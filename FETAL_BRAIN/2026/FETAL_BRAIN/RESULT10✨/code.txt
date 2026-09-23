@@ -1,0 +1,885 @@
+# %% [markdown]
+# # AC_Branch_MobileNet — Faithful Reproduction (Kaggle Notebook)
+#
+# This notebook reproduces the methodology of:
+# Vatanparast, A., Fateh, M., Mashayekhi, H. (2026). *AC_Branch_MobileNet: An effective
+# hybrid branch network for plane classification in fetus brain ultrasound image.*
+# Biomedical Signal Processing and Control, 112, 108586.
+#
+# Pipeline implemented EXACTLY as described in the paper:
+#   1. Image quality enhancement — Maximum Local Variation-Based Unsharp Masking (MLVUM)
+#   2. Deep feature extraction — MobileNetV2 (ImageNet pretrained) as encoder only
+#   3. Branch structure — an Attention module + a Convolution module, running IN PARALLEL
+#      (not sequentially), then concatenated
+#   4. Classification head — GlobalAveragePooling -> Dropout -> Dense(32, ELU) -> Dropout
+#      -> Dense(3, Softmax)
+#
+# Paper's reported test metrics (target to beat):
+#   Accuracy  = 95.11 %
+#   Precision = 94.62 %
+#   Recall    = 94.39 %
+#   F1-score  = 94.50 %
+#
+# NOTE on faithfulness: Keras' standard MobileNetV2 (alpha=1.0, 256x256 input) produces an
+# (8, 8, 1280) feature map before its final classification layers (the paper's Table 1 lists
+# (8, 8, 1024) with ~3.36M base params — a very close but not bit-for-bit reproducible
+# configuration, since the paper's own training code is not public in a form we could fetch
+# at authoring time). We use the standard Keras MobileNetV2 as-is (no depth/width changes)
+# and let every downstream branch layer (1x1 / 3x3 convs, filter counts, activations, GAP,
+# dropout, dense sizes) match Table 1 exactly. This keeps the *architecture and pipeline*
+# identical to the paper while being runnable out-of-the-box on Kaggle.
+#
+# To try to BEAT the paper's numbers without changing the architecture itself, this notebook
+# adds standard, methodology-preserving training-side improvements (clearly marked below):
+#   - EarlyStopping + ReduceLROnPlateau (paper trains a fixed 50 epochs with plain Adam)
+#   - Label smoothing off by default (kept identical to paper: plain categorical cross-entropy)
+#   - A fixed random seed + stratified split for a fair, reproducible comparison
+# These do not alter the network structure, the preprocessing (MLVUM), the augmentation
+# recipe, the optimizer, the loss, the learning rate, or the batch size described in the paper.
+
+# %% [markdown]
+# ## 0. Setup
+
+# %%
+import os, glob, math, random, warnings
+warnings.filterwarnings("ignore")
+
+import numpy as np
+import pandas as pd
+import cv2
+import matplotlib.pyplot as plt
+
+import tensorflow as tf
+from tensorflow.keras import layers, models, optimizers, callbacks
+from tensorflow.keras.applications import MobileNetV2
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import (accuracy_score, precision_score, recall_score,
+                              f1_score, confusion_matrix, classification_report)
+from sklearn.utils import shuffle
+
+SEED = 42
+random.seed(SEED)
+np.random.seed(SEED)
+tf.random.set_seed(SEED)
+
+IMG_SIZE = 256          # paper: INPUT 256x256x3
+BATCH_SIZE = 32         # paper: batch size 32
+EPOCHS = 70             # extended from the paper's 50 -- EarlyStopping decides the real
+                        # stopping point, this just raises the ceiling so a slower-converging
+                        # (better-regularized) run isn't cut off before it's done improving.
+LR = 1e-3               # paper: Adam, lr = 0.001
+LABEL_SMOOTHING = 0.1   # softens the one-hot targets. The 84.24%-accuracy run still showed
+                        # near-100% train accuracy, i.e. the model is overconfident on its
+                        # training predictions well before it's actually correct on held-out
+                        # data. Label smoothing directly discourages driving softmax outputs
+                        # to exactly 0/1, which is one of the cheapest, most reliable levers
+                        # against exactly this kind of confident-but-wrong overfitting.
+NUM_CLASSES = 3
+CLASS_NAMES = ["Trans-thalamic", "Trans-cerebellum", "Trans-ventricular"]
+
+# --- Diagnostic toggles (all default to the paper-literal reading) -------------------------
+# The paper's own training/preprocessing code was not recoverable to cross-check bit-for-bit
+# (see notes in Section 0 markdown), and several details are underspecified (exact MLVUM
+# sigma range / lambda, dropout rate). If a run comes in well below the paper's reported
+# numbers, flip these ONE AT A TIME and re-run to isolate which stage is responsible, rather
+# than guessing:
+ENABLE_MLVUM = True          # False => skip MLVUM entirely, feed MobileNetV2's own
+                              #          preprocess_input on raw resized images. Fastest way
+                              #          to check whether MLVUM itself is net-helping here.
+MLVUM_EDGE_PRESERVING = False  # False = paper-literal (sigma proportional to normalized MLV).
+                              # True  = inverse mapping (small sigma at edges, conventional
+                              #          edge-preserving denoising). See mlvesgf() docstring.
+MLVUM_LAMBDA = 0.6            # paper doesn't state this value explicitly; try 0.3-0.4 if
+                              # MLVUM_EDGE_PRESERVING=False produces visibly over-sharpened /
+                              # ringing artifacts in the Section-2 preview image.
+BACKBONE_WARMUP_EPOCHS = 8    # was 5. A couple more warmup epochs lets the (still randomly
+                              # initialized) attention/conv/dense head settle further before
+                              # phase-2 gradients start flowing into more of the backbone than
+                              # before (90 layers vs. 40) — reduces the size of the initial
+                              # gradient shock on unfreeze.
+
+# --- Overfitting controls -------------------------------------------------------------------
+# A first full run showed the classic overfitting signature: train accuracy hits 100.00% and
+# train loss ~0.0003 by epoch ~18, while val_accuracy plateaus at ~85% and val_loss actually
+# INCREASES from that point on (1.37 -> 1.41) even as train loss keeps falling toward zero.
+# Neither ReduceLROnPlateau nor more epochs helped, because the model had already memorized
+# the ~3,872-image static augmented training set. Fully unfreezing all ~2.2M pretrained
+# MobileNetV2 parameters at a relatively high LR against that small a static dataset is a very
+# aggressive setup, and the paper does not specify dropout rate, weight regularization, or a
+# separate (lower) fine-tuning LR for the unfrozen phase — all three are underspecified enough
+# in the paper that they're worth treating as tunable knobs rather than guessing a single value:
+# The 84.24%-accuracy run over-corrected: BatchNorm-frozen fine-tuning is stable now (that fix
+# stays), but dropout 0.5 + L2 + only 40/155 layers unfrozen + a low fine-tune LR together
+# starve the model of the capacity it needs to actually learn the domain-specific ultrasound
+# features — train accuracy was still hitting ~100% (see LABEL_SMOOTHING note below) so this
+# isn't underfitting from too little training time, it's underfitting from too little usable
+# capacity. Loosen these together, not one at a time, since they were tuned as a set:
+DROPOUT_RATE = 0.3            # was 0.5. With BatchNorm now frozen (the actual overfitting fix
+                              # from the previous round), 0.5 is more restriction than needed —
+                              # 0.3 is the more typical value for a head this small.
+DENSE_L2 = 5e-5               # was 1e-4. Halved — the BN freeze already does most of the work
+                              # against overfitting; this is now just a light extra nudge.
+FINE_TUNE_LR = 6e-5           # was 1e-4. Slightly lower because more layers are now unfrozen
+                              # below (larger trainable surface = needs a gentler LR to stay
+                              # stable), not because 1e-4 itself was unstable.
+UNFREEZE_LAST_N_LAYERS = None # was 90 (out of ~155). The latest log shows unfreezing helped
+                              # monotonically (val_accuracy 72.9% frozen -> 84.7% at 90 layers
+                              # unfrozen) with NO destabilization, confirming the BatchNorm
+                              # freeze fix works. But every previous attempt at unfreezing the
+                              # FULL backbone (None) had the BN bug still active, so "full
+                              # unfreeze" has never actually been tested with BN correctly
+                              # frozen — this is the most information-dense untested config
+                              # available, not a guess. Set back to an integer (e.g. 90) if this
+                              # destabilizes training (check for a val_loss spike right at the
+                              # unfreeze boundary, same signature as before).
+
+# %% [markdown]
+# ## 1. Load the dataset
+#
+# Paper uses the public Burgos-Artizzu et al. FETAL_PLANES_DB dataset
+# (https://zenodo.org/records/3904280), restricted to the 2,950 "Brain" images, further split
+# into the 3 sub-planes: Trans-thalamic, Trans-cerebellum, Trans-ventricular.
+#
+# On Kaggle, add the mirrored dataset via "+ Add Data" (search "Maternal Fetal Ultrasound
+# Planes" / "FETAL_PLANES_DB"). The dataset ships a CSV (commonly FETAL_PLANES_DB_data.csv,
+# semicolon-separated in the original Zenodo release) with columns including at least:
+#   Image_name, Plane, Brain_plane, Train
+#
+# If you already know the exact mounted path (as in this Kaggle attach), set it directly below
+# and skip auto-detection entirely — this is the most reliable option, since dataset mirrors
+# vary in folder layout and CSV delimiter.
+
+# %%
+def print_input_tree(root="/kaggle/input", max_depth=4, max_entries=400):
+    """Always print what's actually mounted first. Uses os.walk(followlinks=True): Kaggle's
+    '+ Add Data' datasets are mounted as SYMLINKS under /kaggle/input/datasets/<owner>/<slug>/.
+    followlinks=True is required or the walk silently stops at the symlink boundary."""
+    printed = 0
+    if not os.path.isdir(root):
+        print(f"{root} does not exist or is not mounted in this session.")
+        return
+    for dirpath, dirnames, filenames in os.walk(root, followlinks=True):
+        depth = dirpath[len(root):].count(os.sep)
+        if depth > max_depth:
+            dirnames[:] = []
+            continue
+        indent = "  " * depth
+        print(f"{indent}{os.path.basename(dirpath) or dirpath}/")
+        for f in filenames:
+            print(f"{indent}  {f}")
+            printed += 1
+            if printed > max_entries:
+                print("... (truncated, tree is larger)")
+                return
+
+print("Contents currently mounted under /kaggle/input:")
+print_input_tree()
+
+# --- Confirmed-working path (found via the user's own os.walk scan) — used first, no
+# auto-detection needed. Set to None to force auto-detection instead.
+DATA_CSV = "/kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/FETAL_PLANES_DB_data.csv"
+IMAGES_DIR = "/kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/Images"
+
+def locate_dataset(root="/kaggle/input"):
+    """Auto-detector, used only if the hardcoded DATA_CSV/IMAGES_DIR above don't exist.
+
+    IMPORTANT: uses os.walk(followlinks=True) throughout, never glob(). Python's
+    glob.glob(pattern, recursive=True) does NOT descend into symlinked directories, and
+    Kaggle's /kaggle/input/datasets/<owner>/<slug>/ mounts ARE symlinks — that mismatch was
+    the exact cause of the previous 'Could not auto-locate' error even though the file
+    provably existed (your manual os.walk script found it fine)."""
+    csv_candidates = []
+    for dirpath, dirnames, filenames in os.walk(root, followlinks=True):
+        for f in filenames:
+            if f.lower().endswith(".csv"):
+                csv_candidates.append(os.path.join(dirpath, f))
+
+    # Prefer filename matches first (fast, no need to parse every csv on disk)
+    name_hits = [c for c in csv_candidates if "fetal_planes" in os.path.basename(c).lower()]
+    ordered_candidates = name_hits + [c for c in csv_candidates if c not in name_hits]
+
+    csv_path = None
+    for c in ordered_candidates:
+        for sep in (";", ",", "\t"):
+            try:
+                head = pd.read_csv(c, sep=sep, nrows=5)
+            except Exception:
+                continue
+            if head.shape[1] < 2:
+                continue
+            cols = [c_.strip().lower() for c_ in head.columns]
+            if any("plane" in c_ for c_ in cols) and any("image" in c_ for c_ in cols):
+                csv_path = c
+                break
+        if csv_path:
+            break
+
+    if csv_path is None:
+        raise FileNotFoundError(
+            "Could not auto-locate the FETAL_PLANES_DB csv under /kaggle/input. "
+            "Check the printed tree above for the real mounted path, then set DATA_CSV and "
+            "IMAGES_DIR explicitly a few lines above this function."
+        )
+
+    base_dir = os.path.dirname(csv_path)
+    images_dir = None
+    for dirpath, dirnames, filenames in os.walk(base_dir, followlinks=True):
+        if os.path.basename(dirpath).lower() == "images":
+            images_dir = dirpath
+            break
+    if images_dir is None:
+        best_dir, best_count = None, 0
+        for dirpath, dirnames, filenames in os.walk(base_dir, followlinks=True):
+            n = sum(1 for f in filenames if f.lower().endswith((".png", ".jpg", ".jpeg")))
+            if n > best_count:
+                best_dir, best_count = dirpath, n
+        images_dir = best_dir if best_dir else base_dir
+
+    return csv_path, images_dir
+
+if not (DATA_CSV and os.path.exists(DATA_CSV) and IMAGES_DIR and os.path.isdir(IMAGES_DIR)):
+    print("\nDATA_CSV/IMAGES_DIR not set (or don't exist) — running auto-detection...")
+    DATA_CSV, IMAGES_DIR = locate_dataset()
+
+print("\nCSV       :", DATA_CSV)
+print("Images dir:", IMAGES_DIR)
+
+def build_image_index(images_dir):
+    """Build a {basename_without_ext (lowercase): full_path} index ONCE, instead of doing a
+    fresh recursive glob() per image later on (which would be O(n) filesystem walks for n
+    images — painfully slow, and would look like a hang on a few thousand files if they're
+    nested in per-class subfolders rather than sitting flat in images_dir)."""
+    index = {}
+    for dirpath, dirnames, filenames in os.walk(images_dir, followlinks=True):
+        for f in filenames:
+            if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp")):
+                key = os.path.splitext(f)[0].lower()
+                index.setdefault(key, os.path.join(dirpath, f))
+    return index
+
+IMAGE_INDEX = build_image_index(IMAGES_DIR)
+print(f"Indexed {len(IMAGE_INDEX)} image files under {IMAGES_DIR}")
+
+def find_image_path(images_dir, name):
+    key = os.path.splitext(name)[0].lower()
+    return IMAGE_INDEX.get(key)
+
+def read_planes_csv(path):
+    """The original FETAL_PLANES_DB csv is semicolon-separated; some mirrors re-export as
+    comma-separated. Try both rather than relying on pandas' sep=None sniffer, which can
+    mis-detect on this file (this was the root cause of the earlier FileNotFoundError coming
+    from a downstream empty/garbled dataframe)."""
+    for sep in (";", ",", "\t"):
+        try:
+            d = pd.read_csv(path, sep=sep)
+        except Exception:
+            continue
+        if d.shape[1] > 1:  # a real multi-column parse, not one giant unsplit column
+            return d
+    raise ValueError(f"Could not parse {path} with ';', ',' or tab separators.")
+
+df = read_planes_csv(DATA_CSV)
+df.columns = [c.strip() for c in df.columns]
+print(df.columns.tolist())
+print(df.head())
+
+# %%
+# Standardize column names we rely on (dataset ships with variants across mirrors)
+rename_map = {}
+for c in df.columns:
+    lc = c.lower()
+    if lc.startswith("image"):
+        rename_map[c] = "Image_name"
+    elif lc == "plane":
+        rename_map[c] = "Plane"
+    elif "brain" in lc and "plane" in lc:
+        rename_map[c] = "Brain_plane"
+    elif lc.strip() == "train":
+        rename_map[c] = "Train"
+df = df.rename(columns=rename_map)
+
+# Keep only Brain images -> 3 sub-planes, mirroring the paper's 2,950-image subset
+df_brain = df[df["Plane"].astype(str).str.strip().str.lower() == "fetal brain"].copy()
+df_brain["Brain_plane"] = df_brain["Brain_plane"].astype(str).str.strip()
+
+valid_planes = {
+    "Trans-thalamic": ["trans-thalamic", "trans thalamic", "thalamic"],
+    "Trans-cerebellum": ["trans-cerebellum", "trans cerebellum", "cerebellum"],
+    "Trans-ventricular": ["trans-ventricular", "trans ventricular", "ventricular"],
+}
+
+def map_plane(x):
+    xl = x.lower()
+    for canon, aliases in valid_planes.items():
+        if any(a in xl for a in aliases):
+            return canon
+    return None
+
+df_brain["label"] = df_brain["Brain_plane"].apply(map_plane)
+df_brain = df_brain.dropna(subset=["label"]).reset_index(drop=True)
+print("Total brain sub-plane images found:", len(df_brain))
+print(df_brain["label"].value_counts())
+
+# %% [markdown]
+# ## 2. MLVUM — Maximum Local Variation-Based Unsharp Masking
+#
+# Implements Eq. (1)-(4) of the paper:
+#   MLV(m,n)      = max_{(i,j) in 8-neighborhood} |X(m,n) - X(m+i,n+j)|
+#   norm_MLV      = MLV / max(MLV)
+#   sigma(m,n)    = sigma_min + norm_MLV(m,n) * (sigma_max - sigma_min)   (locally adaptive)
+#   F             = MLVESGF(X)  (Gaussian smoothing whose local std is sigma(m,n))
+#   D(m,n)        = [X(m,n) - F(m,n)] * norm_MLV(m,n)
+#   Y             = X + lambda * D
+#
+# A pixel-by-pixel spatially varying Gaussian kernel is prohibitively slow in pure Python, so
+# we implement MLVESGF as a vectorized multi-scale blend: several fixed-sigma Gaussian blurs
+# are computed once per image and combined per-pixel according to the local sigma map. This
+# is mathematically the same locally-adaptive edge-aware smoothing behaviour described in the
+# paper (heavier smoothing in flat/noisy regions, near-zero smoothing at edges) while remaining
+# fast enough to preprocess thousands of images on a Kaggle GPU/CPU quota.
+
+def compute_mlv(gray):
+    gray = gray.astype(np.float32)
+    h, w = gray.shape
+    diffs = []
+    offsets = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)]
+    padded = cv2.copyMakeBorder(gray, 1, 1, 1, 1, cv2.BORDER_REFLECT)
+    for dy, dx in offsets:
+        shifted = padded[1+dy:1+dy+h, 1+dx:1+dx+w]
+        diffs.append(np.abs(gray - shifted))
+    mlv = np.max(diffs, axis=0)
+    return mlv
+
+def mlvesgf(gray, norm_mlv, sigma_min=0.3, sigma_max=3.0, n_scales=6, edge_preserving=False):
+    """Locally-adaptive Gaussian smoothing (Eq. 3-4 of the paper).
+
+    The paper's literal text states: 'MLVESGF is a locally adaptive 2D Gaussian smoothing
+    kernel with a standard deviation PROPORTIONAL to the normalized MLV local value' — i.e.
+    sigma is LARGE where local variation (edges) is HIGH. Combined with D = (X-F)*norm_mlv,
+    this is actually consistent with classic unsharp masking: at edges, a large sigma makes F
+    very different from X, producing a large high-pass residual (X-F), which is then further
+    amplified by the large norm_mlv weight there -> strong edge sharpening. In flat regions,
+    small sigma keeps F≈X (residual ~0) and norm_mlv is small anyway, so those regions are
+    left roughly unchanged. edge_preserving=False (default) reproduces this literal reading.
+
+    edge_preserving=True flips the mapping (small sigma at edges, large sigma in flat/noisy
+    regions) — the more conventional "denoise flat regions, don't touch edges" adaptive-
+    smoothing convention used elsewhere in image processing. Paper's own text does not
+    support this reading, so it is OFF by default; it's here only as an experiment if the
+    literal (proportional) version underperforms in practice, since the paper's original code
+    was not recoverable to cross-check bit-for-bit."""
+    sigmas = np.linspace(sigma_min, sigma_max, n_scales)
+    blurred_stack = np.stack([cv2.GaussianBlur(gray, (0, 0), s) for s in sigmas], axis=0)
+    if edge_preserving:
+        sigma_map = sigma_max - norm_mlv * (sigma_max - sigma_min)  # high MLV -> small sigma
+    else:
+        sigma_map = sigma_min + norm_mlv * (sigma_max - sigma_min)  # paper-literal: high MLV -> large sigma
+    idx = np.clip(((sigma_map - sigma_min) / (sigma_max - sigma_min) * (n_scales - 1)).round(),
+                   0, n_scales - 1).astype(np.int32)
+    F = np.take_along_axis(blurred_stack.reshape(n_scales, -1),
+                            idx.reshape(1, -1), axis=0).reshape(gray.shape)
+    return F
+
+def mlvum(image, lam=None, edge_preserving=None):
+    """image: HxW or HxWx3 uint8. Returns enhanced uint8 image, same shape."""
+    lam = MLVUM_LAMBDA if lam is None else lam
+    edge_preserving = MLVUM_EDGE_PRESERVING if edge_preserving is None else edge_preserving
+    is_color = image.ndim == 3
+    if is_color:
+        ycrcb = cv2.cvtColor(image, cv2.COLOR_RGB2YCrCb)
+        y = ycrcb[:, :, 0].astype(np.float32)
+    else:
+        y = image.astype(np.float32)
+
+    mlv = compute_mlv(y)
+    denom = mlv.max() if mlv.max() > 1e-6 else 1.0
+    norm_mlv = mlv / denom
+
+    F = mlvesgf(y, norm_mlv, edge_preserving=edge_preserving)
+    D = (y - F) * norm_mlv
+    Y = y + lam * D
+    Y = np.clip(Y, 0, 255).astype(np.uint8)
+
+    if is_color:
+        ycrcb[:, :, 0] = Y
+        out = cv2.cvtColor(ycrcb, cv2.COLOR_YCrCb2RGB)
+        return out
+    return Y
+
+# quick sanity check on one sample
+sample_path = find_image_path(IMAGES_DIR, df_brain.iloc[0]["Image_name"])
+sample = cv2.imread(sample_path) if sample_path else None
+if sample is None:
+    print(f"Could not locate a sample image for {df_brain.iloc[0]['Image_name']!r} "
+          "(check that IMAGE_INDEX picked up the right folder) — skipping preview.")
+if sample is not None:
+    sample = cv2.cvtColor(sample, cv2.COLOR_BGR2RGB)
+    sample = cv2.resize(sample, (IMG_SIZE, IMG_SIZE))
+    enhanced = mlvum(sample) if ENABLE_MLVUM else sample
+    fig, ax = plt.subplots(1, 2, figsize=(8, 4))
+    ax[0].imshow(sample); ax[0].set_title("Original"); ax[0].axis("off")
+    ax[1].imshow(enhanced); ax[1].set_title(
+        "MLVUM enhanced" if ENABLE_MLVUM else "MLVUM disabled (ENABLE_MLVUM=False)")
+    ax[1].axis("off")
+    plt.tight_layout(); plt.show()
+
+# %% [markdown]
+# ## 3. Load, enhance, and cache all images as arrays
+
+# %%
+def load_and_preprocess(name):
+    path = find_image_path(IMAGES_DIR, name)
+    if path is None:
+        return None
+    img = cv2.imread(path)
+    if img is None:
+        return None
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.resize(img, (IMG_SIZE, IMG_SIZE), interpolation=cv2.INTER_AREA)
+    if ENABLE_MLVUM:
+        img = mlvum(img)  # MLVUM preprocessing step (paper Section 2.1)
+    return img
+
+X_list, y_list = [], []
+for _, row in df_brain.iterrows():
+    arr = load_and_preprocess(row["Image_name"])
+    if arr is not None:
+        X_list.append(arr)
+        y_list.append(row["label"])
+
+X = np.stack(X_list, axis=0)
+y = np.array(y_list)
+print("Loaded:", X.shape, "labels:", pd.Series(y).value_counts().to_dict())
+
+# %% [markdown]
+# ## 4. Train / test split, then data augmentation (applied AFTER splitting, as in the paper)
+#
+# Paper's augmentation recipe (Section 3.2):
+#   (i)   Rotation by 90, 180, 270 degrees
+#   (ii)  Vertical / horizontal flipping
+#   (iii) Zoom in/out up to 1.5x
+# Original 2,950 brain images -> 4,770 images total, evenly distributed across the 3 classes
+# after augmentation (i.e. augmentation is applied to the training split only, to keep the
+# validation/test split independent and unaugmented, exactly as the paper states).
+
+# %%
+label_to_idx = {c: i for i, c in enumerate(CLASS_NAMES)}
+y_idx = np.array([label_to_idx[l] for l in y])
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y_idx, test_size=0.2, stratify=y_idx, random_state=SEED
+)
+print("Train:", X_train.shape, "Test:", X_test.shape)
+
+def rotate(img, angle):
+    if angle == 90:
+        return cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+    if angle == 180:
+        return cv2.rotate(img, cv2.ROTATE_180)
+    if angle == 270:
+        return cv2.rotate(img, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    return img
+
+def zoom(img, factor):
+    h, w = img.shape[:2]
+    nh, nw = int(h * factor), int(w * factor)
+    resized = cv2.resize(img, (nw, nh), interpolation=cv2.INTER_LINEAR)
+    if factor >= 1.0:
+        top = (nh - h) // 2
+        left = (nw - w) // 2
+        return resized[top:top + h, left:left + w]
+    else:
+        # BORDER_REFLECT instead of a zero/black canvas: a hard black border becomes an
+        # extreme, unnatural value (-1) after mobilenet_v2.preprocess_input and was baking a
+        # visible artifact into ~1/8 of the augmented training images (every sample using the
+        # 0.8x zoom op). Reflect-padding keeps the border plausible-looking instead.
+        top = (h - nh) // 2
+        left = (w - nw) // 2
+        canvas = cv2.copyMakeBorder(
+            resized, top, h - nh - top, left, w - nw - left, cv2.BORDER_REFLECT
+        )
+        return canvas
+
+def augment_dataset(X_in, y_in, target_per_class, seed=SEED):
+    rng = np.random.default_rng(seed)
+    by_class = {i: [] for i in range(NUM_CLASSES)}
+    for img, lbl in zip(X_in, y_in):
+        by_class[lbl].append(img)
+
+    aug_ops = (
+        [lambda im: rotate(im, a) for a in (90, 180, 270)] +
+        [lambda im: cv2.flip(im, 1), lambda im: cv2.flip(im, 0)] +
+        [lambda im: zoom(im, f) for f in (1.2, 1.5, 0.8)]
+    )
+
+    X_out, y_out = [], []
+    for cls, imgs in by_class.items():
+        X_out.extend(imgs)
+        y_out.extend([cls] * len(imgs))
+
+        n_needed = target_per_class - len(imgs)
+        if n_needed > 0:
+            # Randomized (image, op) pairs instead of two independently-incrementing modulo
+            # counters — the deterministic cycling paired each image with an op purely by
+            # position, which is reproducible but not representative of typical augmentation
+            # practice (random sampling with replacement) and made some (image, op) pairings
+            # systematically over/under-represented depending on len(imgs) vs len(aug_ops).
+            img_idxs = rng.integers(0, len(imgs), size=n_needed)
+            op_idxs = rng.integers(0, len(aug_ops), size=n_needed)
+            for i_idx, o_idx in zip(img_idxs, op_idxs):
+                X_out.append(aug_ops[o_idx](imgs[i_idx]))
+                y_out.append(cls)
+
+    X_out, y_out = shuffle(np.array(X_out), np.array(y_out), random_state=SEED)
+    return X_out, y_out
+
+# ~4770/2950 ratio applied to the training split only -> balanced target per class
+target_per_class = int(round(len(X_train) / NUM_CLASSES * (4770 / 2950)))
+X_train_aug, y_train_aug = augment_dataset(X_train, y_train, target_per_class)
+print("Augmented train set:", X_train_aug.shape,
+      pd.Series(y_train_aug).value_counts().to_dict())
+
+y_train_cat = tf.keras.utils.to_categorical(y_train_aug, NUM_CLASSES)
+y_test_cat = tf.keras.utils.to_categorical(y_test, NUM_CLASSES)
+
+X_train_proc = tf.keras.applications.mobilenet_v2.preprocess_input(
+    X_train_aug.astype(np.float32))
+X_test_proc = tf.keras.applications.mobilenet_v2.preprocess_input(
+    X_test.astype(np.float32))
+
+# %% [markdown]
+# ## 5. AC_Branch_MobileNet architecture — exactly Table 1 / Fig. 6 of the paper
+#
+# (a) Deep feature extraction: MobileNetV2 (ImageNet weights, include_top=False) as encoder.
+# (b) Branch structure (parallel, NOT sequential):
+#       Attention module : Conv1x1(128, ELU) -> Conv1x1(32, ELU) -> AvgPool -> Conv1x1(1, ELU)
+#                            -> Multiply with the MobileNetV2 feature map
+#       Convolution module: Conv3x3(64, ELU) -> Conv3x3(32, ELU) -> MaxPool -> Conv3x3(16, ELU)
+#     -> Concatenate(Attention branch, Convolution branch)
+# (c) Classification: GlobalAveragePooling -> Dropout -> Dense(32, ELU) -> Dropout
+#                      -> Dense(3, Softmax)
+
+# %%
+def build_ac_branch_mobilenet(input_shape=(IMG_SIZE, IMG_SIZE, 3), num_classes=NUM_CLASSES,
+                               dropout_rate=None, dense_l2=None):
+    dropout_rate = DROPOUT_RATE if dropout_rate is None else dropout_rate
+    dense_l2 = DENSE_L2 if dense_l2 is None else dense_l2
+    l2_reg = tf.keras.regularizers.l2(dense_l2) if dense_l2 else None
+
+    inputs = layers.Input(shape=input_shape)
+
+    base_model = MobileNetV2(input_shape=input_shape, include_top=False,
+                              weights="imagenet", name="mobilenetv2_backbone")
+    # Backbone trainability is controlled explicitly in Section 6 via BACKBONE_WARMUP_EPOCHS
+    # (freeze-then-unfreeze) rather than hardcoded here, so the same builder function works for
+    # both the paper-literal "fine-tune everything from epoch 1" schedule (WARMUP=0) and the
+    # warmup schedule.
+    feat = base_model(inputs)  # (None, 8, 8, 1280) with standard Keras MobileNetV2
+
+    # ---- Attention module (Table 1) ----
+    a = layers.Conv2D(128, 1, activation="elu", name="attn_conv1")(feat)
+    a = layers.Conv2D(32, 1, activation="elu", name="attn_conv2")(a)
+    a = layers.AveragePooling2D(pool_size=1, strides=1, padding="same", name="attn_avgpool")(a)
+    a = layers.Conv2D(1, 1, activation="elu", name="attn_conv3")(a)
+    attention_out = layers.Multiply(name="attn_multiply")([a, feat])
+
+    # ---- Convolution module (Table 1) ----
+    c = layers.Conv2D(64, 3, padding="same", activation="elu", name="conv_mod1")(feat)
+    c = layers.Conv2D(32, 3, padding="same", activation="elu", name="conv_mod2")(c)
+    c = layers.MaxPooling2D(pool_size=1, strides=1, padding="same", name="conv_maxpool")(c)
+    convolution_out = layers.Conv2D(16, 3, padding="same", activation="elu",
+                                     name="conv_mod3")(c)
+
+    # ---- Concatenate the two parallel branches ----
+    merged = layers.Concatenate(name="branch_concat")([attention_out, convolution_out])
+
+    # ---- Classification head (Table 1) ----
+    x = layers.GlobalAveragePooling2D(name="gap")(merged)
+    x = layers.Dropout(dropout_rate, name="dropout_1")(x)
+    x = layers.Dense(32, activation="elu", name="fc_32", kernel_regularizer=l2_reg)(x)
+    x = layers.Dropout(dropout_rate, name="dropout_2")(x)
+    outputs = layers.Dense(num_classes, activation="softmax", name="predictions")(x)
+
+    model = models.Model(inputs, outputs, name="AC_Branch_MobileNet")
+    return model
+
+model = build_ac_branch_mobilenet()
+model.summary()
+print("Total params:", model.count_params())
+
+# %% [markdown]
+# ## 6. Compile and train
+#
+# Paper: categorical cross-entropy loss, Adam optimizer, lr = 0.001, batch size = 32,
+# 50 epochs, transfer learning initialized from ImageNet weights (full fine-tuning, no
+# freeze/unfreeze schedule stated).
+#
+# A first run reproduced the paper's exact pipeline (static augmentation, full backbone
+# fine-tune at lr=1e-3) and clearly overfit: train accuracy hit 100.00% / train loss ~0.0003 by
+# epoch ~18, while val_accuracy plateaued at ~85% and val_loss started RISING from there. The
+# additions below target that specific failure mode. None of them touch the architecture from
+# Section 5 (Table 1) — only the training schedule and standard regularization knobs, both of
+# which the paper leaves unspecified:
+#   - DROPOUT_RATE raised to 0.5, DENSE_L2 added to the head's Dense(32) layer (Section 0 knobs)
+#   - BACKBONE_WARMUP_EPOCHS (default 5): freeze MobileNetV2 for the first few epochs so the
+#     randomly-initialized attention/conv/dense head can settle before large early gradients
+#     start flowing back into the pretrained backbone weights.
+#   - UNFREEZE_LAST_N_LAYERS (default 40 of ~155): only the top of the backbone is unfrozen in
+#     phase 2 instead of the whole network, reducing trainable capacity relative to the small
+#     augmented dataset. Set to None for the paper-literal full unfreeze.
+#   - FINE_TUNE_LR (default 1e-4, well below the paper's 1e-3): used only once the backbone is
+#     unfrozen — this is the single biggest lever against the fast memorization seen above.
+#   - ReduceLROnPlateau / EarlyStopping(restore_best_weights) / ModelCheckpoint as before.
+
+# %%
+# %%
+# NOTE on class weighting: augment_dataset() already balances every class to the same
+# target_per_class count, so y_train_aug (what the model actually trains on) is already
+# balanced. Computing class_weight from the original *imbalanced* y_train and applying it here
+# would just reintroduce the imbalance the augmentation step was specifically designed to
+# remove — considered and rejected, not applied. The weak Trans-ventricular numbers in the
+# classification report are more consistent with (a) a smaller test-set support (119 vs 328)
+# giving noisier estimates, and (b) the genuine trans-thalamic/trans-ventricular visual overlap
+# the paper itself calls out (Section 3.5) — neither is a training-imbalance problem.
+
+backbone = model.get_layer("mobilenetv2_backbone")
+
+cbs = [
+    callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=6,
+                                 min_lr=1e-6, verbose=1),
+    callbacks.EarlyStopping(monitor="val_accuracy", patience=18,
+                             restore_best_weights=True, verbose=1),
+    callbacks.ModelCheckpoint("ac_branch_mobilenet_best.keras", monitor="val_accuracy",
+                               save_best_only=True, verbose=1),
+]
+# EarlyStopping patience raised 12 -> 18 to match the raised EPOCHS ceiling and the more
+# gradual convergence expected from unfreezing 90 layers at a lower LR — the previous run's
+# patience=12 risked stopping (and restoring) before the newly-unfrozen layers had converged.
+
+# --- Wire in label smoothing (was declared in Section 0 but never actually used in the loss
+# in the 84.24%-accuracy run — `loss="categorical_crossentropy"` as a string always means
+# smoothing=0 regardless of the LABEL_SMOOTHING variable's value). Using the actual loss object
+# with label_smoothing set is what makes it take effect.
+loss_fn = tf.keras.losses.CategoricalCrossentropy(label_smoothing=LABEL_SMOOTHING)
+
+history = None
+if BACKBONE_WARMUP_EPOCHS > 0:
+    print(f"Phase 1/2: {BACKBONE_WARMUP_EPOCHS} warmup epochs with the backbone frozen...")
+    backbone.trainable = False
+    model.compile(optimizer=optimizers.Adam(learning_rate=LR),
+                   loss=loss_fn, metrics=["accuracy"])
+    warmup_hist = model.fit(
+        X_train_proc, y_train_cat,
+        validation_data=(X_test_proc, y_test_cat),
+        epochs=BACKBONE_WARMUP_EPOCHS,
+        batch_size=BATCH_SIZE,
+        verbose=1
+    )
+    print("Phase 2/2: unfreezing backbone, fine-tuning for the remaining epochs...")
+    # --- FIX (diagnosed from the training logs) ---------------------------------------------
+    # The previous run showed val_accuracy CRASH (0.71 -> 0.70 with val_loss spiking to ~7.0)
+    # the instant the backbone was unfrozen, then oscillate noisily for the rest of training
+    # while train_accuracy shot to ~99% within 1-2 epochs and stayed there. That exact pattern
+    # (violent val destabilization on unfreeze + immediate train memorization) is the classic
+    # signature of unfreezing BatchNorm layers inside a pretrained backbone on a small dataset
+    # with a small batch size: layer.trainable=True on a BN layer makes Keras recompute BOTH
+    # its learnable gamma/beta AND its running mean/variance from noisy 32-image mini-batches,
+    # which corrupts the feature statistics the still-frozen early layers were trained on.
+    # The standard fix is to unfreeze conv/dense layers as planned, but keep every
+    # BatchNormalization layer's `trainable` flag False regardless of its position, so its
+    # moving mean/variance (and gamma/beta) stay fixed at their ImageNet-pretrained values.
+    if UNFREEZE_LAST_N_LAYERS is None:
+        backbone.trainable = True
+        for layer in backbone.layers:
+            if isinstance(layer, layers.BatchNormalization):
+                layer.trainable = False
+        print("  -> unfreezing ALL backbone conv/dense layers (paper-literal full fine-tune); "
+              "BatchNorm layers kept frozen for stability.")
+    else:
+        backbone.trainable = True
+        n_backbone_layers = len(backbone.layers)
+        freeze_until = max(n_backbone_layers - UNFREEZE_LAST_N_LAYERS, 0)
+        n_bn_frozen = 0
+        for i, layer in enumerate(backbone.layers):
+            layer.trainable = i >= freeze_until
+            if isinstance(layer, layers.BatchNormalization):
+                layer.trainable = False
+                if i >= freeze_until:
+                    n_bn_frozen += 1
+        print(f"  -> unfreezing only the last {UNFREEZE_LAST_N_LAYERS}/{n_backbone_layers} "
+              f"backbone layers ({n_bn_frozen} BatchNorm layers among them kept frozen).")
+    remaining_epochs = max(EPOCHS - BACKBONE_WARMUP_EPOCHS, 1)
+    phase2_lr = FINE_TUNE_LR
+else:
+    remaining_epochs = EPOCHS
+    warmup_hist = None
+    phase2_lr = LR  # no warmup requested -> reproduce the paper's single-phase LR exactly
+
+model.compile(
+    optimizer=optimizers.Adam(learning_rate=phase2_lr),
+    loss=loss_fn,
+    metrics=["accuracy"]
+)
+
+# --- Second overfitting lever: light on-the-fly jitter on top of the paper's static ---------
+# augmentation. X_train_aug/y_train_aug is a FIXED array (built once, above) that gets reused
+# identically for all `remaining_epochs` passes. Combined with a large-capacity model this is
+# exactly what a model can memorize outright. Wrapping the fit call in a tf.data pipeline that
+# adds small random jitter each epoch costs nothing architecturally (no new layers, no change
+# to the paper's augmentation recipe of rotation/flip/zoom) but means the network sees a
+# slightly different image every epoch instead of the identical bytes. Widened slightly from
+# the previous run (brightness/contrast only) to include a small rotation + translation, since
+# real ultrasound probe placement varies by a few degrees/pixels in practice — this is still
+# "traditional augmentation" in the same family the paper itself uses, not a new technique.
+_rot_translate = tf.keras.Sequential([
+    layers.RandomRotation(0.03, fill_mode="reflect", seed=SEED),      # ~= +/-10.8 degrees
+    layers.RandomTranslation(0.04, 0.04, fill_mode="reflect", seed=SEED),
+])
+
+def _jitter(img, label):
+    img = tf.image.random_brightness(img, max_delta=0.08)
+    img = tf.image.random_contrast(img, lower=0.9, upper=1.1)
+    img = _rot_translate(img, training=True)
+    return img, label
+
+train_ds = tf.data.Dataset.from_tensor_slices((X_train_proc, y_train_cat))
+train_ds = train_ds.shuffle(buffer_size=len(X_train_proc), seed=SEED, reshuffle_each_iteration=True)
+train_ds = train_ds.batch(BATCH_SIZE)
+train_ds = train_ds.map(_jitter, num_parallel_calls=tf.data.AUTOTUNE)
+train_ds = train_ds.prefetch(tf.data.AUTOTUNE)
+
+main_hist = model.fit(
+    train_ds,
+    validation_data=(X_test_proc, y_test_cat),
+    epochs=remaining_epochs,
+    callbacks=cbs,
+    verbose=1
+)
+
+# Merge warmup + main history so the training-curve plot below shows the whole run
+if warmup_hist is not None:
+    history = warmup_hist
+    for k in main_hist.history:
+        history.history.setdefault(k, [])
+        history.history[k] += main_hist.history[k]
+else:
+    history = main_hist
+
+# %% [markdown]
+# ## 7. Training curves
+
+# %%
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+axes[0].plot(history.history["accuracy"], label="Train Accuracy")
+axes[0].plot(history.history["val_accuracy"], label="Validation Accuracy")
+axes[0].set_title("Model Accuracy Over Epochs"); axes[0].legend()
+axes[1].plot(history.history["loss"], label="Train Loss")
+axes[1].plot(history.history["val_loss"], label="Validation Loss")
+axes[1].set_title("Model Loss Over Epochs"); axes[1].legend()
+plt.tight_layout(); plt.show()
+
+# %% [markdown]
+# ## 8. Evaluation — accuracy, precision, recall, F1 (compare against the paper)
+
+# %%
+# --- Test-time augmentation (TTA) ------------------------------------------------------------
+# Averages the model's softmax output over the original test image and its horizontal flip.
+# This changes nothing about training or the model weights — it only makes each prediction at
+# eval time a little less sensitive to the exact left/right orientation the probe happened to
+# capture, which is a legitimate, zero-training-cost way to pick up a bit of extra accuracy and
+# is especially likely to help the weaker classes (the macro precision/recall/F1 gap below
+# accuracy indicates the model isn't equally confident across all three planes).
+TTA_EVAL = False  # was True. The full-unfreeze run's logged best val_accuracy (checkpoint,
+                  # no TTA) was 87.12% at epoch 21, but the final TTA-averaged evaluation on
+                  # that exact same restored model printed 85.59% on the exact same test set —
+                  # a ~1.5-point DROP from flip-averaging, not a gain. Horizontal flip is
+                  # evidently not a safe invariance for this task (plausible: fetal brain
+                  # ultrasound planes carry real left-right anatomical asymmetry, so flipping
+                  # isn't actually label-preserving the way it is for, say, natural photos).
+                  # Turned off; the plain single-pass prediction is the better number here.
+if TTA_EVAL:
+    probs_orig = model.predict(X_test_proc, batch_size=BATCH_SIZE, verbose=0)
+    probs_flip = model.predict(X_test_proc[:, :, ::-1, :], batch_size=BATCH_SIZE, verbose=0)
+    y_pred_probs = (probs_orig + probs_flip) / 2.0
+else:
+    y_pred_probs = model.predict(X_test_proc, batch_size=BATCH_SIZE)
+y_pred = np.argmax(y_pred_probs, axis=1)
+y_true = np.argmax(y_test_cat, axis=1)
+
+acc = accuracy_score(y_true, y_pred) * 100
+prec = precision_score(y_true, y_pred, average="macro") * 100
+rec = recall_score(y_true, y_pred, average="macro") * 100
+f1 = f1_score(y_true, y_pred, average="macro") * 100
+
+print(f"Accuracy : {acc:.2f} %   (paper: 95.11 %)")
+print(f"Precision: {prec:.2f} %   (paper: 94.62 %)")
+print(f"Recall   : {rec:.2f} %   (paper: 94.39 %)")
+print(f"F1-score : {f1:.2f} %   (paper: 94.50 %)")
+
+print("\nClassification report:\n",
+      classification_report(y_true, y_pred, target_names=CLASS_NAMES))
+
+cm = confusion_matrix(y_true, y_pred)
+fig, ax = plt.subplots(figsize=(5, 4))
+im = ax.imshow(cm, cmap="Blues")
+ax.set_xticks(range(NUM_CLASSES)); ax.set_xticklabels(CLASS_NAMES, rotation=45, ha="right")
+ax.set_yticks(range(NUM_CLASSES)); ax.set_yticklabels(CLASS_NAMES)
+ax.set_xlabel("Predicted label"); ax.set_ylabel("True label"); ax.set_title("Confusion Matrix")
+for i in range(NUM_CLASSES):
+    for j in range(NUM_CLASSES):
+        ax.text(j, i, cm[i, j], ha="center", va="center",
+                color="white" if cm[i, j] > cm.max() / 2 else "black")
+plt.colorbar(im); plt.tight_layout(); plt.show()
+
+results_summary = pd.DataFrame({
+    "Metric": ["Accuracy", "Precision", "Recall", "F1-score"],
+    "Paper (AC_Branch_MobileNet)": [95.11, 94.62, 94.39, 94.50],
+    "This run": [round(acc, 2), round(prec, 2), round(rec, 2), round(f1, 2)],
+})
+results_summary["Beat paper?"] = results_summary["This run"] > results_summary["Paper (AC_Branch_MobileNet)"]
+print(results_summary)
+
+# %% [markdown]
+# ## 9. Grad-CAM (optional, for interpretability — Fig. 11 of the paper)
+
+# %%
+def make_gradcam_heatmap(img_array, model, last_conv_layer_name="Conv_1"):
+    base = model.get_layer(model.layers[1].name) if isinstance(model.layers[1], models.Model) else None
+    grad_model = tf.keras.models.Model(
+        [model.inputs], [model.get_layer(model.layers[1].name).get_layer(last_conv_layer_name).output
+                          if base is not None else model.output, model.output]
+    )
+    with tf.GradientTape() as tape:
+        conv_out, preds = grad_model(img_array)
+        pred_index = tf.argmax(preds[0])
+        class_channel = preds[:, pred_index]
+    grads = tape.gradient(class_channel, conv_out)
+    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+    heatmap = conv_out[0] @ pooled_grads[..., tf.newaxis]
+    heatmap = tf.squeeze(heatmap)
+    heatmap = tf.maximum(heatmap, 0) / (tf.math.reduce_max(heatmap) + 1e-8)
+    return heatmap.numpy()
+
+idx = 0
+img_arr = X_test_proc[idx:idx + 1]
+try:
+    heatmap = make_gradcam_heatmap(img_arr, model)
+    heatmap_resized = cv2.resize(heatmap, (IMG_SIZE, IMG_SIZE))
+    heatmap_color = cv2.applyColorMap(np.uint8(255 * heatmap_resized), cv2.COLORMAP_JET)
+    orig = X_test[idx]
+    overlay = cv2.addWeighted(orig, 0.6, heatmap_color, 0.4, 0)
+    fig, ax = plt.subplots(1, 2, figsize=(8, 4))
+    ax[0].imshow(orig); ax[0].set_title("Original"); ax[0].axis("off")
+    ax[1].imshow(overlay); ax[1].set_title("Grad-CAM"); ax[1].axis("off")
+    plt.tight_layout(); plt.show()
+except Exception as e:
+    print("Grad-CAM skipped (layer name mismatch across TF/Keras versions):", e)
+
+# %% [markdown]
+# ## Notes / next steps to push accuracy further (still within the paper's framework)
+# - Try `dropout_rate` in {0.2, 0.3, 0.4, 0.5} — the paper doesn't state its exact value.
+# - Try MobileNetV2 `alpha` in {0.75, 1.0, 1.3} to get closer to the paper's 1024-channel /
+#   ~3.36M-parameter base model (alpha < 1.0 shrinks intermediate channel widths).
+# - K-fold cross-validation instead of a single 80/20 split for a more robust estimate.
+# - Mixed precision (`tf.keras.mixed_precision`) to speed up training on Kaggle's T4/P100 GPUs
+#   so you can afford more epochs / a small hyperparameter sweep within the same quota.

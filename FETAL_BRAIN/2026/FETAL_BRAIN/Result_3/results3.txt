@@ -1,0 +1,510 @@
+TensorFlow version: 2.20.0
+GPU available: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+Found dataset CSV: /kaggle/input/datasets/vineetpawar213/fetal-planes-zenodo/FETAL_PLANES_DB_data.csv
+Using images directory: /kaggle/input/datasets/vineetpawar213/fetal-planes-zenodo/Images
+Indexed 12400 image files under /kaggle/input/datasets/vineetpawar213/fetal-planes-zenodo/Images
+Loaded 2949 fetal-brain images across {'Trans-thalamic': 1638, 'Trans-cerebellum': 714, 'Trans-ventricular': 597}
+(Paper reports 2,950 total fetal-brain images across the three sub-planes; small differences reflect dataset-release version.)
+
+Split sizes -> train: 1235, val: 308, test: 1406
+Preprocessing train split (1235 images)...
+Preprocessing validation split (308 images)...
+Preprocessing test split (1406 images)...
+
+Augmenting training split to balanced target of 1590 images/class (4770 total)...
+  Class 'Trans-thalamic': 697 originals -> 1590 after augmentation
+  Class 'Trans-cerebellum': 301 originals -> 1590 after augmentation
+  Class 'Trans-ventricular': 237 originals -> 1590 after augmentation
+
+Final array shapes -> X_train: (4770, 256, 256, 3), X_val: (308, 256, 256, 3), X_test: (1406, 256, 256, 3)
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1785843239.365013      23 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 13756 MB memory:  -> device: 0, name: Tesla T4, pci bus id: 0000:00:04.0, compute capability: 7.5
+I0000 00:00:1785843239.371017      23 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 13756 MB memory:  -> device: 1, name: Tesla T4, pci bus id: 0000:00:05.0, compute capability: 7.5
+Downloading data from https://storage.googleapis.com/tensorflow/keras-applications/mobilenet_v2/mobilenet_v2_weights_tf_dim_ordering_tf_kernels_1.0_224_no_top.h5
+9406464/9406464 ━━━━━━━━━━━━━━━━━━━━ 0s 0us/step
+
+======================================================================
+Training MobileNetV2 (3,701,315 total parameters)
+======================================================================
+-- Phase 1 (backbone frozen): 1,443,331 trainable params --
+Epoch 1/10
+150/150 - 24s - 160ms/step - accuracy: 0.4623 - loss: 1.2389 - val_accuracy: 0.2922 - val_loss: 1.3680
+Epoch 2/10
+150/150 - 12s - 79ms/step - accuracy: 0.5421 - loss: 0.9974 - val_accuracy: 0.3539 - val_loss: 1.2399
+Epoch 3/10
+150/150 - 12s - 80ms/step - accuracy: 0.5702 - loss: 0.9412 - val_accuracy: 0.3994 - val_loss: 1.4242
+Epoch 4/10
+150/150 - 12s - 80ms/step - accuracy: 0.5893 - loss: 0.9072 - val_accuracy: 0.4253 - val_loss: 1.2445
+Epoch 5/10
+150/150 - 12s - 81ms/step - accuracy: 0.6203 - loss: 0.8528 - val_accuracy: 0.5357 - val_loss: 1.0974
+Epoch 6/10
+150/150 - 12s - 83ms/step - accuracy: 0.6486 - loss: 0.8236 - val_accuracy: 0.3279 - val_loss: 1.2753
+Epoch 7/10
+150/150 - 12s - 83ms/step - accuracy: 0.6608 - loss: 0.7969 - val_accuracy: 0.3864 - val_loss: 1.3448
+Epoch 8/10
+150/150 - 12s - 83ms/step - accuracy: 0.6824 - loss: 0.7578 - val_accuracy: 0.4838 - val_loss: 1.1760
+Epoch 9/10
+150/150 - 12s - 82ms/step - accuracy: 0.7052 - loss: 0.7339 - val_accuracy: 0.3799 - val_loss: 1.3042
+Epoch 10/10
+150/150 - 12s - 82ms/step - accuracy: 0.7111 - loss: 0.7072 - val_accuracy: 0.5390 - val_loss: 1.0467
+-- Phase 2 (backbone unfrozen, BN adapting): 3,667,203 trainable params, lr=0.0001 --
+Epoch 1/60
+150/150 - 82s - 545ms/step - accuracy: 0.5868 - loss: 0.9334 - val_accuracy: 0.5455 - val_loss: 0.9841 - learning_rate: 1.0000e-04
+Epoch 2/60
+150/150 - 51s - 341ms/step - accuracy: 0.7040 - loss: 0.7392 - val_accuracy: 0.5844 - val_loss: 1.0989 - learning_rate: 1.0000e-04
+Epoch 3/60
+150/150 - 51s - 343ms/step - accuracy: 0.7516 - loss: 0.6565 - val_accuracy: 0.5552 - val_loss: 1.1828 - learning_rate: 1.0000e-04
+Epoch 4/60
+
+Epoch 4: ReduceLROnPlateau reducing learning rate to 4.999999873689376e-05.
+150/150 - 51s - 342ms/step - accuracy: 0.7939 - loss: 0.5839 - val_accuracy: 0.5552 - val_loss: 1.3690 - learning_rate: 1.0000e-04
+Epoch 5/60
+150/150 - 51s - 342ms/step - accuracy: 0.8419 - loss: 0.4992 - val_accuracy: 0.5325 - val_loss: 1.4547 - learning_rate: 5.0000e-05
+Epoch 6/60
+150/150 - 51s - 342ms/step - accuracy: 0.8723 - loss: 0.4538 - val_accuracy: 0.5584 - val_loss: 1.4562 - learning_rate: 5.0000e-05
+Epoch 7/60
+
+Epoch 7: ReduceLROnPlateau reducing learning rate to 2.499999936844688e-05.
+150/150 - 51s - 342ms/step - accuracy: 0.8916 - loss: 0.4161 - val_accuracy: 0.5714 - val_loss: 1.3609 - learning_rate: 5.0000e-05
+Epoch 8/60
+150/150 - 51s - 342ms/step - accuracy: 0.9124 - loss: 0.3797 - val_accuracy: 0.5779 - val_loss: 1.6384 - learning_rate: 2.5000e-05
+Epoch 9/60
+150/150 - 51s - 342ms/step - accuracy: 0.9249 - loss: 0.3568 - val_accuracy: 0.5714 - val_loss: 2.1772 - learning_rate: 2.5000e-05
+Epoch 10/60
+
+Epoch 10: ReduceLROnPlateau reducing learning rate to 1.249999968422344e-05.
+150/150 - 51s - 342ms/step - accuracy: 0.9312 - loss: 0.3433 - val_accuracy: 0.5682 - val_loss: 1.9955 - learning_rate: 2.5000e-05
+Epoch 11/60
+150/150 - 51s - 341ms/step - accuracy: 0.9398 - loss: 0.3244 - val_accuracy: 0.5649 - val_loss: 2.0602 - learning_rate: 1.2500e-05
+Epoch 12/60
+150/150 - 51s - 342ms/step - accuracy: 0.9455 - loss: 0.3093 - val_accuracy: 0.5747 - val_loss: 2.3001 - learning_rate: 1.2500e-05
+Epoch 13/60
+
+Epoch 13: ReduceLROnPlateau reducing learning rate to 6.24999984211172e-06.
+150/150 - 51s - 342ms/step - accuracy: 0.9503 - loss: 0.3003 - val_accuracy: 0.5714 - val_loss: 2.3395 - learning_rate: 1.2500e-05
+Epoch 14/60
+150/150 - 51s - 342ms/step - accuracy: 0.9570 - loss: 0.2928 - val_accuracy: 0.5682 - val_loss: 2.4361 - learning_rate: 6.2500e-06
+
+======================================================================
+Training A-MobileNetV2 (3,836,676 total parameters)
+======================================================================
+-- Phase 1 (backbone frozen): 1,578,692 trainable params --
+Epoch 1/10
+150/150 - 21s - 141ms/step - accuracy: 0.4679 - loss: 1.2145 - val_accuracy: 0.4643 - val_loss: 1.0407
+Epoch 2/10
+150/150 - 13s - 86ms/step - accuracy: 0.5350 - loss: 1.0140 - val_accuracy: 0.2955 - val_loss: 1.7464
+Epoch 3/10
+150/150 - 13s - 87ms/step - accuracy: 0.5671 - loss: 0.9558 - val_accuracy: 0.3247 - val_loss: 2.0281
+Epoch 4/10
+150/150 - 13s - 85ms/step - accuracy: 0.5836 - loss: 0.9268 - val_accuracy: 0.3474 - val_loss: 1.4037
+Epoch 5/10
+150/150 - 13s - 84ms/step - accuracy: 0.6172 - loss: 0.8588 - val_accuracy: 0.4253 - val_loss: 1.5714
+Epoch 6/10
+150/150 - 13s - 84ms/step - accuracy: 0.6277 - loss: 0.8480 - val_accuracy: 0.2532 - val_loss: 2.0251
+Epoch 7/10
+150/150 - 13s - 84ms/step - accuracy: 0.6606 - loss: 0.7882 - val_accuracy: 0.2662 - val_loss: 1.6768
+Epoch 8/10
+150/150 - 13s - 85ms/step - accuracy: 0.6813 - loss: 0.7619 - val_accuracy: 0.3149 - val_loss: 1.4396
+Epoch 9/10
+150/150 - 13s - 85ms/step - accuracy: 0.6866 - loss: 0.7423 - val_accuracy: 0.3929 - val_loss: 1.2927
+Epoch 10/10
+150/150 - 13s - 85ms/step - accuracy: 0.7082 - loss: 0.7190 - val_accuracy: 0.3149 - val_loss: 1.5762
+-- Phase 2 (backbone unfrozen, BN adapting): 3,802,564 trainable params, lr=0.0001 --
+Epoch 1/60
+150/150 - 81s - 539ms/step - accuracy: 0.5759 - loss: 0.9379 - val_accuracy: 0.4513 - val_loss: 1.2084 - learning_rate: 1.0000e-04
+Epoch 2/60
+150/150 - 51s - 341ms/step - accuracy: 0.6920 - loss: 0.7647 - val_accuracy: 0.4675 - val_loss: 1.1018 - learning_rate: 1.0000e-04
+Epoch 3/60
+150/150 - 51s - 342ms/step - accuracy: 0.7602 - loss: 0.6554 - val_accuracy: 0.3961 - val_loss: 1.3116 - learning_rate: 1.0000e-04
+Epoch 4/60
+150/150 - 51s - 342ms/step - accuracy: 0.7950 - loss: 0.5953 - val_accuracy: 0.5519 - val_loss: 0.9962 - learning_rate: 1.0000e-04
+Epoch 5/60
+150/150 - 51s - 342ms/step - accuracy: 0.8394 - loss: 0.5135 - val_accuracy: 0.6039 - val_loss: 0.8992 - learning_rate: 1.0000e-04
+Epoch 6/60
+150/150 - 51s - 341ms/step - accuracy: 0.8606 - loss: 0.4744 - val_accuracy: 0.5812 - val_loss: 1.2359 - learning_rate: 1.0000e-04
+Epoch 7/60
+150/150 - 51s - 341ms/step - accuracy: 0.8866 - loss: 0.4240 - val_accuracy: 0.5649 - val_loss: 1.0694 - learning_rate: 1.0000e-04
+Epoch 8/60
+
+Epoch 8: ReduceLROnPlateau reducing learning rate to 4.999999873689376e-05.
+150/150 - 51s - 342ms/step - accuracy: 0.9073 - loss: 0.3855 - val_accuracy: 0.4968 - val_loss: 1.0938 - learning_rate: 1.0000e-04
+Epoch 9/60
+150/150 - 51s - 341ms/step - accuracy: 0.9329 - loss: 0.3327 - val_accuracy: 0.5552 - val_loss: 1.1322 - learning_rate: 5.0000e-05
+Epoch 10/60
+150/150 - 51s - 343ms/step - accuracy: 0.9470 - loss: 0.3041 - val_accuracy: 0.5552 - val_loss: 1.1163 - learning_rate: 5.0000e-05
+Epoch 11/60
+
+Epoch 11: ReduceLROnPlateau reducing learning rate to 2.499999936844688e-05.
+150/150 - 52s - 344ms/step - accuracy: 0.9558 - loss: 0.2902 - val_accuracy: 0.5682 - val_loss: 1.3425 - learning_rate: 5.0000e-05
+Epoch 12/60
+150/150 - 52s - 345ms/step - accuracy: 0.9642 - loss: 0.2708 - val_accuracy: 0.5877 - val_loss: 1.3562 - learning_rate: 2.5000e-05
+Epoch 13/60
+150/150 - 51s - 343ms/step - accuracy: 0.9727 - loss: 0.2564 - val_accuracy: 0.5682 - val_loss: 1.4474 - learning_rate: 2.5000e-05
+Epoch 14/60
+
+Epoch 14: ReduceLROnPlateau reducing learning rate to 1.249999968422344e-05.
+150/150 - 52s - 344ms/step - accuracy: 0.9738 - loss: 0.2516 - val_accuracy: 0.5487 - val_loss: 1.4410 - learning_rate: 2.5000e-05
+Epoch 15/60
+150/150 - 51s - 343ms/step - accuracy: 0.9765 - loss: 0.2494 - val_accuracy: 0.5682 - val_loss: 1.4540 - learning_rate: 1.2500e-05
+Epoch 16/60
+150/150 - 51s - 343ms/step - accuracy: 0.9824 - loss: 0.2374 - val_accuracy: 0.5649 - val_loss: 1.6160 - learning_rate: 1.2500e-05
+Epoch 17/60
+
+Epoch 17: ReduceLROnPlateau reducing learning rate to 6.24999984211172e-06.
+150/150 - 52s - 344ms/step - accuracy: 0.9826 - loss: 0.2352 - val_accuracy: 0.5779 - val_loss: 1.6891 - learning_rate: 1.2500e-05
+
+======================================================================
+Training AC_Branch_MobileNetV2 (4,451,700 total parameters)
+======================================================================
+-- Phase 1 (backbone frozen): 2,193,716 trainable params --
+Epoch 1/10
+150/150 - 24s - 159ms/step - accuracy: 0.4671 - loss: 1.2206 - val_accuracy: 0.5000 - val_loss: 1.0849
+Epoch 2/10
+150/150 - 14s - 91ms/step - accuracy: 0.5306 - loss: 1.0065 - val_accuracy: 0.3247 - val_loss: 1.2462
+Epoch 3/10
+150/150 - 14s - 91ms/step - accuracy: 0.5602 - loss: 0.9576 - val_accuracy: 0.2922 - val_loss: 1.5437
+Epoch 4/10
+150/150 - 13s - 89ms/step - accuracy: 0.5885 - loss: 0.9054 - val_accuracy: 0.3604 - val_loss: 1.2867
+Epoch 5/10
+150/150 - 13s - 90ms/step - accuracy: 0.6237 - loss: 0.8663 - val_accuracy: 0.5390 - val_loss: 1.2092
+Epoch 6/10
+150/150 - 14s - 90ms/step - accuracy: 0.6419 - loss: 0.8298 - val_accuracy: 0.5812 - val_loss: 1.3469
+Epoch 7/10
+150/150 - 14s - 90ms/step - accuracy: 0.6583 - loss: 0.7987 - val_accuracy: 0.6266 - val_loss: 1.1353
+Epoch 8/10
+150/150 - 13s - 89ms/step - accuracy: 0.6753 - loss: 0.7788 - val_accuracy: 0.5584 - val_loss: 1.4988
+Epoch 9/10
+150/150 - 13s - 89ms/step - accuracy: 0.6860 - loss: 0.7611 - val_accuracy: 0.5812 - val_loss: 1.0779
+Epoch 10/10
+150/150 - 13s - 89ms/step - accuracy: 0.6832 - loss: 0.7456 - val_accuracy: 0.6006 - val_loss: 1.0221
+-- Phase 2 (backbone unfrozen, BN adapting): 4,417,588 trainable params, lr=0.0001 --
+Epoch 1/60
+150/150 - 86s - 576ms/step - accuracy: 0.5899 - loss: 0.9234 - val_accuracy: 0.5390 - val_loss: 1.0528 - learning_rate: 1.0000e-04
+Epoch 2/60
+150/150 - 53s - 351ms/step - accuracy: 0.6897 - loss: 0.7547 - val_accuracy: 0.5649 - val_loss: 1.0019 - learning_rate: 1.0000e-04
+Epoch 3/60
+150/150 - 53s - 351ms/step - accuracy: 0.7518 - loss: 0.6572 - val_accuracy: 0.5552 - val_loss: 1.1391 - learning_rate: 1.0000e-04
+Epoch 4/60
+150/150 - 53s - 351ms/step - accuracy: 0.7945 - loss: 0.5705 - val_accuracy: 0.5649 - val_loss: 0.9951 - learning_rate: 1.0000e-04
+Epoch 5/60
+150/150 - 53s - 351ms/step - accuracy: 0.8411 - loss: 0.5188 - val_accuracy: 0.5357 - val_loss: 1.0365 - learning_rate: 1.0000e-04
+Epoch 6/60
+150/150 - 53s - 352ms/step - accuracy: 0.8566 - loss: 0.4707 - val_accuracy: 0.6006 - val_loss: 1.0520 - learning_rate: 1.0000e-04
+Epoch 7/60
+
+Epoch 7: ReduceLROnPlateau reducing learning rate to 4.999999873689376e-05.
+150/150 - 53s - 352ms/step - accuracy: 0.8767 - loss: 0.4489 - val_accuracy: 0.5487 - val_loss: 1.1631 - learning_rate: 1.0000e-04
+Epoch 8/60
+150/150 - 53s - 353ms/step - accuracy: 0.9172 - loss: 0.3634 - val_accuracy: 0.5942 - val_loss: 1.3328 - learning_rate: 5.0000e-05
+Epoch 9/60
+150/150 - 53s - 353ms/step - accuracy: 0.9275 - loss: 0.3386 - val_accuracy: 0.5682 - val_loss: 1.9193 - learning_rate: 5.0000e-05
+Epoch 10/60
+
+Epoch 10: ReduceLROnPlateau reducing learning rate to 2.499999936844688e-05.
+150/150 - 53s - 353ms/step - accuracy: 0.9403 - loss: 0.3147 - val_accuracy: 0.5682 - val_loss: 2.6151 - learning_rate: 5.0000e-05
+Epoch 11/60
+150/150 - 53s - 353ms/step - accuracy: 0.9539 - loss: 0.2920 - val_accuracy: 0.5682 - val_loss: 2.2967 - learning_rate: 2.5000e-05
+Epoch 12/60
+150/150 - 53s - 353ms/step - accuracy: 0.9577 - loss: 0.2791 - val_accuracy: 0.5714 - val_loss: 2.7150 - learning_rate: 2.5000e-05
+Epoch 13/60
+
+Epoch 13: ReduceLROnPlateau reducing learning rate to 1.249999968422344e-05.
+150/150 - 53s - 352ms/step - accuracy: 0.9635 - loss: 0.2725 - val_accuracy: 0.5714 - val_loss: 2.7767 - learning_rate: 2.5000e-05
+Epoch 14/60
+150/150 - 53s - 351ms/step - accuracy: 0.9667 - loss: 0.2636 - val_accuracy: 0.5714 - val_loss: 2.7680 - learning_rate: 1.2500e-05
+Epoch 15/60
+150/150 - 53s - 351ms/step - accuracy: 0.9727 - loss: 0.2494 - val_accuracy: 0.5714 - val_loss: 2.9018 - learning_rate: 1.2500e-05
+Epoch 16/60
+
+Epoch 16: ReduceLROnPlateau reducing learning rate to 6.24999984211172e-06.
+150/150 - 53s - 352ms/step - accuracy: 0.9744 - loss: 0.2505 - val_accuracy: 0.5714 - val_loss: 2.9365 - learning_rate: 1.2500e-05
+Epoch 17/60
+150/150 - 53s - 351ms/step - accuracy: 0.9780 - loss: 0.2459 - val_accuracy: 0.5714 - val_loss: 2.8828 - learning_rate: 6.2500e-06
+Epoch 18/60
+150/150 - 53s - 351ms/step - accuracy: 0.9797 - loss: 0.2391 - val_accuracy: 0.5714 - val_loss: 2.8564 - learning_rate: 6.2500e-06
+Downloading data from https://storage.googleapis.com/tensorflow/keras-applications/mobilenet_v3/weights_mobilenet_v3_small_224_1.0_float_no_top_v2.h5
+4334752/4334752 ━━━━━━━━━━━━━━━━━━━━ 0s 0us/step
+
+======================================================================
+Training MobileNetV3_small (1,013,363 total parameters)
+======================================================================
+-- Phase 1 (backbone frozen): 74,243 trainable params --
+Epoch 1/10
+150/150 - 16s - 104ms/step - accuracy: 0.5371 - loss: 1.0410 - val_accuracy: 0.6526 - val_loss: 0.7775
+Epoch 2/10
+150/150 - 6s - 38ms/step - accuracy: 0.6119 - loss: 0.8833 - val_accuracy: 0.6591 - val_loss: 0.7635
+Epoch 3/10
+150/150 - 6s - 38ms/step - accuracy: 0.6411 - loss: 0.8364 - val_accuracy: 0.6558 - val_loss: 0.7361
+Epoch 4/10
+150/150 - 6s - 39ms/step - accuracy: 0.6535 - loss: 0.8239 - val_accuracy: 0.7013 - val_loss: 0.7085
+Epoch 5/10
+150/150 - 6s - 38ms/step - accuracy: 0.6621 - loss: 0.8080 - val_accuracy: 0.6688 - val_loss: 0.7245
+Epoch 6/10
+150/150 - 6s - 38ms/step - accuracy: 0.6635 - loss: 0.8012 - val_accuracy: 0.6656 - val_loss: 0.7400
+Epoch 7/10
+150/150 - 6s - 38ms/step - accuracy: 0.6694 - loss: 0.7876 - val_accuracy: 0.6786 - val_loss: 0.7252
+Epoch 8/10
+150/150 - 6s - 38ms/step - accuracy: 0.6782 - loss: 0.7646 - val_accuracy: 0.6721 - val_loss: 0.7264
+Epoch 9/10
+150/150 - 6s - 38ms/step - accuracy: 0.6740 - loss: 0.7798 - val_accuracy: 0.6981 - val_loss: 0.7118
+Epoch 10/10
+150/150 - 6s - 38ms/step - accuracy: 0.6757 - loss: 0.7623 - val_accuracy: 0.7045 - val_loss: 0.7051
+-- Phase 2 (backbone unfrozen, BN adapting): 1,001,251 trainable params, lr=0.0001 --
+Epoch 1/60
+150/150 - 46s - 305ms/step - accuracy: 0.6044 - loss: 0.8961 - val_accuracy: 0.6461 - val_loss: 0.8452 - learning_rate: 1.0000e-04
+Epoch 2/60
+150/150 - 18s - 118ms/step - accuracy: 0.7367 - loss: 0.6675 - val_accuracy: 0.6461 - val_loss: 0.8906 - learning_rate: 1.0000e-04
+Epoch 3/60
+150/150 - 18s - 117ms/step - accuracy: 0.7939 - loss: 0.5767 - val_accuracy: 0.6623 - val_loss: 0.9036 - learning_rate: 1.0000e-04
+Epoch 4/60
+
+Epoch 4: ReduceLROnPlateau reducing learning rate to 4.999999873689376e-05.
+150/150 - 17s - 117ms/step - accuracy: 0.8270 - loss: 0.5186 - val_accuracy: 0.6656 - val_loss: 0.9092 - learning_rate: 1.0000e-04
+Epoch 5/60
+150/150 - 18s - 120ms/step - accuracy: 0.8604 - loss: 0.4613 - val_accuracy: 0.6883 - val_loss: 0.9363 - learning_rate: 5.0000e-05
+Epoch 6/60
+150/150 - 18s - 119ms/step - accuracy: 0.8717 - loss: 0.4399 - val_accuracy: 0.6688 - val_loss: 1.0256 - learning_rate: 5.0000e-05
+Epoch 7/60
+
+Epoch 7: ReduceLROnPlateau reducing learning rate to 2.499999936844688e-05.
+150/150 - 18s - 120ms/step - accuracy: 0.8872 - loss: 0.4282 - val_accuracy: 0.6721 - val_loss: 1.0526 - learning_rate: 5.0000e-05
+Epoch 8/60
+150/150 - 18s - 120ms/step - accuracy: 0.9023 - loss: 0.3965 - val_accuracy: 0.6786 - val_loss: 1.0660 - learning_rate: 2.5000e-05
+Epoch 9/60
+150/150 - 18s - 120ms/step - accuracy: 0.8996 - loss: 0.3953 - val_accuracy: 0.6721 - val_loss: 1.1506 - learning_rate: 2.5000e-05
+Epoch 10/60
+
+Epoch 10: ReduceLROnPlateau reducing learning rate to 1.249999968422344e-05.
+150/150 - 18s - 119ms/step - accuracy: 0.9099 - loss: 0.3790 - val_accuracy: 0.6688 - val_loss: 1.2239 - learning_rate: 2.5000e-05
+Epoch 11/60
+150/150 - 18s - 120ms/step - accuracy: 0.9101 - loss: 0.3710 - val_accuracy: 0.6753 - val_loss: 1.2527 - learning_rate: 1.2500e-05
+Epoch 12/60
+150/150 - 18s - 120ms/step - accuracy: 0.9130 - loss: 0.3682 - val_accuracy: 0.6786 - val_loss: 1.2839 - learning_rate: 1.2500e-05
+Epoch 13/60
+
+Epoch 13: ReduceLROnPlateau reducing learning rate to 6.24999984211172e-06.
+150/150 - 18s - 120ms/step - accuracy: 0.9189 - loss: 0.3630 - val_accuracy: 0.6786 - val_loss: 1.3366 - learning_rate: 1.2500e-05
+Epoch 14/60
+150/150 - 18s - 120ms/step - accuracy: 0.9184 - loss: 0.3623 - val_accuracy: 0.6786 - val_loss: 1.3534 - learning_rate: 6.2500e-06
+Epoch 15/60
+150/150 - 18s - 120ms/step - accuracy: 0.9224 - loss: 0.3528 - val_accuracy: 0.6721 - val_loss: 1.3894 - learning_rate: 6.2500e-06
+Epoch 16/60
+
+Epoch 16: ReduceLROnPlateau reducing learning rate to 3.12499992105586e-06.
+150/150 - 18s - 120ms/step - accuracy: 0.9239 - loss: 0.3517 - val_accuracy: 0.6753 - val_loss: 1.4103 - learning_rate: 6.2500e-06
+Epoch 17/60
+150/150 - 18s - 120ms/step - accuracy: 0.9262 - loss: 0.3492 - val_accuracy: 0.6753 - val_loss: 1.4062 - learning_rate: 3.1250e-06
+
+======================================================================
+Training A-MobileNetV3_small (1,091,380 total parameters)
+======================================================================
+-- Phase 1 (backbone frozen): 152,260 trainable params --
+Epoch 1/10
+150/150 - 17s - 114ms/step - accuracy: 0.5329 - loss: 1.0414 - val_accuracy: 0.6786 - val_loss: 0.7611
+Epoch 2/10
+150/150 - 6s - 42ms/step - accuracy: 0.6537 - loss: 0.8223 - val_accuracy: 0.7013 - val_loss: 0.7120
+Epoch 3/10
+150/150 - 6s - 42ms/step - accuracy: 0.7038 - loss: 0.7457 - val_accuracy: 0.7078 - val_loss: 0.7080
+Epoch 4/10
+150/150 - 6s - 42ms/step - accuracy: 0.7216 - loss: 0.7055 - val_accuracy: 0.7175 - val_loss: 0.6814
+Epoch 5/10
+150/150 - 6s - 42ms/step - accuracy: 0.7375 - loss: 0.6774 - val_accuracy: 0.7240 - val_loss: 0.6780
+Epoch 6/10
+150/150 - 6s - 43ms/step - accuracy: 0.7583 - loss: 0.6392 - val_accuracy: 0.7273 - val_loss: 0.6900
+Epoch 7/10
+150/150 - 6s - 42ms/step - accuracy: 0.7771 - loss: 0.6160 - val_accuracy: 0.7435 - val_loss: 0.6972
+Epoch 8/10
+150/150 - 6s - 42ms/step - accuracy: 0.7818 - loss: 0.5969 - val_accuracy: 0.7110 - val_loss: 0.7599
+Epoch 9/10
+150/150 - 6s - 42ms/step - accuracy: 0.7950 - loss: 0.5804 - val_accuracy: 0.7143 - val_loss: 0.7226
+Epoch 10/10
+150/150 - 6s - 41ms/step - accuracy: 0.8004 - loss: 0.5671 - val_accuracy: 0.7208 - val_loss: 0.7034
+-- Phase 2 (backbone unfrozen, BN adapting): 1,079,268 trainable params, lr=0.0001 --
+Epoch 1/60
+150/150 - 51s - 342ms/step - accuracy: 0.6386 - loss: 0.8525 - val_accuracy: 0.6916 - val_loss: 0.7598 - learning_rate: 1.0000e-04
+Epoch 2/60
+150/150 - 18s - 122ms/step - accuracy: 0.7602 - loss: 0.6346 - val_accuracy: 0.6818 - val_loss: 0.9164 - learning_rate: 1.0000e-04
+Epoch 3/60
+150/150 - 18s - 122ms/step - accuracy: 0.8044 - loss: 0.5649 - val_accuracy: 0.6818 - val_loss: 0.9522 - learning_rate: 1.0000e-04
+Epoch 4/60
+
+Epoch 4: ReduceLROnPlateau reducing learning rate to 4.999999873689376e-05.
+150/150 - 18s - 121ms/step - accuracy: 0.8396 - loss: 0.5085 - val_accuracy: 0.6818 - val_loss: 0.8984 - learning_rate: 1.0000e-04
+Epoch 5/60
+150/150 - 18s - 120ms/step - accuracy: 0.8784 - loss: 0.4512 - val_accuracy: 0.6818 - val_loss: 0.8826 - learning_rate: 5.0000e-05
+Epoch 6/60
+150/150 - 18s - 121ms/step - accuracy: 0.8765 - loss: 0.4403 - val_accuracy: 0.6948 - val_loss: 0.8674 - learning_rate: 5.0000e-05
+Epoch 7/60
+
+Epoch 7: ReduceLROnPlateau reducing learning rate to 2.499999936844688e-05.
+150/150 - 18s - 121ms/step - accuracy: 0.8883 - loss: 0.4231 - val_accuracy: 0.6948 - val_loss: 0.8582 - learning_rate: 5.0000e-05
+Epoch 8/60
+150/150 - 18s - 121ms/step - accuracy: 0.9021 - loss: 0.4013 - val_accuracy: 0.7045 - val_loss: 0.8760 - learning_rate: 2.5000e-05
+Epoch 9/60
+150/150 - 18s - 121ms/step - accuracy: 0.9021 - loss: 0.3953 - val_accuracy: 0.7078 - val_loss: 0.8948 - learning_rate: 2.5000e-05
+Epoch 10/60
+
+Epoch 10: ReduceLROnPlateau reducing learning rate to 1.249999968422344e-05.
+150/150 - 18s - 121ms/step - accuracy: 0.9149 - loss: 0.3793 - val_accuracy: 0.6851 - val_loss: 0.9412 - learning_rate: 2.5000e-05
+Epoch 11/60
+150/150 - 18s - 121ms/step - accuracy: 0.9134 - loss: 0.3795 - val_accuracy: 0.7013 - val_loss: 0.9340 - learning_rate: 1.2500e-05
+Epoch 12/60
+150/150 - 18s - 121ms/step - accuracy: 0.9252 - loss: 0.3680 - val_accuracy: 0.7045 - val_loss: 0.9422 - learning_rate: 1.2500e-05
+Epoch 13/60
+
+Epoch 13: ReduceLROnPlateau reducing learning rate to 6.24999984211172e-06.
+150/150 - 18s - 122ms/step - accuracy: 0.9199 - loss: 0.3660 - val_accuracy: 0.7143 - val_loss: 0.9388 - learning_rate: 1.2500e-05
+Epoch 14/60
+150/150 - 18s - 121ms/step - accuracy: 0.9237 - loss: 0.3634 - val_accuracy: 0.7208 - val_loss: 0.9427 - learning_rate: 6.2500e-06
+Epoch 15/60
+150/150 - 18s - 121ms/step - accuracy: 0.9260 - loss: 0.3589 - val_accuracy: 0.7305 - val_loss: 0.9187 - learning_rate: 6.2500e-06
+Epoch 16/60
+
+Epoch 16: ReduceLROnPlateau reducing learning rate to 3.12499992105586e-06.
+150/150 - 18s - 121ms/step - accuracy: 0.9264 - loss: 0.3580 - val_accuracy: 0.7305 - val_loss: 0.9178 - learning_rate: 6.2500e-06
+Epoch 17/60
+150/150 - 18s - 120ms/step - accuracy: 0.9283 - loss: 0.3544 - val_accuracy: 0.7273 - val_loss: 0.9143 - learning_rate: 3.1250e-06
+Epoch 18/60
+150/150 - 18s - 121ms/step - accuracy: 0.9275 - loss: 0.3509 - val_accuracy: 0.7240 - val_loss: 0.9114 - learning_rate: 3.1250e-06
+Epoch 19/60
+
+Epoch 19: ReduceLROnPlateau reducing learning rate to 1.56249996052793e-06.
+150/150 - 18s - 121ms/step - accuracy: 0.9342 - loss: 0.3508 - val_accuracy: 0.7305 - val_loss: 0.8978 - learning_rate: 3.1250e-06
+Epoch 20/60
+150/150 - 18s - 121ms/step - accuracy: 0.9306 - loss: 0.3486 - val_accuracy: 0.7305 - val_loss: 0.8877 - learning_rate: 1.5625e-06
+Epoch 21/60
+150/150 - 18s - 121ms/step - accuracy: 0.9298 - loss: 0.3500 - val_accuracy: 0.7305 - val_loss: 0.8802 - learning_rate: 1.5625e-06
+Epoch 22/60
+
+Epoch 22: ReduceLROnPlateau reducing learning rate to 7.81249980263965e-07.
+150/150 - 18s - 121ms/step - accuracy: 0.9270 - loss: 0.3484 - val_accuracy: 0.7305 - val_loss: 0.8701 - learning_rate: 1.5625e-06
+Epoch 23/60
+150/150 - 18s - 121ms/step - accuracy: 0.9289 - loss: 0.3524 - val_accuracy: 0.7338 - val_loss: 0.8569 - learning_rate: 7.8125e-07
+Epoch 24/60
+150/150 - 18s - 120ms/step - accuracy: 0.9298 - loss: 0.3487 - val_accuracy: 0.7338 - val_loss: 0.8420 - learning_rate: 7.8125e-07
+Epoch 25/60
+
+Epoch 25: ReduceLROnPlateau reducing learning rate to 3.906249901319825e-07.
+150/150 - 18s - 121ms/step - accuracy: 0.9344 - loss: 0.3451 - val_accuracy: 0.7403 - val_loss: 0.8297 - learning_rate: 7.8125e-07
+Epoch 26/60
+150/150 - 18s - 121ms/step - accuracy: 0.9270 - loss: 0.3512 - val_accuracy: 0.7435 - val_loss: 0.8146 - learning_rate: 3.9062e-07
+Epoch 27/60
+150/150 - 18s - 121ms/step - accuracy: 0.9325 - loss: 0.3466 - val_accuracy: 0.7403 - val_loss: 0.7997 - learning_rate: 3.9062e-07
+Epoch 28/60
+
+Epoch 28: ReduceLROnPlateau reducing learning rate to 1.9531249506599124e-07.
+150/150 - 18s - 121ms/step - accuracy: 0.9310 - loss: 0.3461 - val_accuracy: 0.7305 - val_loss: 0.7840 - learning_rate: 3.9062e-07
+Epoch 29/60
+150/150 - 18s - 121ms/step - accuracy: 0.9317 - loss: 0.3510 - val_accuracy: 0.7370 - val_loss: 0.7666 - learning_rate: 1.9531e-07
+Epoch 30/60
+150/150 - 18s - 121ms/step - accuracy: 0.9346 - loss: 0.3462 - val_accuracy: 0.7532 - val_loss: 0.7506 - learning_rate: 1.9531e-07
+Epoch 31/60
+150/150 - 18s - 120ms/step - accuracy: 0.9243 - loss: 0.3540 - val_accuracy: 0.7532 - val_loss: 0.7355 - learning_rate: 1.9531e-07
+Epoch 32/60
+150/150 - 18s - 121ms/step - accuracy: 0.9277 - loss: 0.3480 - val_accuracy: 0.7630 - val_loss: 0.7208 - learning_rate: 1.9531e-07
+Epoch 33/60
+150/150 - 18s - 120ms/step - accuracy: 0.9300 - loss: 0.3487 - val_accuracy: 0.7597 - val_loss: 0.7065 - learning_rate: 1.9531e-07
+Epoch 34/60
+150/150 - 18s - 121ms/step - accuracy: 0.9283 - loss: 0.3519 - val_accuracy: 0.7662 - val_loss: 0.6953 - learning_rate: 1.9531e-07
+Epoch 35/60
+150/150 - 18s - 121ms/step - accuracy: 0.9270 - loss: 0.3468 - val_accuracy: 0.7662 - val_loss: 0.6866 - learning_rate: 1.9531e-07
+Epoch 36/60
+150/150 - 18s - 121ms/step - accuracy: 0.9327 - loss: 0.3444 - val_accuracy: 0.7630 - val_loss: 0.6812 - learning_rate: 1.9531e-07
+Epoch 37/60
+150/150 - 18s - 121ms/step - accuracy: 0.9294 - loss: 0.3485 - val_accuracy: 0.7630 - val_loss: 0.6808 - learning_rate: 1.9531e-07
+Epoch 38/60
+150/150 - 18s - 121ms/step - accuracy: 0.9310 - loss: 0.3474 - val_accuracy: 0.7565 - val_loss: 0.6858 - learning_rate: 1.9531e-07
+Epoch 39/60
+150/150 - 18s - 120ms/step - accuracy: 0.9335 - loss: 0.3439 - val_accuracy: 0.7532 - val_loss: 0.6969 - learning_rate: 1.9531e-07
+Epoch 40/60
+
+Epoch 40: ReduceLROnPlateau reducing learning rate to 1e-07.
+150/150 - 18s - 121ms/step - accuracy: 0.9300 - loss: 0.3473 - val_accuracy: 0.7468 - val_loss: 0.7083 - learning_rate: 1.9531e-07
+Epoch 41/60
+150/150 - 18s - 120ms/step - accuracy: 0.9294 - loss: 0.3475 - val_accuracy: 0.7305 - val_loss: 0.7194 - learning_rate: 1.0000e-07
+Epoch 42/60
+150/150 - 18s - 121ms/step - accuracy: 0.9300 - loss: 0.3506 - val_accuracy: 0.7143 - val_loss: 0.7264 - learning_rate: 1.0000e-07
+Epoch 43/60
+150/150 - 18s - 121ms/step - accuracy: 0.9249 - loss: 0.3530 - val_accuracy: 0.7013 - val_loss: 0.7271 - learning_rate: 1.0000e-07
+Epoch 44/60
+150/150 - 18s - 121ms/step - accuracy: 0.9300 - loss: 0.3485 - val_accuracy: 0.7143 - val_loss: 0.7259 - learning_rate: 1.0000e-07
+Epoch 45/60
+150/150 - 18s - 121ms/step - accuracy: 0.9268 - loss: 0.3515 - val_accuracy: 0.7208 - val_loss: 0.7222 - learning_rate: 1.0000e-07
+Epoch 46/60
+150/150 - 18s - 121ms/step - accuracy: 0.9302 - loss: 0.3476 - val_accuracy: 0.7175 - val_loss: 0.7156 - learning_rate: 1.0000e-07
+
+======================================================================
+Training AC_Branch_MobileNetV3_small (1,448,356 total parameters)
+======================================================================
+-- Phase 1 (backbone frozen): 509,236 trainable params --
+Epoch 1/10
+150/150 - 18s - 123ms/step - accuracy: 0.5602 - loss: 0.9829 - val_accuracy: 0.7143 - val_loss: 0.7251
+Epoch 2/10
+150/150 - 7s - 45ms/step - accuracy: 0.7138 - loss: 0.7282 - val_accuracy: 0.7403 - val_loss: 0.6866
+Epoch 3/10
+150/150 - 7s - 45ms/step - accuracy: 0.7709 - loss: 0.6319 - val_accuracy: 0.7565 - val_loss: 0.6409
+Epoch 4/10
+150/150 - 7s - 45ms/step - accuracy: 0.7857 - loss: 0.5893 - val_accuracy: 0.7565 - val_loss: 0.6056
+Epoch 5/10
+150/150 - 7s - 45ms/step - accuracy: 0.8191 - loss: 0.5361 - val_accuracy: 0.7500 - val_loss: 0.7071
+Epoch 6/10
+150/150 - 7s - 45ms/step - accuracy: 0.8392 - loss: 0.5017 - val_accuracy: 0.7403 - val_loss: 0.6436
+Epoch 7/10
+150/150 - 7s - 45ms/step - accuracy: 0.8604 - loss: 0.4672 - val_accuracy: 0.7760 - val_loss: 0.6410
+Epoch 8/10
+150/150 - 7s - 45ms/step - accuracy: 0.8665 - loss: 0.4424 - val_accuracy: 0.7630 - val_loss: 0.6559
+Epoch 9/10
+150/150 - 7s - 44ms/step - accuracy: 0.8878 - loss: 0.4231 - val_accuracy: 0.7695 - val_loss: 0.6913
+Epoch 10/10
+150/150 - 7s - 45ms/step - accuracy: 0.8948 - loss: 0.4071 - val_accuracy: 0.7890 - val_loss: 0.7349
+-- Phase 2 (backbone unfrozen, BN adapting): 1,436,244 trainable params, lr=0.0001 --
+Epoch 1/60
+150/150 - 53s - 355ms/step - accuracy: 0.7048 - loss: 0.7617 - val_accuracy: 0.7370 - val_loss: 0.7514 - learning_rate: 1.0000e-04
+Epoch 2/60
+150/150 - 19s - 127ms/step - accuracy: 0.8233 - loss: 0.5318 - val_accuracy: 0.7175 - val_loss: 0.9708 - learning_rate: 1.0000e-04
+Epoch 3/60
+150/150 - 19s - 126ms/step - accuracy: 0.8623 - loss: 0.4550 - val_accuracy: 0.7175 - val_loss: 1.0270 - learning_rate: 1.0000e-04
+Epoch 4/60
+
+Epoch 4: ReduceLROnPlateau reducing learning rate to 4.999999873689376e-05.
+150/150 - 19s - 126ms/step - accuracy: 0.8843 - loss: 0.4100 - val_accuracy: 0.7240 - val_loss: 1.0608 - learning_rate: 1.0000e-04
+Epoch 5/60
+150/150 - 19s - 126ms/step - accuracy: 0.9082 - loss: 0.3757 - val_accuracy: 0.7110 - val_loss: 1.0953 - learning_rate: 5.0000e-05
+Epoch 6/60
+150/150 - 19s - 126ms/step - accuracy: 0.9164 - loss: 0.3557 - val_accuracy: 0.7175 - val_loss: 1.1214 - learning_rate: 5.0000e-05
+Epoch 7/60
+
+Epoch 7: ReduceLROnPlateau reducing learning rate to 2.499999936844688e-05.
+150/150 - 19s - 126ms/step - accuracy: 0.9222 - loss: 0.3424 - val_accuracy: 0.7208 - val_loss: 1.1596 - learning_rate: 5.0000e-05
+Epoch 8/60
+150/150 - 19s - 126ms/step - accuracy: 0.9283 - loss: 0.3272 - val_accuracy: 0.7240 - val_loss: 1.1807 - learning_rate: 2.5000e-05
+Epoch 9/60
+150/150 - 18s - 123ms/step - accuracy: 0.9407 - loss: 0.3190 - val_accuracy: 0.7305 - val_loss: 1.1933 - learning_rate: 2.5000e-05
+Epoch 10/60
+
+Epoch 10: ReduceLROnPlateau reducing learning rate to 1.249999968422344e-05.
+150/150 - 19s - 123ms/step - accuracy: 0.9405 - loss: 0.3096 - val_accuracy: 0.7273 - val_loss: 1.1676 - learning_rate: 2.5000e-05
+Epoch 11/60
+150/150 - 19s - 124ms/step - accuracy: 0.9442 - loss: 0.3077 - val_accuracy: 0.7273 - val_loss: 1.1645 - learning_rate: 1.2500e-05
+Epoch 12/60
+150/150 - 18s - 122ms/step - accuracy: 0.9503 - loss: 0.2946 - val_accuracy: 0.7273 - val_loss: 1.2021 - learning_rate: 1.2500e-05
+Epoch 13/60
+
+Epoch 13: ReduceLROnPlateau reducing learning rate to 6.24999984211172e-06.
+150/150 - 18s - 123ms/step - accuracy: 0.9417 - loss: 0.3071 - val_accuracy: 0.7305 - val_loss: 1.2111 - learning_rate: 1.2500e-05
+
+=== Own-model family results (matches Fig. 8 / Table 2 rows) ===
+                      Model  Params  Accuracy (%)  Precision (%)  Recall (%)  F1-score (%)
+                MobileNetV2 3701315         56.69          60.67       40.33         37.16
+              A-MobileNetV2 3836676         52.13          46.38       45.41         45.77
+      AC_Branch_MobileNetV2 4451700         54.20          48.07       44.80         45.14
+          MobileNetV3_small 1013363         66.29          73.72       58.87         58.52
+        A-MobileNetV3_small 1091380         75.04          75.44       70.40         72.33
+AC_Branch_MobileNetV3_small 1448356         72.76          75.15       67.37         69.64
+
+Generating Grad-CAM visualizations for AC_Branch_MobileNetV2...
+Saved Grad-CAM visualization: /kaggle/working/ac_branch_mobilenet_repro/gradcam_example_0.png
+Saved Grad-CAM visualization: /kaggle/working/ac_branch_mobilenet_repro/gradcam_example_1.png
+Saved Grad-CAM visualization: /kaggle/working/ac_branch_mobilenet_repro/gradcam_example_2.png
+
+All outputs saved under: /kaggle/working/ac_branch_mobilenet_repro

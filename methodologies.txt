@@ -1,0 +1,301 @@
+1.Proposed FetalMLOps, a ten-step MLOps pipeline covering data acquisition, preprocessing, model development, deployment, monitoring, explainability, and sustainability. The framework integrates ML lifecycle management with clinical requirements.
+2.Proposed method/framework:
+Deep learning-based multi-class classification framework for identifying fetal abdominal ultrasound planes and structures.
+Workflow/pipeline summary:
+Ultrasound image acquisition → OCR-based text/artifact removal → CV2 inpainting → transfer learning-based CNN classification → tenfold cross-validation → statistical comparison.
+Main contributions:
+Developed AI approach for fetal abdominal plane classification.
+Compared six deep learning architectures.
+Identified MobileNetV3Large and EfficientNetV2S as highest-performing models."
+3.Proposed method/framework:
+Lightweight CNN-Attention pipeline using EfficientNet feature extraction backbones with attention mechanisms and MLP classifier.
+Workflow/pipeline summary:
+Ultrasound image input → EfficientNet/EfficientNetV2 feature extraction → attention mechanism → 3-layer MLP classifier → fetal plane classification → GradCAM explanation.
+Main contributions:
+Lightweight CNN-attention architecture with fewer trainable parameters.
+Transfer learning using ImageNet1k pretrained models.
+Comparison of attention mechanisms.
+Explainable AI framework using GradCAM.
+Benchmark comparison with CNN, transformer, and ensemble methods."
+4.Proposed method/framework:
+Multi-task deep learning and radiomics-based framework combining detection, feature extraction, feature selection, and classification.
+Workflow/pipeline summary:
+Ultrasound image collection from nine centers.
+Detection of nine fetal structures using:
+YOLOv11
+Swin Transformer
+Extraction of:
+215 radiomic features
+1,792 deep features from ViT
+Feature refinement:
+ICC filtering
+Pearson correlation filtering
+LASSO regression
+Feature fusion (radiomics + deep features).
+Classification using TabTransformer.
+Main contributions:
+Multi-structure detection using YOLOv11 and Swin Transformer.
+Radiomic and deep feature fusion.
+Feature reproducibility filtering using ICC, correlation analysis, and LASSO.
+Structure-specific classification using TabTransformer."
+5.Proposed method/framework:
+FetCAT (Fetal Cross-Attention Transformer): hybrid Swin Transformer + AdaptiveMed-CNN architecture with cross-attention fusion.
+Workflow/pipeline summary:
+Dataset collection
+Image preprocessing
+Feature extraction using Swin Transformer and AdaptiveMed-CNN
+Cross-attention feature fusion
+Classification into Axial, Coronal, Sagittal planes
+Grad-CAM explainability analysis
+Statistical evaluation
+Main contributions:
+Proposed hybrid Transformer-CNN cross-attention architecture.
+Applied Grad-CAM for explainable predictions.
+Conducted systematic augmentation ablation studies."
+6.Proposed method/framework:
+Dual deep learning framework consisting of:
+Differential CNN for plane localization.
+Dual CNN for cerebellum segmentation.
+Workflow/pipeline summary:
+Collect fetal ultrasound brain images.
+Resize and normalize images.
+Apply augmentation.
+Differential CNN extracts features using six convolution operators for plane localization.
+Dual CNN combines original images and complementary information (feature maps/edge maps) for cerebellum segmentation.
+Softmax produces multiclass segmentation outputs.
+Main contributions:
+Development of specialized differential CNN architecture.
+Development of dual CNN architecture integrating complementary information.
+Use of multiple convolution operators for feature extraction.
+Improved plane localization and cerebellum segmentation performance."
+7.Proposed method/framework:
+Deep learning-based multi-class fetal ultrasound image classification framework using CNN architectures.
+Workflow/pipeline summary:
+Dataset collection → preprocessing → augmentation → label encoding → CNN model training → evaluation → anatomical plane prediction.
+Main contributions:
+Evaluation of five CNN architectures for fetal anatomical plane classification.
+Demonstration of DenseNet169 achieving highest accuracy.
+Development of a reproducible classification pipeline using clinically validated data."
+8.Proposed method/framework:
+Deep learning model for fetal weight estimation from ultrasound images.
+Model predicts Estimated Fetal Weight (EFW).
+Workflow/pipeline summary:
+Ultrasound images classified into head, abdomen, femur, and other categories using OCR.
+Other class removed.
+Image sets created from the same examination.
+Three subnetworks process head, abdomen, and femur images.
+Predicted measurements and image embeddings combined to estimate fetal weight.
+Improved SGA and LGA detection compared with Hadlock formula.
+Utilization of pixel-level ultrasound information beyond standard biometric measurements.
+Added uncertainty estimation for fetal weight predictions."
+9.Proposed method/framework:
+Benchmarking of multiple state-of-the-art convolutional neural networks for fetal ultrasound plane classification.
+Workflow/pipeline summary:
+Collect and manually label ultrasound images by experts.
+Preprocess ultrasound images.
+Train multiple CNN architectures using transfer learning from ImageNet.
+Evaluate models on unseen patient data.
+Compare CNN performance with trained research technicians.
+Main contributions:
+Created a large maternal-fetal ultrasound dataset (>12,000 images).
+Evaluated 19 CNN architectures.
+Compared deep learning models with human classification performance.
+Investigated transferability across ultrasound machines and operators."
+10.Proposed method/framework Stacking ensemble of deep convolutional neural networks (CNNs) for automated fetal ultrasound plane classification.
+Workflow/pipeline summary Input fetal ultrasound images → feature extraction using three pretrained CNN models → prediction using Softmax and Random Forest classifiers → final classification using absolute majority voting.
+Main contributions Proposed stacking ensemble framework; combined multiple pretrained CNN models; improved classification reliability compared with individual CNN models and competing methods."
+11.Proposed method/framework:
+Hybrid feature selection using PSO-GWO optimization with a Fast Radial Basis Function Neural Network (Fast-RBFNN) classifier.
+Workflow/pipeline summary:
+Ultrasound image collection → preprocessing → GLCM feature extraction → PSO/GWO/PSOGWO feature selection → DL classification using ANN, CNN, RBF, Fast-RBFNN.
+Main contributions:
+Introduced hybrid PSOGWO feature selection.
+Proposed Fast-RBFNN with ε-insensitive loss function and structural risk term.
+Compared proposed model with ANN, CNN, and RBF models."
+12.Proposed method/framework:
+CNN-based fetal ultrasound plane classification combined with LIME (Local Interpretable Model-Agnostic Explanations) for explainability.
+Workflow/pipeline summary:
+Ultrasound images → normalization/rescaling → CNN classification model → predicted fetal plane class → LIME explanation generation → identification of important image regions.
+Main contributions:
+Developed CNN model for fetal ultrasound plane classification.
+Applied LIME to explain CNN predictions.
+Identified important anatomical regions influencing classification decisions."
+13.Proposed method/framework:
+Literature review and survey of deep-learning algorithms for fetal ultrasound image analysis.
+Workflow/pipeline summary:
+Literature search → paper selection → categorization of DL applications → analysis of datasets, methods, metrics, limitations, and challenges.
+Main contributions:
+Reviewed 145 DL research papers after 2017.
+Categorized studies into:
+Standard-plane detection
+Anatomical-structure analysis
+Biometry estimation
+Summarized publicly available datasets and performance metrics.
+Discussed limitations and future research directions."
+14.Proposed method/framework:
+Compound scaling method for CNNs.
+EfficientNet architecture family based on neural architecture search and compound scaling.
+Workflow/pipeline summary:
+Develop EfficientNet-B0 baseline using neural architecture search.
+Apply compound scaling coefficient to uniformly scale:
+Network depth
+Network width
+Input resolution
+Generate EfficientNet-B1 to EfficientNet-B7 models.
+Evaluate on ImageNet and transfer learning datasets.
+Main contributions:
+Proposed compound scaling method balancing depth, width, and resolution.
+Developed EfficientNet model family.
+Achieved improved accuracy with fewer parameters and FLOPS compared with previous CNN models."
+15.Proposed method/framework:
+SonoNet: deep convolutional neural network framework for real-time fetal standard plane detection and weakly supervised localisation.
+Uses image-level labels only for localisation training.
+Workflow/pipeline summary:
+Input fetal ultrasound frame.
+CNN predicts standard scan plane category.
+Class score maps generated.
+Backward pass creates category-specific saliency maps.
+Confidence maps extracted.
+Bounding boxes generated for localisation.
+Main contributions:
+Real-time detection of 13 fetal standard scan planes.
+Weakly supervised localisation without bounding box annotations during training.
+Designed CNN architecture optimized for real-time performance.
+Evaluation on large clinical freehand ultrasound dataset."
+16.Proposed method/framework:
+Iterative Transformation Network (ITN).
+CNN-based framework that predicts rigid transformations to move arbitrary planes toward standard planes in 3D volumes.
+Workflow/pipeline summary:
+Start with randomly initialized plane inside 3D volume.
+Extract 2D plane image.
+CNN predicts transformation parameters.
+Update plane position and orientation.
+Repeat iteratively until convergence to standard plane.
+Classification probabilities used as confidence measures for transformation prediction.
+Main contributions:
+Introduced iterative CNN-based plane detection framework for 3D fetal ultrasound.
+Used transformation regression instead of plane classification.
+Compared multiple transformation representations.
+Added classification probability outputs using multi-task learning to improve localization accuracy."
+17.Proposed method/framework:
+Multi-Task Learning Network (MTLN).
+End-to-end deep network based on Link-Net architecture.
+Performs fetal head segmentation and ellipse parameter estimation simultaneously.
+Workflow/pipeline summary:
+Input 2D fetal ultrasound image at multiple scales.
+Segmentation network extracts fetal head mask.
+Ellipse Tuner estimates head ellipse parameters from intermediate feature maps.
+Compound loss combines segmentation loss and ellipse parameter loss.
+Output: segmented fetal head and estimated HC ellipse.
+Main contributions:
+Proposed multi-task deep learning framework based on Link-Net.
+Introduced Ellipse Tuner module for HC estimation.
+Combined Dice-based segmentation loss with MSE ellipse parameter loss.
+Demonstrated improved segmentation compared with single-task learning."
+18.Proposed method/framework:
+Multitask learning framework for fetal sonographic image quality assessment.
+Combines anatomical structure detection, segmentation, and classification.
+Workflow/pipeline summary:
+Input fetal ultrasound standard plane image.
+Feature extraction network extracts image features.
+Features divided into:
+Region Proposal Network for localization.
+Segmentation network for anatomical structures.
+Classification network for quality assessment.
+Outputs anatomical structure segmentation and quality classification simultaneously.
+Main contributions:
+Proposed multitask framework for automatic fetal standard plane quality assessment.
+Integrated object detection, segmentation, and classification.
+Added relation module to improve anatomical structure segmentation.
+Achieved simultaneous localization and classification."
+19.Proposed method/framework:
+Dilated Squeeze-and-Excitation U-Net (Dilated SE U-Net)
+Workflow/pipeline summary:
+Input 2D prenatal ultrasound images.
+Extract features using modified U-Net encoder.
+Apply dilated convolution module after last encoder.
+Apply Squeeze-and-Excitation (SE) attention blocks on skip connections.
+Decode features to generate segmentation output.
+Use segmented skull boundary/skull to fit fetal HC ellipse and calculate HC measurement.
+Main contributions:
+Extended U-Net with dilated convolution layers.
+Added SE blocks to skip connections.
+Improved fetal skull boundary and skull segmentation.
+Enabled automatic fetal HC measurement from segmentation results."
+20.Proposed method/framework:
+Systematic review and categorization of image processing methods for fetal head and brain analysis in ultrasound images.
+Workflow/pipeline summary:
+Collection and analysis of published studies.
+Categorization based on clinical applications:
+Fetal head analysis.
+Brain inner structure analysis.
+Standard anatomical plane evaluation.
+Fetal development analysis.
+Image processing enhancement.
+Categorization based on theoretical approaches:
+Global intensity-based methods.
+Deformable models.
+Learning-based methods.
+Registration methods.
+Active Shape Models (ASM).
+Main contributions:
+Comprehensive overview of state-of-the-art fetal head/brain ultrasound image processing methods.
+Analysis of methods according to clinical application and theoretical approach.
+Comparison of approaches and identification of future research topics."
+21.Proposed method/framework:
+Novel multi-task learning framework for fetal MRI motion correction and tissue segmentation.
+Uses a coarse-to-fine learning strategy.
+Workflow/pipeline summary:
+Input: Individual 2D fetal MRI slices.
+Coarse stage:
+U-Net-like network learns shared features for pose estimation and segmentation.
+Refinement stage:
+Signed distance maps generated from coarse segmentation are introduced.
+Anatomical information guides feature learning.
+Iterative incorporation of signed distance maps progressively improves regression and segmentation performance.
+Main contributions:
+Joint learning of pose estimation parameters and tissue segmentation maps.
+Introduction of regression-based segmentation loss as deep supervision.
+Use of signed distance maps for refinement and anatomical guidance.
+Simultaneous improvement of motion correction and tissue segmentation."
+22.Proposed Hierarchical Online Contrastive Anomaly Detection (HOCAD) framework. It uses hierarchical localization of measurable cardiac cycles and online contrastive anomaly detection to distinguish normal and abnormal cardiac rhythms.
+23.Developed and evaluated deep convolutional neural network models for automatic classification of standard fetal ultrasound planes using transfer learning and comparison with expert clinicians.
+24.Proposed the use of Vision Transformers (ViT) for breast ultrasound image classification and compared their performance with state-of-the-art CNN models using different augmentation strategies.
+25.Comprehensive literature survey reviewing deep learning architectures, medical imaging applications, image classification, object detection, segmentation, registration, and computer-aided diagnosis
+26.Proposed an Evidential Dempster–Shafer (DS) based CNN architecture and compared it with PreLUNet, SqueezeNet, and Swin Transformer. The study also incorporated Explainable AI (LIME and Grad-CAM) to interpret model predictions.
+27.Comprehensive literature review of deep learning algorithms applied to medical image classification, object detection, segmentation, registration, and computer-aided diagnosis across multiple medical imaging domains.
+28.Comprehensive review of deep learning techniques for image classification, segmentation, detection, image registration, computer-aided diagnosis, and prognosis in medical imaging.
+29."No new framework proposed; comprehensive review of deep learning applications in healthcare.
+Deep learning fundamentals → Computer Vision → Natural Language Processing → Reinforcement Learning → Genomics → Future healthcare applications.
+Reviews deep learning techniques in healthcare; discusses computer vision, NLP, reinforcement learning, genomics, end-to-end AI systems, and future challenges."
+30.Narrative perspective piece synthesizing evidence and examples from the AI-in-medicine literature (imaging, pathology, dermatology, cardiology, genomics) rather than presenting a novel experimental method.
+31.Narrative review summarizing prospective clinical AI studies and medical imaging AI advances, then outlining promising future avenues (non-image data sources, unconventional problem formulations, human-AI collaboration) and unresolved technical/ethical challenges.
+32.Tutorial-style review describing the general machine-learning pipeline (computing candidate image features, feature selection, classifier training) and introducing deep learning/CNN concepts for image-based diagnosis, illustrated with example applications.
+33.Narrative survey that introduces deep-learning fundamentals (convolutional neural networks) and reviews published deep-learning applications across radiology tasks (classification, detection, segmentation), with a particular focus on MRI-based studies.
+34.Proposed method/framework: SonoNet, a deep CNN framework for real-time fetal standard plane detection and weakly supervised localisation using only image-level labels. Workflow: input frame -> CNN predicts standard scan plane category -> class score maps generated -> backward pass creates category-specific saliency maps -> confidence maps extracted -> bounding boxes generated for localisation. Main contributions: real-time detection of 13 fetal standard scan planes; weakly supervised localisation without bounding-box annotations during training; CNN architecture optimized for real-time performance; evaluation on a large clinical freehand ultrasound dataset.
+35.Proposed Iterative Transformation Network (ITN), a CNN-based framework that predicts rigid transformations to move an arbitrary plane toward the standard plane within a 3D volume. Starting from a randomly initialized plane, the CNN iteratively predicts transformation parameters that update the plane's position and orientation until convergence, with classification probability outputs used as confidence measures via multi-task learning.
+36.Investigated the effect of multi-scale input on a LinkNet-based encoder-decoder segmentation network and proposed a lighter variant, mini-LinkNet, with fewer encoder blocks (3 instead of 4) to reduce parameters while preserving spatial detail. Trained using a combined weighted binary cross-entropy and Dice loss that emphasizes head-boundary pixels; multi-scale variants additionally take a half-scale input branch.
+37.Novel multi-task learning framework for fetal MRI motion correction and tissue segmentation using a coarse-to-fine strategy. In the coarse stage, a U-Net-like network learns features shared for both pose-estimation and segmentation tasks. In the refinement stage, signed distance maps constructed from the coarse segmentation are introduced to guide feature learning, progressively improving both regression (pose) and segmentation outputs.
+38.Proposed a detection framework combining a coarse-to-fine detection strategy with a multi-task learning mechanism on feature-fused images. Traditional manually designed features and deep-learning-based features are fused to obtain low-level shared features that enhance the model's feature expression ability. Inspired by human recognition, detection is divided into a coarse process of plane-type classification and a fine process of standard-or-not detection, implemented end-to-end via multi-task learning.
+39.Proposed Method/Framework: Coarse-to-fine detection framework with multi-task learning for feature-fused images.
+Workflow/Pipeline Summary: Manual feature extraction + Deep feature extraction → Feature fusion → Plane type classification (coarse) → Standard/non-standard detection (fine) → ROI recognition.
+Main Contributions:
+Proposed coarse-to-fine detection framework.
+Fused handcrafted and deep learning features.
+Introduced end-to-end multi-task learning.
+Incorporated ROI recognition to suppress maternal background."
+40.Proposed a novel Attention Gate (AG) module — a soft, additive attention mechanism integrated into standard CNN architectures (U-Net for segmentation, Sononet/VGG-variant for classification) that automatically learns to suppress irrelevant background regions and highlight salient task-relevant features, without requiring external localization models or bounding box supervision.
+41.Proposed two novel custom CNN architectures (3-Residual Block and 4-Residual Block models) with Bayesian Optimization for hyperparameter tuning. Deep features extracted from global average pooling layers of both models, optimized using an Improved Generalized Normal Distribution Optimization (IGNDO) algorithm, then fused via a serial-based feature fusion approach. Final classification performed using neural network classifiers.
+42.Proposed Method: Structure-Enhanced Mixture-of-Experts Contrastive Learning (SEMC).
+Workflow: SSFM → Multi-scale feature fusion → MCRM → Contrastive learning → Classification.
+Main Contributions:
+Proposed SEMC framework.
+Developed SSFM and MCRM modules.
+Built a large annotated liver ultrasound dataset.
+Improved standard plane recognition.
+43.Proposed SonoEyeNet, which fuses fetal ultrasound images with sonographer eye-tracking heatmaps. Multiple fusion strategies (Concat, Early Fusion, Late Fusion) were evaluated using a pretrained SonoNet-16 architecture.
+44.Deep features extracted from pretrained ResNet-50 and VGG-19-GAP were fused and classified using a Multiclass Support Vector Machine (SVM) into six fetal ultrasound plane categories.
+45.Deep learning algorithms were trained for fetal skull segmentation, normal/abnormal image classification, and lesion localization using fetal brain ultrasound images.
+46.Reviews deep learning architectures, ultrasound image preprocessing methods, and CAD applications in medical ultrasound imaging.
+47.Comprehensive survey of deep learning architectures and their applications in classification, segmentation, detection, registration, image reconstruction, and computer-aided diagnosis.
+48.Comprehensive review of deep learning architectures and their applications in medical image analysis including segmentation, detection, registration, diagnosis, and prognosis

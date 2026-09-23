@@ -1,0 +1,190 @@
+Device: cuda | Seed: 42
+Per-model epochs: {'Attn-EfficientNet-B0': 32, 'MS-EfficientNet-B4-NS': 34, 'US-EfficientNet-B5-NS': 45}
+Dataset root: /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO
+Organized 12400 images into class folders
+Cropped & resized 12400 images -> /kaggle/working/processed (CLAHE=off)
+Loaded 12400 images across 6 classes
+
+Split: burgos-artizzu_2020_official_train_test + patient-disjoint val carve-out
+Patients: train=784 val=112 test=896
+Images:   train=6361 val=768 test=5271
+Train per-class: {'abdomen': 317, 'brain': 1445, 'cervix': 859, 'femur': 467, 'thorax': 945, 'other': 2328}
+Val   per-class: {'abdomen': 36, 'brain': 175, 'cervix': 122, 'femur': 49, 'thorax': 113, 'other': 273}
+Test  per-class: {'abdomen': 358, 'brain': 1472, 'cervix': 645, 'femur': 524, 'thorax': 660, 'other': 1612}
+Effective-number class weights (beta=0.9999): {'abdomen': np.float64(2.15), 'brain': np.float64(0.499), 'cervix': np.float64(0.815), 'femur': np.float64(1.47), 'thorax': np.float64(0.744), 'other': np.float64(0.323)}
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+model.safetensors: 100%
+ 21.4M/21.4M [00:01<00:00, 39.0MB/s]
+model.safetensors: 100%
+ 77.9M/77.9M [00:01<00:00, 110MB/s]
+Unexpected keys (bn2.num_batches_tracked, bn2.bias, bn2.running_mean, bn2.running_var, bn2.weight, classifier.bias, classifier.weight, conv_head.weight) found while loading pretrained weights. This may be expected if model is being adapted.
+model.safetensors: 100%
+ 122M/122M [00:01<00:00, 261MB/s]
+
+============================================================
+Training Attn-EfficientNet-B0  (per-model tuned)
+============================================================
+  epochs=32 backbone_lr=0.0009 head_lr=0.0009 wd=0.0005 warmup=0.1 clip=1.0 aug=strong
+[Attn-EfficientNet-B0] Ep  1 | Train 49.79% | Val(raw) acc 82.55% f1 80.44 | Val(ema) acc 80.47% f1 78.63 | kept=raw | BestF1 80.44 (acc 82.55%)
+[Attn-EfficientNet-B0] Ep  2 | Train 70.15% | Val(raw) acc 91.80% f1 89.69 | Val(ema) acc 91.41% f1 89.63 | kept=raw | BestF1 89.69 (acc 91.80%)
+[Attn-EfficientNet-B0] Ep  3 | Train 74.93% | Val(raw) acc 90.89% f1 89.27 | Val(ema) acc 90.76% f1 88.61 | kept=raw | BestF1 89.69 (acc 91.80%)
+[Attn-EfficientNet-B0] Ep  4 | Train 74.74% | Val(raw) acc 89.19% f1 87.86 | Val(ema) acc 92.06% f1 90.21 | kept=ema | BestF1 90.21 (acc 92.06%)
+[Attn-EfficientNet-B0] Ep  5 | Train 75.21% | Val(raw) acc 92.58% f1 90.56 | Val(ema) acc 91.54% f1 89.52 | kept=raw | BestF1 90.56 (acc 92.58%)
+[Attn-EfficientNet-B0] Ep  6 | Train 75.59% | Val(raw) acc 86.59% f1 84.62 | Val(ema) acc 91.41% f1 89.36 | kept=ema | BestF1 90.56 (acc 92.58%)
+[Attn-EfficientNet-B0] Ep  7 | Train 75.62% | Val(raw) acc 92.32% f1 90.17 | Val(ema) acc 91.80% f1 90.05 | kept=raw | BestF1 90.56 (acc 92.58%)
+[Attn-EfficientNet-B0] Ep  8 | Train 76.80% | Val(raw) acc 92.19% f1 89.91 | Val(ema) acc 92.32% f1 90.43 | kept=ema | BestF1 90.56 (acc 92.58%)
+[Attn-EfficientNet-B0] Ep  9 | Train 77.35% | Val(raw) acc 94.53% f1 93.35 | Val(ema) acc 93.10% f1 91.45 | kept=raw | BestF1 93.35 (acc 94.53%)
+[Attn-EfficientNet-B0] Ep 10 | Train 79.33% | Val(raw) acc 93.23% f1 91.13 | Val(ema) acc 93.23% f1 91.65 | kept=ema | BestF1 93.35 (acc 94.53%)
+[Attn-EfficientNet-B0] Ep 11 | Train 76.17% | Val(raw) acc 93.23% f1 91.64 | Val(ema) acc 92.97% f1 91.35 | kept=raw | BestF1 93.35 (acc 94.53%)
+[Attn-EfficientNet-B0] Ep 12 | Train 75.11% | Val(raw) acc 93.62% f1 92.06 | Val(ema) acc 93.23% f1 91.76 | kept=raw | BestF1 93.35 (acc 94.53%)
+[Attn-EfficientNet-B0] Ep 13 | Train 77.30% | Val(raw) acc 93.49% f1 91.71 | Val(ema) acc 93.62% f1 92.23 | kept=ema | BestF1 93.35 (acc 94.53%)
+[Attn-EfficientNet-B0] Ep 14 | Train 77.98% | Val(raw) acc 94.01% f1 92.74 | Val(ema) acc 93.88% f1 92.62 | kept=raw | BestF1 93.35 (acc 94.53%)
+[Attn-EfficientNet-B0] Ep 15 | Train 76.10% | Val(raw) acc 91.93% f1 90.67 | Val(ema) acc 93.49% f1 91.96 | kept=ema | BestF1 93.35 (acc 94.53%)
+[Attn-EfficientNet-B0] Ep 16 | Train 76.28% | Val(raw) acc 92.97% f1 90.81 | Val(ema) acc 93.62% f1 92.02 | kept=ema | BestF1 93.35 (acc 94.53%)
+[Attn-EfficientNet-B0] Ep 17 | Train 81.01% | Val(raw) acc 90.62% f1 88.10 | Val(ema) acc 94.40% f1 92.93 | kept=ema | BestF1 93.35 (acc 94.53%)
+[Attn-EfficientNet-B0] Ep 18 | Train 77.13% | Val(raw) acc 93.88% f1 92.06 | Val(ema) acc 94.79% f1 93.30 | kept=ema | BestF1 93.35 (acc 94.53%)
+[Attn-EfficientNet-B0] Ep 19 | Train 76.23% | Val(raw) acc 94.66% f1 93.57 | Val(ema) acc 95.05% f1 93.64 | kept=ema | BestF1 93.64 (acc 95.05%)
+[Attn-EfficientNet-B0] Ep 20 | Train 80.24% | Val(raw) acc 95.18% f1 93.85 | Val(ema) acc 95.05% f1 93.72 | kept=raw | BestF1 93.85 (acc 95.18%)
+[Attn-EfficientNet-B0] Ep 21 | Train 80.98% | Val(raw) acc 95.57% f1 94.32 | Val(ema) acc 95.05% f1 93.72 | kept=raw | BestF1 94.32 (acc 95.57%)
+[Attn-EfficientNet-B0] Ep 22 | Train 77.76% | Val(raw) acc 95.57% f1 94.31 | Val(ema) acc 95.05% f1 93.72 | kept=raw | BestF1 94.32 (acc 95.57%)
+[Attn-EfficientNet-B0] Ep 23 | Train 79.37% | Val(raw) acc 95.44% f1 94.22 | Val(ema) acc 95.05% f1 93.72 | kept=raw | BestF1 94.32 (acc 95.57%)
+[Attn-EfficientNet-B0] Ep 24 | Train 76.83% | Val(raw) acc 95.83% f1 94.49 | Val(ema) acc 95.44% f1 94.14 | kept=raw | BestF1 94.49 (acc 95.83%)
+[Attn-EfficientNet-B0] Ep 25 | Train 81.20% | Val(raw) acc 95.44% f1 94.06 | Val(ema) acc 95.57% f1 94.35 | kept=ema | BestF1 94.49 (acc 95.83%)
+[Attn-EfficientNet-B0] Ep 26 | Train 79.86% | Val(raw) acc 95.44% f1 94.21 | Val(ema) acc 95.31% f1 94.06 | kept=raw | BestF1 94.49 (acc 95.83%)
+[Attn-EfficientNet-B0] Ep 27 | Train 78.78% | Val(raw) acc 95.70% f1 94.30 | Val(ema) acc 95.05% f1 93.75 | kept=raw | BestF1 94.49 (acc 95.83%)
+[Attn-EfficientNet-B0] Ep 28 | Train 79.20% | Val(raw) acc 94.92% f1 93.73 | Val(ema) acc 95.05% f1 93.75 | kept=ema | BestF1 94.49 (acc 95.83%)
+[Attn-EfficientNet-B0] Ep 29 | Train 77.38% | Val(raw) acc 95.05% f1 93.91 | Val(ema) acc 95.18% f1 93.82 | kept=raw | BestF1 94.49 (acc 95.83%)
+[Attn-EfficientNet-B0] Ep 30 | Train 77.53% | Val(raw) acc 94.92% f1 93.70 | Val(ema) acc 94.92% f1 93.70 | kept=ema | BestF1 94.49 (acc 95.83%)
+[Attn-EfficientNet-B0] Ep 31 | Train 82.90% | Val(raw) acc 95.31% f1 94.00 | Val(ema) acc 95.31% f1 94.00 | kept=ema | BestF1 94.49 (acc 95.83%)
+[Attn-EfficientNet-B0] Ep 32 | Train 78.31% | Val(raw) acc 95.31% f1 94.00 | Val(ema) acc 95.18% f1 93.90 | kept=raw | BestF1 94.49 (acc 95.83%)
+
+============================================================
+Training MS-EfficientNet-B4-NS  (per-model tuned)
+============================================================
+  epochs=34 backbone_lr=0.0005 head_lr=0.0012 wd=0.0005 warmup=0.15 clip=1.0 aug=strong
+[MS-EfficientNet-B4-NS] Ep  1 | Train 49.05% | Val(raw) acc 74.74% f1 73.05 | Val(ema) acc 72.66% f1 71.21 | kept=raw | BestF1 73.05 (acc 74.74%)
+[MS-EfficientNet-B4-NS] Ep  2 | Train 74.50% | Val(raw) acc 92.58% f1 90.71 | Val(ema) acc 90.23% f1 88.55 | kept=raw | BestF1 90.71 (acc 92.58%)
+[MS-EfficientNet-B4-NS] Ep  3 | Train 72.87% | Val(raw) acc 90.10% f1 88.16 | Val(ema) acc 92.58% f1 91.08 | kept=ema | BestF1 91.08 (acc 92.58%)
+[MS-EfficientNet-B4-NS] Ep  4 | Train 74.93% | Val(raw) acc 89.19% f1 87.29 | Val(ema) acc 91.80% f1 90.24 | kept=ema | BestF1 91.08 (acc 92.58%)
+[MS-EfficientNet-B4-NS] Ep  5 | Train 73.70% | Val(raw) acc 89.58% f1 87.12 | Val(ema) acc 91.93% f1 90.42 | kept=ema | BestF1 91.08 (acc 92.58%)
+[MS-EfficientNet-B4-NS] Ep  6 | Train 79.34% | Val(raw) acc 94.40% f1 92.91 | Val(ema) acc 92.71% f1 91.18 | kept=raw | BestF1 92.91 (acc 94.40%)
+[MS-EfficientNet-B4-NS] Ep  7 | Train 78.59% | Val(raw) acc 94.66% f1 92.99 | Val(ema) acc 93.62% f1 92.13 | kept=raw | BestF1 92.99 (acc 94.66%)
+[MS-EfficientNet-B4-NS] Ep  8 | Train 74.06% | Val(raw) acc 93.36% f1 91.66 | Val(ema) acc 93.88% f1 92.29 | kept=ema | BestF1 92.99 (acc 94.66%)
+[MS-EfficientNet-B4-NS] Ep  9 | Train 79.12% | Val(raw) acc 94.40% f1 93.01 | Val(ema) acc 94.27% f1 93.01 | kept=ema | BestF1 93.01 (acc 94.27%)
+[MS-EfficientNet-B4-NS] Ep 10 | Train 76.17% | Val(raw) acc 93.36% f1 91.38 | Val(ema) acc 93.75% f1 92.36 | kept=ema | BestF1 93.01 (acc 94.27%)
+[MS-EfficientNet-B4-NS] Ep 11 | Train 75.74% | Val(raw) acc 93.36% f1 91.83 | Val(ema) acc 94.27% f1 93.07 | kept=ema | BestF1 93.07 (acc 94.27%)
+[MS-EfficientNet-B4-NS] Ep 12 | Train 76.39% | Val(raw) acc 94.79% f1 93.17 | Val(ema) acc 93.88% f1 92.52 | kept=raw | BestF1 93.17 (acc 94.79%)
+[MS-EfficientNet-B4-NS] Ep 13 | Train 76.29% | Val(raw) acc 94.79% f1 93.40 | Val(ema) acc 94.40% f1 93.18 | kept=raw | BestF1 93.40 (acc 94.79%)
+[MS-EfficientNet-B4-NS] Ep 14 | Train 76.65% | Val(raw) acc 94.27% f1 92.67 | Val(ema) acc 94.79% f1 93.46 | kept=ema | BestF1 93.46 (acc 94.79%)
+[MS-EfficientNet-B4-NS] Ep 15 | Train 78.40% | Val(raw) acc 94.53% f1 93.21 | Val(ema) acc 94.53% f1 93.26 | kept=ema | BestF1 93.46 (acc 94.79%)
+[MS-EfficientNet-B4-NS] Ep 16 | Train 81.65% | Val(raw) acc 95.31% f1 94.05 | Val(ema) acc 94.79% f1 93.60 | kept=raw | BestF1 94.05 (acc 95.31%)
+[MS-EfficientNet-B4-NS] Ep 17 | Train 78.98% | Val(raw) acc 95.18% f1 93.90 | Val(ema) acc 95.05% f1 93.86 | kept=raw | BestF1 94.05 (acc 95.31%)
+[MS-EfficientNet-B4-NS] Ep 18 | Train 79.99% | Val(raw) acc 94.27% f1 92.76 | Val(ema) acc 94.92% f1 93.73 | kept=ema | BestF1 94.05 (acc 95.31%)
+[MS-EfficientNet-B4-NS] Ep 19 | Train 79.85% | Val(raw) acc 95.31% f1 94.01 | Val(ema) acc 95.18% f1 93.99 | kept=raw | BestF1 94.05 (acc 95.31%)
+[MS-EfficientNet-B4-NS] Ep 20 | Train 79.08% | Val(raw) acc 96.22% f1 95.32 | Val(ema) acc 95.44% f1 94.34 | kept=raw | BestF1 95.32 (acc 96.22%)
+[MS-EfficientNet-B4-NS] Ep 21 | Train 79.63% | Val(raw) acc 96.09% f1 95.06 | Val(ema) acc 95.83% f1 94.64 | kept=raw | BestF1 95.32 (acc 96.22%)
+[MS-EfficientNet-B4-NS] Ep 22 | Train 79.01% | Val(raw) acc 96.88% f1 95.84 | Val(ema) acc 95.70% f1 94.37 | kept=raw | BestF1 95.84 (acc 96.88%)
+[MS-EfficientNet-B4-NS] Ep 23 | Train 79.41% | Val(raw) acc 95.83% f1 94.54 | Val(ema) acc 95.57% f1 94.10 | kept=raw | BestF1 95.84 (acc 96.88%)
+[MS-EfficientNet-B4-NS] Ep 24 | Train 79.59% | Val(raw) acc 96.22% f1 94.95 | Val(ema) acc 95.83% f1 94.45 | kept=raw | BestF1 95.84 (acc 96.88%)
+[MS-EfficientNet-B4-NS] Ep 25 | Train 77.77% | Val(raw) acc 96.35% f1 95.22 | Val(ema) acc 96.09% f1 94.78 | kept=raw | BestF1 95.84 (acc 96.88%)
+[MS-EfficientNet-B4-NS] Ep 26 | Train 76.50% | Val(raw) acc 97.01% f1 96.11 | Val(ema) acc 96.22% f1 94.95 | kept=raw | BestF1 96.11 (acc 97.01%)
+[MS-EfficientNet-B4-NS] Ep 27 | Train 78.18% | Val(raw) acc 96.22% f1 95.03 | Val(ema) acc 96.35% f1 95.13 | kept=ema | BestF1 96.11 (acc 97.01%)
+[MS-EfficientNet-B4-NS] Ep 28 | Train 81.54% | Val(raw) acc 96.61% f1 95.63 | Val(ema) acc 96.35% f1 95.13 | kept=raw | BestF1 96.11 (acc 97.01%)
+[MS-EfficientNet-B4-NS] Ep 29 | Train 73.89% | Val(raw) acc 97.01% f1 96.09 | Val(ema) acc 96.48% f1 95.31 | kept=raw | BestF1 96.11 (acc 97.01%)
+[MS-EfficientNet-B4-NS] Ep 30 | Train 79.19% | Val(raw) acc 96.35% f1 95.13 | Val(ema) acc 96.48% f1 95.31 | kept=ema | BestF1 96.11 (acc 97.01%)
+[MS-EfficientNet-B4-NS] Ep 31 | Train 78.64% | Val(raw) acc 96.88% f1 95.92 | Val(ema) acc 96.74% f1 95.69 | kept=raw | BestF1 96.11 (acc 97.01%)
+[MS-EfficientNet-B4-NS] Ep 32 | Train 81.78% | Val(raw) acc 97.27% f1 96.54 | Val(ema) acc 96.74% f1 95.69 | kept=raw | BestF1 96.54 (acc 97.27%)
+[MS-EfficientNet-B4-NS] Ep 33 | Train 80.11% | Val(raw) acc 97.14% f1 96.33 | Val(ema) acc 96.74% f1 95.69 | kept=raw | BestF1 96.54 (acc 97.27%)
+[MS-EfficientNet-B4-NS] Ep 34 | Train 77.47% | Val(raw) acc 96.61% f1 95.50 | Val(ema) acc 96.88% f1 95.88 | kept=ema | BestF1 96.54 (acc 97.27%)
+
+============================================================
+Training US-EfficientNet-B5-NS  (per-model tuned)
+============================================================
+  epochs=45 backbone_lr=0.00012 head_lr=0.0007 wd=0.0001 warmup=0.3 clip=0.5 aug=light
+[US-EfficientNet-B5-NS] Ep  1 | Train 54.44% | Val(raw) acc 69.92% f1 67.61 | Val(ema) acc 70.44% f1 68.58 | kept=ema | BestF1 68.58 (acc 70.44%)
+[US-EfficientNet-B5-NS] Ep  2 | Train 64.30% | Val(raw) acc 80.86% f1 76.50 | Val(ema) acc 82.55% f1 79.54 | kept=ema | BestF1 79.54 (acc 82.55%)
+[US-EfficientNet-B5-NS] Ep  3 | Train 69.25% | Val(raw) acc 84.64% f1 82.09 | Val(ema) acc 87.37% f1 85.45 | kept=ema | BestF1 85.45 (acc 87.37%)
+[US-EfficientNet-B5-NS] Ep  4 | Train 72.16% | Val(raw) acc 90.36% f1 88.92 | Val(ema) acc 90.62% f1 88.94 | kept=ema | BestF1 88.94 (acc 90.62%)
+[US-EfficientNet-B5-NS] Ep  5 | Train 70.65% | Val(raw) acc 92.06% f1 90.20 | Val(ema) acc 91.02% f1 88.87 | kept=raw | BestF1 90.20 (acc 92.06%)
+[US-EfficientNet-B5-NS] Ep  6 | Train 76.98% | Val(raw) acc 93.36% f1 91.16 | Val(ema) acc 93.75% f1 92.07 | kept=ema | BestF1 92.07 (acc 93.75%)
+[US-EfficientNet-B5-NS] Ep  7 | Train 77.28% | Val(raw) acc 93.49% f1 92.26 | Val(ema) acc 94.14% f1 92.46 | kept=ema | BestF1 92.46 (acc 94.14%)
+[US-EfficientNet-B5-NS] Ep  8 | Train 79.28% | Val(raw) acc 89.32% f1 86.27 | Val(ema) acc 94.14% f1 92.71 | kept=ema | BestF1 92.71 (acc 94.14%)
+[US-EfficientNet-B5-NS] Ep  9 | Train 76.62% | Val(raw) acc 93.36% f1 92.19 | Val(ema) acc 95.05% f1 93.97 | kept=ema | BestF1 93.97 (acc 95.05%)
+[US-EfficientNet-B5-NS] Ep 10 | Train 77.61% | Val(raw) acc 94.01% f1 93.52 | Val(ema) acc 95.83% f1 94.68 | kept=ema | BestF1 94.68 (acc 95.83%)
+[US-EfficientNet-B5-NS] Ep 11 | Train 76.40% | Val(raw) acc 96.09% f1 95.05 | Val(ema) acc 95.44% f1 94.36 | kept=raw | BestF1 95.05 (acc 96.09%)
+[US-EfficientNet-B5-NS] Ep 12 | Train 79.61% | Val(raw) acc 95.83% f1 94.56 | Val(ema) acc 95.44% f1 94.21 | kept=raw | BestF1 95.05 (acc 96.09%)
+[US-EfficientNet-B5-NS] Ep 13 | Train 75.98% | Val(raw) acc 95.57% f1 94.58 | Val(ema) acc 95.57% f1 94.45 | kept=raw | BestF1 95.05 (acc 96.09%)
+[US-EfficientNet-B5-NS] Ep 14 | Train 79.03% | Val(raw) acc 95.70% f1 94.91 | Val(ema) acc 95.96% f1 94.85 | kept=raw | BestF1 95.05 (acc 96.09%)
+[US-EfficientNet-B5-NS] Ep 15 | Train 77.88% | Val(raw) acc 95.70% f1 94.55 | Val(ema) acc 96.22% f1 95.23 | kept=ema | BestF1 95.23 (acc 96.22%)
+[US-EfficientNet-B5-NS] Ep 16 | Train 77.61% | Val(raw) acc 95.70% f1 94.51 | Val(ema) acc 96.35% f1 95.53 | kept=ema | BestF1 95.53 (acc 96.35%)
+[US-EfficientNet-B5-NS] Ep 17 | Train 79.59% | Val(raw) acc 95.18% f1 94.01 | Val(ema) acc 95.83% f1 94.90 | kept=ema | BestF1 95.53 (acc 96.35%)
+[US-EfficientNet-B5-NS] Ep 18 | Train 77.80% | Val(raw) acc 95.96% f1 94.51 | Val(ema) acc 95.96% f1 94.91 | kept=ema | BestF1 95.53 (acc 96.35%)
+[US-EfficientNet-B5-NS] Ep 19 | Train 79.25% | Val(raw) acc 95.57% f1 94.48 | Val(ema) acc 95.96% f1 94.91 | kept=ema | BestF1 95.53 (acc 96.35%)
+[US-EfficientNet-B5-NS] Ep 20 | Train 73.70% | Val(raw) acc 95.18% f1 93.26 | Val(ema) acc 96.09% f1 95.03 | kept=ema | BestF1 95.53 (acc 96.35%)
+[US-EfficientNet-B5-NS] Ep 21 | Train 78.78% | Val(raw) acc 95.70% f1 94.72 | Val(ema) acc 95.83% f1 94.75 | kept=ema | BestF1 95.53 (acc 96.35%)
+[US-EfficientNet-B5-NS] Ep 22 | Train 79.52% | Val(raw) acc 96.48% f1 95.54 | Val(ema) acc 95.96% f1 94.77 | kept=raw | BestF1 95.54 (acc 96.48%)
+[US-EfficientNet-B5-NS] Ep 23 | Train 80.32% | Val(raw) acc 95.05% f1 93.63 | Val(ema) acc 96.22% f1 95.05 | kept=ema | BestF1 95.54 (acc 96.48%)
+[US-EfficientNet-B5-NS] Ep 24 | Train 78.93% | Val(raw) acc 95.83% f1 94.57 | Val(ema) acc 96.22% f1 95.02 | kept=ema | BestF1 95.54 (acc 96.48%)
+[US-EfficientNet-B5-NS] Ep 25 | Train 76.04% | Val(raw) acc 95.44% f1 93.98 | Val(ema) acc 96.35% f1 95.22 | kept=ema | BestF1 95.54 (acc 96.48%)
+[US-EfficientNet-B5-NS] Ep 26 | Train 81.18% | Val(raw) acc 95.83% f1 94.93 | Val(ema) acc 96.35% f1 95.04 | kept=ema | BestF1 95.54 (acc 96.48%)
+[US-EfficientNet-B5-NS] Ep 27 | Train 81.37% | Val(raw) acc 96.48% f1 95.37 | Val(ema) acc 96.35% f1 95.04 | kept=raw | BestF1 95.54 (acc 96.48%)
+[US-EfficientNet-B5-NS] Ep 28 | Train 76.92% | Val(raw) acc 96.35% f1 95.13 | Val(ema) acc 96.35% f1 95.21 | kept=ema | BestF1 95.54 (acc 96.48%)
+[US-EfficientNet-B5-NS] Ep 29 | Train 76.25% | Val(raw) acc 95.57% f1 94.45 | Val(ema) acc 96.09% f1 94.72 | kept=ema | BestF1 95.54 (acc 96.48%)
+[US-EfficientNet-B5-NS] Ep 30 | Train 84.48% | Val(raw) acc 95.70% f1 94.47 | Val(ema) acc 96.35% f1 95.02 | kept=ema | BestF1 95.54 (acc 96.48%)
+[US-EfficientNet-B5-NS] Ep 31 | Train 81.37% | Val(raw) acc 96.88% f1 95.87 | Val(ema) acc 96.22% f1 94.90 | kept=raw | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 32 | Train 82.09% | Val(raw) acc 96.74% f1 95.82 | Val(ema) acc 96.35% f1 95.17 | kept=raw | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 33 | Train 81.70% | Val(raw) acc 96.22% f1 94.74 | Val(ema) acc 96.35% f1 95.17 | kept=ema | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 34 | Train 76.20% | Val(raw) acc 96.74% f1 95.58 | Val(ema) acc 96.48% f1 95.16 | kept=raw | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 35 | Train 80.71% | Val(raw) acc 96.48% f1 95.23 | Val(ema) acc 96.22% f1 94.88 | kept=raw | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 36 | Train 79.56% | Val(raw) acc 96.35% f1 95.21 | Val(ema) acc 96.35% f1 94.98 | kept=raw | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 37 | Train 79.33% | Val(raw) acc 96.74% f1 95.60 | Val(ema) acc 96.35% f1 94.98 | kept=raw | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 38 | Train 80.38% | Val(raw) acc 96.22% f1 95.02 | Val(ema) acc 96.48% f1 95.20 | kept=ema | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 39 | Train 82.25% | Val(raw) acc 96.61% f1 95.54 | Val(ema) acc 96.48% f1 95.23 | kept=raw | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 40 | Train 80.85% | Val(raw) acc 96.09% f1 94.75 | Val(ema) acc 96.48% f1 95.31 | kept=ema | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 41 | Train 80.27% | Val(raw) acc 96.74% f1 95.73 | Val(ema) acc 96.35% f1 95.21 | kept=raw | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 42 | Train 81.76% | Val(raw) acc 96.61% f1 95.54 | Val(ema) acc 96.35% f1 95.21 | kept=raw | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 43 | Train 77.88% | Val(raw) acc 96.35% f1 95.04 | Val(ema) acc 96.48% f1 95.31 | kept=ema | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 44 | Train 79.99% | Val(raw) acc 96.48% f1 95.44 | Val(ema) acc 96.61% f1 95.54 | kept=ema | BestF1 95.87 (acc 96.88%)
+[US-EfficientNet-B5-NS] Ep 45 | Train 80.21% | Val(raw) acc 96.61% f1 95.54 | Val(ema) acc 96.61% f1 95.54 | kept=ema | BestF1 95.87 (acc 96.88%)
+
+============================================================
+PER-MEMBER TTA TEST ACCURACY
+============================================================
+  Attn-EfficientNet-B0      : 94.3464%
+  MS-EfficientNet-B4-NS     : 95.5416%
+  US-EfficientNet-B5-NS     : 95.0294%
+
+============================================================
+Calibrating FEENet ensemble weights on val set (early stopping, patience=4)
+============================================================
+[EnsembleCalib] Ep  1 | ValLoss 0.1401 | ValAcc 96.88% | weights=[0.215 0.583 0.202] | temps=[0.56  0.763 0.593]
+[EnsembleCalib] Ep  2 | ValLoss 0.1346 | ValAcc 97.14% | weights=[0.136 0.613 0.251] | temps=[0.562 0.807 0.557]
+[EnsembleCalib] Ep  3 | ValLoss 0.1326 | ValAcc 97.14% | weights=[0.125 0.601 0.274] | temps=[0.527 0.821 0.51 ]
+[EnsembleCalib] Ep  4 | ValLoss 0.1325 | ValAcc 97.14% | weights=[0.123 0.591 0.286] | temps=[0.494 0.827 0.489]
+[EnsembleCalib] Ep  5 | ValLoss 0.1324 | ValAcc 97.14% | weights=[0.123 0.585 0.292] | temps=[0.463 0.83  0.48 ]
+[EnsembleCalib] Ep  6 | ValLoss 0.1323 | ValAcc 97.14% | weights=[0.125 0.581 0.295] | temps=[0.434 0.833 0.477]
+[EnsembleCalib] Ep  7 | ValLoss 0.1322 | ValAcc 97.14% | weights=[0.126 0.578 0.296] | temps=[0.409 0.834 0.475]
+[EnsembleCalib] Ep  8 | ValLoss 0.1322 | ValAcc 97.14% | weights=[0.127 0.576 0.297] | temps=[0.387 0.836 0.475]
+[EnsembleCalib] Ep  9 | ValLoss 0.1322 | ValAcc 97.14% | weights=[0.128 0.574 0.298] | temps=[0.369 0.836 0.474]
+[EnsembleCalib] Ep 10 | ValLoss 0.1322 | ValAcc 97.14% | weights=[0.129 0.573 0.299] | temps=[0.355 0.837 0.474]
+[EnsembleCalib] Ep 11 | ValLoss 0.1321 | ValAcc 97.14% | weights=[0.129 0.572 0.299] | temps=[0.343 0.837 0.474]
+[EnsembleCalib] Ep 12 | ValLoss 0.1321 | ValAcc 97.14% | weights=[0.13  0.571 0.299] | temps=[0.334 0.838 0.473]
+[EnsembleCalib] Ep 13 | ValLoss 0.1321 | ValAcc 97.14% | weights=[0.13  0.57  0.299] | temps=[0.326 0.838 0.473]
+[EnsembleCalib] Ep 14 | ValLoss 0.1321 | ValAcc 97.14% | weights=[0.13 0.57 0.3 ] | temps=[0.321 0.838 0.473]
+[EnsembleCalib] Ep 15 | ValLoss 0.1321 | ValAcc 97.14% | weights=[0.131 0.57  0.3  ] | temps=[0.316 0.838 0.473]
+[EnsembleCalib] Ep 16 | ValLoss 0.1321 | ValAcc 97.01% | weights=[0.131 0.57  0.3  ] | temps=[0.313 0.838 0.473]
+[EnsembleCalib] Ep 17 | ValLoss 0.1321 | ValAcc 97.01% | weights=[0.131 0.569 0.3  ] | temps=[0.31  0.839 0.472]
+[EnsembleCalib] Ep 18 | ValLoss 0.1321 | ValAcc 97.01% | weights=[0.131 0.569 0.3  ] | temps=[0.308 0.839 0.472]
+[EnsembleCalib] Ep 19 | ValLoss 0.1321 | ValAcc 97.01% | weights=[0.131 0.569 0.3  ] | temps=[0.307 0.839 0.472]
+[EnsembleCalib] Ep 20 | ValLoss 0.1321 | ValAcc 97.01% | weights=[0.131 0.569 0.3  ] | temps=[0.305 0.839 0.472]
+[EnsembleCalib] Ep 21 | ValLoss 0.1321 | ValAcc 97.01% | weights=[0.131 0.569 0.3  ] | temps=[0.304 0.839 0.472]
+[EnsembleCalib] Early stopping at epoch 21 (no improvement for 4 epochs). Restoring best state (ValLoss 0.1321).
+
+FEENet TTA Accuracy : 95.9021%
+Best single member  : MS-EfficientNet-B4-NS @ 95.5416%
+Ensemble lift        : +0.3605 pts over best member
+
+ROC Plot saved & visible: /kaggle/working/final_paper_plots_v4/fig_06_roc_curves.png
+
+Final Macro AUC: 0.99524
+Done training + ensemble.

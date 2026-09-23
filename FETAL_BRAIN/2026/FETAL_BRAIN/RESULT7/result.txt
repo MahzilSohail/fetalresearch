@@ -1,0 +1,690 @@
+Contents currently mounted under /kaggle/input:
+input/
+  datasets/
+    mahzilsohail/
+      fetal-planes-db-zenodo/
+        FETAL_PLANES_DB_data.csv
+        README.md
+        FETAL_PLANES_DB_data.xlsx
+        Images/
+          Patient00088_Plane4_1_of_2.png
+          Patient01422_Plane1_16_of_19.png
+          Patient01199_Plane1_7_of_11.png
+          Patient00791_Plane3_2_of_3.png
+          Patient01473_Plane1_17_of_30.png
+          Patient01089_Plane3_1_of_2.png
+          Patient00782_Plane3_1_of_4.png
+          Patient01483_Plane3_1_of_4.png
+          Patient01635_Plane1_1_of_1.png
+          Patient00188_Plane4_1_of_1.png
+          Patient00574_Plane4_1_of_1.png
+          Patient01510_Plane1_1_of_12.png
+          Patient00809_Plane1_8_of_14.png
+          Patient01446_Plane1_20_of_29.png
+          Patient01512_Plane3_1_of_2.png
+          Patient00039_Plane1_35_of_47.png
+          Patient00800_Plane6_1_of_5.png
+          Patient00911_Plane1_1_of_6.png
+          Patient01655_Plane5_1_of_1.png
+          Patient00837_Plane5_1_of_2.png
+          Patient00767_Plane3_1_of_3.png
+          Patient00846_Plane6_2_of_4.png
+          Patient00790_Plane1_35_of_47.png
+          Patient00809_Plane1_6_of_14.png
+          Patient01196_Plane4_2_of_2.png
+          Patient01631_Plane1_3_of_16.png
+          Patient01529_Plane3_2_of_3.png
+          Patient00946_Plane1_1_of_1.png
+          Patient00033_Plane1_14_of_27.png
+          Patient00038_Plane1_11_of_38.png
+          Patient00834_Plane1_17_of_34.png
+          Patient00948_Plane6_3_of_5.png
+          Patient00830_Plane1_29_of_49.png
+          Patient00019_Plane1_5_of_18.png
+          Patient00894_Plane3_3_of_6.png
+          Patient01610_Plane4_2_of_2.png
+          Patient01707_Plane6_1_of_1.png
+          Patient01649_Plane5_2_of_2.png
+          Patient01624_Plane3_2_of_2.png
+          Patient00808_Plane3_2_of_2.png
+          Patient01566_Plane6_2_of_4.png
+          Patient00036_Plane1_10_of_39.png
+          Patient00769_Plane1_17_of_17.png
+          Patient00211_Plane4_1_of_1.png
+          Patient00909_Plane6_5_of_6.png
+          Patient01391_Plane1_6_of_26.png
+          Patient00802_Plane4_1_of_6.png
+          Patient01750_Plane2_1_of_1.png
+          Patient01128_Plane3_2_of_3.png
+          Patient00007_Plane1_25_of_34.png
+          Patient01545_Plane1_13_of_13.png
+          Patient00030_Plane1_31_of_35.png
+          Patient01633_Plane1_5_of_13.png
+          Patient00906_Plane6_1_of_1.png
+          Patient01756_Plane3_1_of_2.png
+          Patient01487_Plane1_1_of_17.png
+          Patient01550_Plane2_1_of_1.png
+          Patient00788_Plane6_2_of_3.png
+          Patient00740_Plane3_1_of_3.png
+          Patient01118_Plane5_3_of_3.png
+          Patient01251_Plane3_1_of_2.png
+          Patient01587_Plane5_1_of_1.png
+          Patient00042_Plane1_26_of_39.png
+          Patient00849_Plane1_1_of_1.png
+          Patient00825_Plane4_5_of_7.png
+          Patient00724_Plane3_2_of_3.png
+          Patient01582_Plane6_1_of_5.png
+          Patient00038_Plane1_9_of_38.png
+          Patient01538_Plane2_1_of_1.png
+          Patient00699_Plane3_1_of_4.png
+          Patient00894_Plane2_1_of_2.png
+          Patient00742_Plane1_6_of_20.png
+          Patient00367_Plane4_1_of_1.png
+          Patient01175_Plane2_2_of_2.png
+          Patient01592_Plane3_2_of_2.png
+          Patient01481_Plane2_2_of_2.png
+          Patient00909_Plane1_14_of_15.png
+          Patient00884_Plane4_1_of_4.png
+          Patient01541_Plane3_1_of_2.png
+          Patient00674_Plane1_1_of_1.png
+          Patient01409_Plane3_2_of_4.png
+          Patient01567_Plane2_1_of_3.png
+          Patient01596_Plane3_3_of_5.png
+          Patient01332_Plane1_3_of_12.png
+          Patient00795_Plane1_29_of_41.png
+          Patient01531_Plane2_1_of_1.png
+          Patient01348_Plane1_7_of_8.png
+          Patient00961_Plane2_2_of_2.png
+          Patient01710_Plane4_1_of_1.png
+          Patient00108_Plane4_1_of_1.png
+          Patient01205_Plane5_2_of_2.png
+          Patient01445_Plane3_2_of_4.png
+          Patient01408_Plane1_10_of_15.png
+          Patient01160_Plane5_2_of_2.png
+          Patient00788_Plane6_3_of_3.png
+          Patient01521_Plane5_1_of_1.png
+          Patient00791_Plane1_11_of_25.png
+          Patient01707_Plane4_3_of_3.png
+          Patient00830_Plane5_1_of_1.png
+          Patient01280_Plane3_5_of_5.png
+          Patient00950_Plane3_3_of_5.png
+          Patient01148_Plane3_3_of_3.png
+          Patient00775_Plane2_1_of_1.png
+          Patient00834_Plane1_4_of_34.png
+          Patient00793_Plane4_5_of_10.png
+          Patient00745_Plane1_1_of_1.png
+          Patient00921_Plane4_2_of_7.png
+          Patient01391_Plane1_17_of_26.png
+          Patient00765_Plane6_3_of_4.png
+          Patient00771_Plane4_2_of_4.png
+          Patient00698_Plane3_3_of_3.png
+          Patient01648_Plane5_3_of_5.png
+          Patient00792_Plane1_71_of_71.png
+          Patient00948_Plane3_2_of_3.png
+          Patient00846_Plane3_2_of_2.png
+          Patient00638_Plane4_1_of_1.png
+          Patient01574_Plane6_1_of_2.png
+          Patient01239_Plane4_1_of_4.png
+          Patient01476_Plane4_4_of_5.png
+          Patient01060_Plane3_1_of_4.png
+          Patient01535_Plane1_7_of_21.png
+          Patient01486_Plane1_12_of_26.png
+          Patient01570_Plane1_11_of_16.png
+          Patient00005_Plane1_1_of_25.png
+          Patient01413_Plane3_1_of_4.png
+          Patient01566_Plane1_13_of_29.png
+          Patient00168_Plane2_2_of_2.png
+          Patient01363_Plane2_2_of_3.png
+          Patient00713_Plane2_1_of_1.png
+          Patient00124_Plane4_1_of_1.png
+          Patient00039_Plane1_28_of_47.png
+          Patient01618_Plane6_3_of_5.png
+          Patient01364_Plane1_6_of_6.png
+          Patient01050_Plane3_1_of_2.png
+          Patient01044_Plane4_2_of_3.png
+          Patient01634_Plane2_1_of_2.png
+          Patient00830_Plane4_1_of_6.png
+          Patient00607_Plane4_1_of_1.png
+          Patient00822_Plane3_1_of_6.png
+          Patient00797_Plane1_1_of_8.png
+          Patient00831_Plane1_30_of_38.png
+          Patient01131_Plane1_1_of_1.png
+          Patient00728_Plane6_2_of_4.png
+          Patient01715_Plane1_1_of_1.png
+          Patient01118_Plane2_2_of_2.png
+          Patient01181_Plane6_1_of_2.png
+          Patient01596_Plane3_5_of_5.png
+          Patient00799_Plane1_10_of_28.png
+          Patient01641_Plane4_1_of_1.png
+          Patient01295_Plane6_6_of_8.png
+          Patient01106_Plane2_1_of_2.png
+          Patient01651_Plane3_1_of_2.png
+          Patient01151_Plane5_4_of_4.png
+          Patient00015_Plane1_2_of_18.png
+          Patient01203_Plane3_1_of_3.png
+          Patient00006_Plane1_26_of_36.png
+          Patient00865_Plane6_2_of_4.png
+          Patient00985_Plane5_2_of_4.png
+          Patient01595_Plane3_1_of_2.png
+          Patient00557_Plane4_1_of_1.png
+          Patient00870_Plane1_4_of_8.png
+          Patient01573_Plane1_4_of_8.png
+          Patient01385_Plane6_3_of_3.png
+          Patient01694_Plane3_1_of_3.png
+          Patient00029_Plane1_16_of_16.png
+          Patient01534_Plane1_6_of_11.png
+          Patient00016_Plane1_16_of_16.png
+          Patient01267_Plane3_3_of_4.png
+          Patient01541_Plane1_1_of_5.png
+          Patient00855_Plane1_30_of_39.png
+          Patient00929_Plane3_3_of_8.png
+          Patient01254_Plane3_5_of_5.png
+          Patient00168_Plane6_2_of_4.png
+          Patient01330_Plane1_16_of_16.png
+          Patient00025_Plane1_8_of_15.png
+          Patient01246_Plane1_2_of_7.png
+          Patient00723_Plane3_2_of_4.png
+          Patient01046_Plane5_2_of_3.png
+          Patient00837_Plane6_2_of_3.png
+          Patient00009_Plane1_28_of_42.png
+          Patient00791_Plane1_7_of_25.png
+          Patient00889_Plane2_1_of_1.png
+          Patient01307_Plane1_14_of_25.png
+          Patient01576_Plane3_1_of_2.png
+          Patient00848_Plane4_1_of_9.png
+          Patient00830_Plane1_39_of_49.png
+          Patient00792_Plane1_40_of_71.png
+          Patient01401_Plane1_2_of_2.png
+          Patient01120_Plane2_1_of_1.png
+          Patient01286_Plane4_1_of_5.png
+          Patient01487_Plane1_17_of_17.png
+          Patient00945_Plane1_1_of_1.png
+          Patient01678_Plane5_2_of_2.png
+          Patient00854_Plane1_21_of_32.png
+          Patient01301_Plane1_1_of_1.png
+          Patient00922_Plane3_1_of_1.png
+          Patient00705_Plane3_3_of_3.png
+          Patient00718_Plane6_2_of_2.png
+          Patient01366_Plane1_3_of_8.png
+          Patient01495_Plane6_1_of_3.png
+          Patient00781_Plane4_4_of_10.png
+          Patient00011_Plane1_6_of_20.png
+          Patient00956_Plane1_1_of_1.png
+          Patient01450_Plane2_1_of_1.png
+          Patient01137_Plane2_1_of_2.png
+          Patient00864_Plane3_1_of_2.png
+          Patient01590_Plane3_4_of_6.png
+          Patient00308_Plane4_1_of_1.png
+          Patient00950_Plane6_1_of_2.png
+          Patient01237_Plane6_1_of_2.png
+          Patient00826_Plane3_4_of_5.png
+          Patient01303_Plane3_3_of_3.png
+          Patient01505_Plane4_1_of_1.png
+          Patient01468_Plane3_4_of_4.png
+          Patient01567_Plane2_3_of_3.png
+          Patient01560_Plane2_1_of_1.png
+          Patient00977_Plane3_2_of_4.png
+          Patient01678_Plane3_2_of_8.png
+          Patient01100_Plane3_2_of_2.png
+          Patient01271_Plane3_2_of_15.png
+          Patient00971_Plane2_1_of_1.png
+          Patient00953_Plane3_1_of_3.png
+          Patient01548_Plane3_1_of_2.png
+          Patient01087_Plane6_1_of_1.png
+          Patient00722_Plane5_1_of_1.png
+          Patient00890_Plane3_2_of_4.png
+          Patient01189_Plane5_2_of_2.png
+          Patient00846_Plane2_1_of_1.png
+          Patient01545_Plane1_11_of_13.png
+          Patient00036_Plane1_31_of_39.png
+          Patient01662_Plane3_2_of_3.png
+          Patient00005_Plane1_11_of_25.png
+          Patient01156_Plane3_2_of_5.png
+          Patient00961_Plane3_1_of_4.png
+          Patient01436_Plane3_2_of_2.png
+          Patient01500_Plane1_1_of_9.png
+          Patient01331_Plane6_2_of_2.png
+          Patient01115_Plane5_1_of_1.png
+          Patient01717_Plane3_2_of_3.png
+          Patient00962_Plane3_2_of_5.png
+          Patient00018_Plane1_6_of_14.png
+          Patient00006_Plane1_3_of_36.png
+          Patient01512_Plane2_1_of_1.png
+          Patient00722_Plane1_1_of_1.png
+          Patient01169_Plane3_3_of_3.png
+          Patient01335_Plane6_1_of_1.png
+          Patient01663_Plane3_2_of_5.png
+          Patient00039_Plane1_8_of_47.png
+          Patient01620_Plane3_1_of_3.png
+          Patient00922_Plane1_1_of_1.png
+          Patient01614_Plane1_8_of_9.png
+          Patient00745_Plane6_1_of_4.png
+          Patient00776_Plane3_2_of_6.png
+          Patient00809_Plane5_1_of_1.png
+          Patient01199_Plane1_11_of_11.png
+          Patient00004_Plane1_30_of_30.png
+          Patient00007_Plane1_15_of_34.png
+          Patient01172_Plane2_1_of_1.png
+          Patient01052_Plane3_9_of_9.png
+          Patient01621_Plane5_1_of_1.png
+          Patient01408_Plane1_4_of_15.png
+          Patient00826_Plane4_3_of_3.png
+          Patient00577_Plane4_1_of_1.png
+          Patient00771_Plane3_3_of_3.png
+          Patient00799_Plane4_3_of_4.png
+          Patient01307_Plane3_1_of_2.png
+          Patient00767_Plane6_1_of_1.png
+          Patient00831_Plane1_3_of_38.png
+          Patient00794_Plane1_6_of_7.png
+          Patient01542_Plane5_1_of_1.png
+          Patient00674_Plane5_1_of_1.png
+          Patient00803_Plane3_1_of_5.png
+          Patient00888_Plane1_1_of_2.png
+          Patient01716_Plane3_3_of_3.png
+          Patient00168_Plane1_4_of_23.png
+          Patient01606_Plane1_6_of_18.png
+          Patient00661_Plane5_1_of_1.png
+          Patient01045_Plane5_2_of_2.png
+          Patient01291_Plane2_1_of_1.png
+          Patient00511_Plane4_1_of_1.png
+          Patient00750_Plane1_7_of_7.png
+          Patient01606_Plane1_12_of_18.png
+          Patient01089_Plane6_1_of_1.png
+          Patient00993_Plane4_1_of_3.png
+          Patient00881_Plane1_1_of_1.png
+          Patient01535_Plane1_16_of_21.png
+          Patient00031_Plane1_33_of_42.png
+          Patient00004_Plane1_11_of_30.png
+          Patient00025_Plane1_12_of_15.png
+          Patient00932_Plane1_1_of_1.png
+          Patient01347_Plane5_1_of_2.png
+          Patient01161_Plane3_3_of_4.png
+          Patient00043_Plane1_46_of_55.png
+          Patient01601_Plane1_1_of_1.png
+          Patient01111_Plane3_2_of_3.png
+          Patient00970_Plane3_2_of_4.png
+          Patient00830_Plane1_30_of_49.png
+          Patient00825_Plane4_6_of_7.png
+          Patient00751_Plane4_1_of_2.png
+          Patient00010_Plane1_13_of_14.png
+          Patient01765_Plane3_3_of_3.png
+          Patient00909_Plane1_9_of_15.png
+          Patient01520_Plane3_1_of_2.png
+          Patient01444_Plane1_28_of_28.png
+          Patient01026_Plane2_3_of_3.png
+          Patient01496_Plane1_7_of_7.png
+          Patient00831_Plane1_10_of_38.png
+          Patient00001_Plane1_2_of_15.png
+          Patient01225_Plane3_3_of_4.png
+          Patient01632_Plane1_2_of_4.png
+          Patient01576_Plane3_2_of_2.png
+          Patient00505_Plane4_1_of_1.png
+          Patient00768_Plane1_10_of_26.png
+          Patient01607_Plane3_2_of_2.png
+          Patient00842_Plane6_3_of_4.png
+          Patient01675_Plane1_1_of_4.png
+          Patient01784_Plane6_1_of_4.png
+          Patient01047_Plane6_1_of_3.png
+          Patient00746_Plane6_4_of_11.png
+          Patient01670_Plane2_6_of_6.png
+          Patient01344_Plane3_1_of_4.png
+          Patient01384_Plane3_2_of_3.png
+          Patient01592_Plane3_1_of_2.png
+          Patient01110_Plane4_1_of_3.png
+          Patient01708_Plane1_1_of_1.png
+          Patient00826_Plane3_2_of_5.png
+          Patient01435_Plane6_4_of_5.png
+          Patient01234_Plane6_1_of_1.png
+          Patient00791_Plane1_4_of_25.png
+          Patient00848_Plane4_5_of_9.png
+          Patient01022_Plane3_1_of_5.png
+          Patient01105_Plane4_2_of_2.png
+          Patient00771_Plane1_1_of_40.png
+          Patient00937_Plane3_1_of_1.png
+          Patient01002_Plane3_3_of_3.png
+          Patient00804_Plane4_4_of_6.png
+          Patient01547_Plane1_14_of_18.png
+          Patient01151_Plane3_10_of_13.png
+          Patient00014_Plane1_20_of_42.png
+          Patient01254_Plane3_4_of_5.png
+          Patient01113_Plane5_2_of_2.png
+          Patient01032_Plane2_1_of_1.png
+          Patient01731_Plane6_1_of_1.png
+          Patient00760_Plane3_4_of_4.png
+          Patient01330_Plane1_4_of_16.png
+          Patient01417_Plane5_2_of_2.png
+          Patient00711_Plane6_2_of_4.png
+          Patient01225_Plane3_2_of_4.png
+          Patient01070_Plane4_1_of_2.png
+          Patient00013_Plane1_8_of_20.png
+          Patient00851_Plane1_7_of_8.png
+          Patient00960_Plane3_3_of_3.png
+          Patient00930_Plane5_1_of_1.png
+          Patient00458_Plane4_1_of_1.png
+          Patient00168_Plane1_12_of_23.png
+          Patient01365_Plane1_14_of_17.png
+          Patient00765_Plane3_4_of_6.png
+          Patient00255_Plane4_1_of_1.png
+          Patient00803_Plane4_1_of_2.png
+          Patient00883_Plane6_1_of_2.png
+          Patient01203_Plane6_1_of_2.png
+          Patient01252_Plane1_8_of_17.png
+          Patient00781_Plane4_10_of_10.png
+          Patient01652_Plane5_1_of_1.png
+          Patient00484_Plane4_1_of_1.png
+          Patient01406_Plane3_1_of_3.png
+          Patient01751_Plane6_1_of_2.png
+          Patient00988_Plane3_1_of_2.png
+          Patient00905_Plane6_5_of_5.png
+          Patient00038_Plane1_14_of_38.png
+          Patient01301_Plane3_1_of_7.png
+          Patient00144_Plane4_1_of_1.png
+          Patient00056_Plane4_1_of_2.png
+          Patient00005_Plane1_18_of_25.png
+          Patient01595_Plane5_1_of_1.png
+          Patient01547_Plane1_6_of_18.png
+          Patient01045_Plane3_2_of_5.png
+          Patient00003_Plane1_17_of_21.png
+          Patient01711_Plane6_3_of_3.png
+          Patient00040_Plane1_8_of_36.png
+          Patient01682_Plane5_1_of_2.png
+          Patient01592_Plane5_3_of_5.png
+          Patient01573_Plane3_1_of_2.png
+          Patient01446_Plane1_24_of_29.png
+          Patient01762_Plane3_1_of_2.png
+          Patient00257_Plane4_1_of_1.png
+          Patient00982_Plane3_2_of_3.png
+          Patient00031_Plane1_6_of_42.png
+          Patient00793_Plane1_31_of_48.png
+          Patient00878_Plane6_2_of_2.png
+          Patient00036_Plane1_6_of_39.png
+          Patient01535_Plane1_11_of_21.png
+          Patient00963_Plane6_2_of_3.png
+          Patient00551_Plane4_1_of_1.png
+          Patient00691_Plane3_1_of_1.png
+          Patient00009_Plane1_6_of_42.png
+          Patient01182_Plane2_1_of_1.png
+          Patient00042_Plane1_27_of_39.png
+... (truncated, tree is larger)
+
+CSV       : /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/FETAL_PLANES_DB_data.csv
+Images dir: /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/Images
+Indexed 12400 image files under /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/Images
+['Image_name', 'Patient_num', 'Plane', 'Brain_plane', 'Operator', 'US_Machine', 'Train']
+                    Image_name  Patient_num  Plane  Brain_plane Operator  \
+0  Patient00001_Plane1_1_of_15            1  Other  Not A Brain    Other   
+1  Patient00001_Plane1_2_of_15            1  Other  Not A Brain    Other   
+2  Patient00001_Plane1_3_of_15            1  Other  Not A Brain    Other   
+3  Patient00001_Plane1_4_of_15            1  Other  Not A Brain    Other   
+4  Patient00001_Plane1_5_of_15            1  Other  Not A Brain    Other   
+
+  US_Machine  Train  
+0      Aloka      1  
+1      Aloka      1  
+2      Aloka      1  
+3      Aloka      1  
+4      Aloka      1  
+Total brain sub-plane images found: 2949
+label
+Trans-thalamic       1638
+Trans-cerebellum      714
+Trans-ventricular     597
+Name: count, dtype: int64
+
+Loaded: (2949, 256, 256, 3) labels: {'Trans-thalamic': 1638, 'Trans-cerebellum': 714, 'Trans-ventricular': 597}
+Train: (2359, 256, 256, 3) Test: (590, 256, 256, 3)
+Augmented train set: (3852, 256, 256, 3) {0: 1310, 2: 1271, 1: 1271}
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788000944.100693      23 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 13756 MB memory:  -> device: 0, name: Tesla T4, pci bus id: 0000:00:04.0, compute capability: 7.5
+I0000 00:00:1788000944.103546      23 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 13756 MB memory:  -> device: 1, name: Tesla T4, pci bus id: 0000:00:05.0, compute capability: 7.5
+Downloading data from https://storage.googleapis.com/tensorflow/keras-applications/mobilenet_v2/mobilenet_v2_weights_tf_dim_ordering_tf_kernels_1.0_224_no_top.h5
+9406464/9406464 ━━━━━━━━━━━━━━━━━━━━ 0s 0us/step
+Model: "AC_Branch_MobileNet"
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)        ┃ Output Shape      ┃    Param # ┃ Connected to      ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ input_layer         │ (None, 256, 256,  │          0 │ -                 │
+│ (InputLayer)        │ 3)                │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ mobilenetv2_backbo… │ (None, 8, 8,      │  2,257,984 │ input_layer[0][0] │
+│ (Functional)        │ 1280)             │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv1 (Conv2D) │ (None, 8, 8, 128) │    163,968 │ mobilenetv2_back… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv2 (Conv2D) │ (None, 8, 8, 32)  │      4,128 │ attn_conv1[0][0]  │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_mod1 (Conv2D)  │ (None, 8, 8, 64)  │    737,344 │ mobilenetv2_back… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_avgpool        │ (None, 8, 8, 32)  │          0 │ attn_conv2[0][0]  │
+│ (AveragePooling2D)  │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_mod2 (Conv2D)  │ (None, 8, 8, 32)  │     18,464 │ conv_mod1[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv3 (Conv2D) │ (None, 8, 8, 1)   │         33 │ attn_avgpool[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_maxpool        │ (None, 8, 8, 32)  │          0 │ conv_mod2[0][0]   │
+│ (MaxPooling2D)      │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_multiply       │ (None, 8, 8,      │          0 │ attn_conv3[0][0], │
+│ (Multiply)          │ 1280)             │            │ mobilenetv2_back… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_mod3 (Conv2D)  │ (None, 8, 8, 16)  │      4,624 │ conv_maxpool[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ branch_concat       │ (None, 8, 8,      │          0 │ attn_multiply[0]… │
+│ (Concatenate)       │ 1296)             │            │ conv_mod3[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ gap                 │ (None, 1296)      │          0 │ branch_concat[0]… │
+│ (GlobalAveragePool… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_1 (Dropout) │ (None, 1296)      │          0 │ gap[0][0]         │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ fc_32 (Dense)       │ (None, 32)        │     41,504 │ dropout_1[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_2 (Dropout) │ (None, 32)        │          0 │ fc_32[0][0]       │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ predictions (Dense) │ (None, 3)         │         99 │ dropout_2[0][0]   │
+└─────────────────────┴───────────────────┴────────────┴───────────────────┘
+ Total params: 3,228,148 (12.31 MB)
+ Trainable params: 3,194,036 (12.18 MB)
+ Non-trainable params: 34,112 (133.25 KB)
+Total params: 3228148
+Phase 1/2: 5 warmup epochs with the backbone frozen...
+Epoch 1/5
+2026-08-29 10:56:12.893155: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-08-29 10:56:13.030752: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+I0000 00:00:1788000977.689831      78 device_compiler.h:196] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+119/121 ━━━━━━━━━━━━━━━━━━━━ 0s 39ms/step - accuracy: 0.4521 - loss: 1.1775
+2026-08-29 10:56:33.932457: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-08-29 10:56:34.069145: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 169ms/step - accuracy: 0.4534 - loss: 1.1745
+2026-08-29 10:56:57.414844: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-08-29 10:56:57.551160: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+121/121 ━━━━━━━━━━━━━━━━━━━━ 67s 350ms/step - accuracy: 0.5335 - loss: 0.9953 - val_accuracy: 0.5949 - val_loss: 0.8352
+Epoch 2/5
+121/121 ━━━━━━━━━━━━━━━━━━━━ 6s 46ms/step - accuracy: 0.6685 - loss: 0.7363 - val_accuracy: 0.6966 - val_loss: 0.7335
+Epoch 3/5
+121/121 ━━━━━━━━━━━━━━━━━━━━ 6s 45ms/step - accuracy: 0.7399 - loss: 0.6023 - val_accuracy: 0.6966 - val_loss: 0.7267
+Epoch 4/5
+121/121 ━━━━━━━━━━━━━━━━━━━━ 6s 45ms/step - accuracy: 0.7921 - loss: 0.5013 - val_accuracy: 0.7051 - val_loss: 0.7054
+Epoch 5/5
+121/121 ━━━━━━━━━━━━━━━━━━━━ 6s 46ms/step - accuracy: 0.8268 - loss: 0.4222 - val_accuracy: 0.7034 - val_loss: 0.7862
+Phase 2/2: unfreezing backbone, fine-tuning for the remaining epochs...
+Epoch 1/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 411ms/step - accuracy: 0.5624 - loss: 1.1954
+Epoch 1: val_accuracy improved from None to 0.62034, saving model to ac_branch_mobilenet_best.keras
+
+Epoch 1: finished saving model to ac_branch_mobilenet_best.keras
+121/121 ━━━━━━━━━━━━━━━━━━━━ 128s 537ms/step - accuracy: 0.6763 - loss: 0.7943 - val_accuracy: 0.6203 - val_loss: 1.6190 - learning_rate: 0.0010
+Epoch 2/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 136ms/step - accuracy: 0.8327 - loss: 0.4421
+Epoch 2: val_accuracy did not improve from 0.62034
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 143ms/step - accuracy: 0.8489 - loss: 0.3947 - val_accuracy: 0.4627 - val_loss: 2.4672 - learning_rate: 0.0010
+Epoch 3/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 136ms/step - accuracy: 0.8881 - loss: 0.3153
+Epoch 3: val_accuracy improved from 0.62034 to 0.65254, saving model to ac_branch_mobilenet_best.keras
+
+Epoch 3: finished saving model to ac_branch_mobilenet_best.keras
+121/121 ━━━━━━━━━━━━━━━━━━━━ 18s 150ms/step - accuracy: 0.9011 - loss: 0.2688 - val_accuracy: 0.6525 - val_loss: 1.5873 - learning_rate: 0.0010
+Epoch 4/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9308 - loss: 0.1729
+Epoch 4: val_accuracy improved from 0.65254 to 0.65932, saving model to ac_branch_mobilenet_best.keras
+
+Epoch 4: finished saving model to ac_branch_mobilenet_best.keras
+121/121 ━━━━━━━━━━━━━━━━━━━━ 18s 145ms/step - accuracy: 0.9294 - loss: 0.1882 - val_accuracy: 0.6593 - val_loss: 1.7143 - learning_rate: 0.0010
+Epoch 5/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.9381 - loss: 0.1727
+Epoch 5: val_accuracy did not improve from 0.65932
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 137ms/step - accuracy: 0.9330 - loss: 0.1782 - val_accuracy: 0.2085 - val_loss: 7.1879 - learning_rate: 0.0010
+Epoch 6/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 0.9431 - loss: 0.1586
+Epoch 6: val_accuracy did not improve from 0.65932
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 139ms/step - accuracy: 0.9434 - loss: 0.1632 - val_accuracy: 0.4085 - val_loss: 5.9990 - learning_rate: 0.0010
+Epoch 7/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 135ms/step - accuracy: 0.9649 - loss: 0.1071
+Epoch 7: val_accuracy did not improve from 0.65932
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 142ms/step - accuracy: 0.9634 - loss: 0.1104 - val_accuracy: 0.2119 - val_loss: 11.3427 - learning_rate: 0.0010
+Epoch 8/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 134ms/step - accuracy: 0.9685 - loss: 0.0933
+Epoch 8: ReduceLROnPlateau reducing learning rate to 0.0005000000237487257.
+
+Epoch 8: val_accuracy did not improve from 0.65932
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 141ms/step - accuracy: 0.9670 - loss: 0.0928 - val_accuracy: 0.3542 - val_loss: 5.3055 - learning_rate: 0.0010
+Epoch 9/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 0.9858 - loss: 0.0472
+Epoch 9: val_accuracy did not improve from 0.65932
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 140ms/step - accuracy: 0.9899 - loss: 0.0352 - val_accuracy: 0.5915 - val_loss: 3.2411 - learning_rate: 5.0000e-04
+Epoch 10/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 0.9980 - loss: 0.0115
+Epoch 10: val_accuracy did not improve from 0.65932
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 139ms/step - accuracy: 0.9987 - loss: 0.0108 - val_accuracy: 0.5831 - val_loss: 2.8203 - learning_rate: 5.0000e-04
+Epoch 11/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 0.9993 - loss: 0.0036
+Epoch 11: val_accuracy did not improve from 0.65932
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 140ms/step - accuracy: 0.9990 - loss: 0.0036 - val_accuracy: 0.6237 - val_loss: 2.7843 - learning_rate: 5.0000e-04
+Epoch 12/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 134ms/step - accuracy: 0.9994 - loss: 0.0037
+Epoch 12: val_accuracy improved from 0.65932 to 0.74407, saving model to ac_branch_mobilenet_best.keras
+
+Epoch 12: finished saving model to ac_branch_mobilenet_best.keras
+121/121 ━━━━━━━━━━━━━━━━━━━━ 18s 149ms/step - accuracy: 0.9990 - loss: 0.0060 - val_accuracy: 0.7441 - val_loss: 1.9535 - learning_rate: 5.0000e-04
+Epoch 13/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 0.9997 - loss: 0.0016
+Epoch 13: ReduceLROnPlateau reducing learning rate to 0.0002500000118743628.
+
+Epoch 13: val_accuracy improved from 0.74407 to 0.79661, saving model to ac_branch_mobilenet_best.keras
+
+Epoch 13: finished saving model to ac_branch_mobilenet_best.keras
+121/121 ━━━━━━━━━━━━━━━━━━━━ 18s 147ms/step - accuracy: 0.9997 - loss: 0.0016 - val_accuracy: 0.7966 - val_loss: 1.6508 - learning_rate: 5.0000e-04
+Epoch 14/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 0.9997 - loss: 0.0018
+Epoch 14: val_accuracy improved from 0.79661 to 0.82373, saving model to ac_branch_mobilenet_best.keras
+
+Epoch 14: finished saving model to ac_branch_mobilenet_best.keras
+121/121 ━━━━━━━━━━━━━━━━━━━━ 18s 146ms/step - accuracy: 0.9997 - loss: 0.0015 - val_accuracy: 0.8237 - val_loss: 1.4785 - learning_rate: 2.5000e-04
+Epoch 15/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 0.9997 - loss: 9.8375e-04
+Epoch 15: val_accuracy improved from 0.82373 to 0.83220, saving model to ac_branch_mobilenet_best.keras
+
+Epoch 15: finished saving model to ac_branch_mobilenet_best.keras
+121/121 ━━━━━━━━━━━━━━━━━━━━ 18s 147ms/step - accuracy: 0.9997 - loss: 8.9617e-04 - val_accuracy: 0.8322 - val_loss: 1.4238 - learning_rate: 2.5000e-04
+Epoch 16/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 135ms/step - accuracy: 0.9997 - loss: 8.3456e-04
+Epoch 16: val_accuracy improved from 0.83220 to 0.83898, saving model to ac_branch_mobilenet_best.keras
+
+Epoch 16: finished saving model to ac_branch_mobilenet_best.keras
+121/121 ━━━━━━━━━━━━━━━━━━━━ 18s 149ms/step - accuracy: 0.9997 - loss: 8.0534e-04 - val_accuracy: 0.8390 - val_loss: 1.3875 - learning_rate: 2.5000e-04
+Epoch 17/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 134ms/step - accuracy: 0.9997 - loss: 7.2599e-04
+Epoch 17: val_accuracy improved from 0.83898 to 0.84746, saving model to ac_branch_mobilenet_best.keras
+
+Epoch 17: finished saving model to ac_branch_mobilenet_best.keras
+121/121 ━━━━━━━━━━━━━━━━━━━━ 18s 149ms/step - accuracy: 0.9997 - loss: 7.2267e-04 - val_accuracy: 0.8475 - val_loss: 1.3734 - learning_rate: 2.5000e-04
+Epoch 18/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 134ms/step - accuracy: 1.0000 - loss: 3.4126e-04
+Epoch 18: val_accuracy improved from 0.84746 to 0.85424, saving model to ac_branch_mobilenet_best.keras
+
+Epoch 18: finished saving model to ac_branch_mobilenet_best.keras
+121/121 ━━━━━━━━━━━━━━━━━━━━ 18s 149ms/step - accuracy: 1.0000 - loss: 3.7454e-04 - val_accuracy: 0.8542 - val_loss: 1.3775 - learning_rate: 2.5000e-04
+Epoch 19/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 134ms/step - accuracy: 1.0000 - loss: 3.3967e-04
+Epoch 19: val_accuracy improved from 0.85424 to 0.85763, saving model to ac_branch_mobilenet_best.keras
+
+Epoch 19: finished saving model to ac_branch_mobilenet_best.keras
+121/121 ━━━━━━━━━━━━━━━━━━━━ 18s 148ms/step - accuracy: 1.0000 - loss: 3.9786e-04 - val_accuracy: 0.8576 - val_loss: 1.3841 - learning_rate: 2.5000e-04
+Epoch 20/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 1.0000 - loss: 4.1117e-04
+Epoch 20: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 140ms/step - accuracy: 1.0000 - loss: 3.4754e-04 - val_accuracy: 0.8559 - val_loss: 1.3734 - learning_rate: 2.5000e-04
+Epoch 21/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 1.0000 - loss: 2.0506e-04
+Epoch 21: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 140ms/step - accuracy: 1.0000 - loss: 2.0541e-04 - val_accuracy: 0.8542 - val_loss: 1.3637 - learning_rate: 2.5000e-04
+Epoch 22/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 1.0000 - loss: 2.1922e-04
+Epoch 22: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 140ms/step - accuracy: 1.0000 - loss: 2.0004e-04 - val_accuracy: 0.8542 - val_loss: 1.3606 - learning_rate: 2.5000e-04
+Epoch 23/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 1.0000 - loss: 1.7645e-04
+Epoch 23: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 140ms/step - accuracy: 1.0000 - loss: 2.3991e-04 - val_accuracy: 0.8576 - val_loss: 1.3490 - learning_rate: 2.5000e-04
+Epoch 24/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 1.0000 - loss: 2.1989e-04
+Epoch 24: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 140ms/step - accuracy: 1.0000 - loss: 1.8973e-04 - val_accuracy: 0.8559 - val_loss: 1.3602 - learning_rate: 2.5000e-04
+Epoch 25/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 1.0000 - loss: 2.4756e-04
+Epoch 25: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 139ms/step - accuracy: 1.0000 - loss: 2.0719e-04 - val_accuracy: 0.8525 - val_loss: 1.3747 - learning_rate: 2.5000e-04
+Epoch 26/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 1.0000 - loss: 1.3087e-04
+Epoch 26: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 140ms/step - accuracy: 1.0000 - loss: 1.2371e-04 - val_accuracy: 0.8542 - val_loss: 1.3876 - learning_rate: 2.5000e-04
+Epoch 27/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 1.0000 - loss: 9.7078e-05
+Epoch 27: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 139ms/step - accuracy: 1.0000 - loss: 1.1956e-04 - val_accuracy: 0.8525 - val_loss: 1.3846 - learning_rate: 2.5000e-04
+Epoch 28/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 1.0000 - loss: 1.1165e-04
+Epoch 28: ReduceLROnPlateau reducing learning rate to 0.0001250000059371814.
+
+Epoch 28: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 139ms/step - accuracy: 1.0000 - loss: 1.2857e-04 - val_accuracy: 0.8508 - val_loss: 1.4110 - learning_rate: 2.5000e-04
+Epoch 29/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 1.0000 - loss: 1.0141e-04
+Epoch 29: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 139ms/step - accuracy: 1.0000 - loss: 9.8684e-05 - val_accuracy: 0.8525 - val_loss: 1.4084 - learning_rate: 1.2500e-04
+Epoch 30/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 1.0000 - loss: 1.4443e-04
+Epoch 30: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 139ms/step - accuracy: 1.0000 - loss: 1.0324e-04 - val_accuracy: 0.8525 - val_loss: 1.4036 - learning_rate: 1.2500e-04
+Epoch 31/45
+121/121 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 1.0000 - loss: 6.3195e-05
+Epoch 31: val_accuracy did not improve from 0.85763
+121/121 ━━━━━━━━━━━━━━━━━━━━ 17s 139ms/step - accuracy: 1.0000 - loss: 8.3220e-05 - val_accuracy: 0.8559 - val_loss: 1.3910 - learning_rate: 1.2500e-04
+Epoch 31: early stopping
+Restoring model weights from the end of the best epoch: 19.
+
+19/19 ━━━━━━━━━━━━━━━━━━━━ 14s 396ms/step
+Accuracy : 85.76 %   (paper: 95.11 %)
+Precision: 85.04 %   (paper: 94.62 %)
+Recall   : 84.46 %   (paper: 94.39 %)
+F1-score : 84.69 %   (paper: 94.50 %)
+
+Classification report:
+                    precision    recall  f1-score   support
+
+   Trans-thalamic       0.87      0.88      0.87       328
+ Trans-cerebellum       0.94      0.87      0.91       143
+Trans-ventricular       0.74      0.78      0.76       119
+
+         accuracy                           0.86       590
+        macro avg       0.85      0.84      0.85       590
+     weighted avg       0.86      0.86      0.86       590
+
+
+      Metric  Paper (AC_Branch_MobileNet)  This run  Beat paper?
+0   Accuracy                        95.11     85.76        False
+1  Precision                        94.62     85.04        False
+2     Recall                        94.39     84.46        False
+3   F1-score                        94.50     84.69        False
+Grad-CAM skipped (layer name mismatch across TF/Keras versions): "Exception encountered when calling Functional.call().\n\n\x1b[1m138095480228752\x1b[0m\n\nArguments received by Functional.call():\n  • inputs=array([[[[-1.        , -1.        , -1.        ],\n         [-1.        , -1.        , -1.        ],\n         [-1.        , -1.        , -1.        ],\n         ...,\n         [-1.        , -1.        , -1.        ],\n         [-1.        , -1.        , -1.        ],\n         [-1.        , -1.        , -1.        ]],\n\n        [[-1.        , -1.        , -1.        ],\n         [-0.9843137 , -0.9843137 , -0.9843137 ],\n         [-0.9843137 , -0.9843137 , -0.9843137 ],\n         ...,\n         [-1.        , -1.        , -1.        ],\n         [-1.        , -1.        , -1.        ],\n         [-0.9843137 , -0.9843137 , -0.9843137 ]],\n\n        [[-1.        , -1.        , -1.        ],\n         [-0.9843137 , -0.9843137 , -0.9843137 ],\n         [-0.9843137 , -0.9843137 , -0.9843137 ],\n         ...,\n         [ 0.35686278,  0.35686278,  0.35686278],\n         [-0.9843137 , -0.9843137 , -0.9843137 ],\n         [-0.99215686, -0.99215686, -0.99215686]],\n\n        ...,\n\n        [[-0.96862745, -0.96862745, -0.96862745],\n         [-0.9372549 , -0.9372549 , -0.9372549 ],\n         [-0.92156863, -0.92156863, -0.92156863],\n         ...,\n         [-0.85882354, -0.85882354, -0.85882354],\n         [-0.81960785, -0.81960785, -0.81960785],\n         [-0.8509804 , -0.8509804 , -0.8509804 ]],\n\n        [[-0.9843137 , -0.9843137 , -0.9843137 ],\n         [-0.9529412 , -0.9529412 , -0.9529412 ],\n         [-0.94509804, -0.94509804, -0.94509804],\n         ...,\n         [-0.9137255 , -0.9137255 , -0.9137255 ],\n         [-0.92156863, -0.92156863, -0.92156863],\n         [-0.92941177, -0.92941177, -0.92941177]],\n\n        [[-0.9843137 , -0.9843137 , -0.9843137 ],\n         [-0.9764706 , -0.9764706 , -0.9764706 ],\n         [-0.9607843 , -0.9607843 , -0.9607843 ],\n         ...,\n         [-0.9607843 , -0.9607843 , -0.9607843 ],\n         [-0.9607843 , -0.9607843 , -0.9607843 ],\n         [-0.92941177, -0.92941177, -0.92941177]]]], dtype=float32)\n  • training=None\n  • mask=None\n  • kwargs=<class 'inspect._empty'>"

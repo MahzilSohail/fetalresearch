@@ -1,0 +1,321 @@
+"""
+================================================================================
+Fetal Brain Plane Classification (3-class: Trans-thalamic / Trans-cerebellum /
+Trans-ventricular)
+
+Base architecture reproduced from:
+  Vatanparast, Fateh, Mashayekhi (2026). "AC_Branch_MobileNet: An effective
+  hybrid branch network for plane classification in fetus brain ultrasound
+  image." Biomedical Signal Processing and Control, 112, 108586.
+  https://doi.org/10.1016/j.bspc.2025.108586
+
+Dataset: FETAL_PLANES_DB (Burgos-Artizzu et al., 2020, Scientific Reports)
+  https://doi.org/10.5281/zenodo.3904280
+  Kaggle mirror: fahadnajeeb/common-maternal-fetal-ultrasound-images
+
+Additions on top of the reproduced baseline (justified, not arbitrary):
+  1. Focal loss instead of plain categorical cross-entropy -> targets the
+     hard trans-thalamic vs trans-ventricular confusion the paper itself
+     reports, and is more robust to residual class imbalance.
+  2. Dual explainability: Grad-CAM (as in the paper) + LIME, for stronger,
+     independently-corroborated interpretability -> supports genuine
+     research rigor rather than accuracy alone.
+  3. Swappable backbone: MobileNetV2 (paper's choice) vs EfficientNetV2S,
+     run as a controlled ablation (mirrors the paper's own Fig.8/Table 2
+     ablation methodology, extended to a backbone the paper didn't test).
+
+IMPORTANT - before running:
+  - Set DATA_DIR / CSV_PATH below to match your Kaggle dataset mount path.
+  - This script assumes the official FETAL_PLANES_DB metadata CSV with
+    columns: Image_name, Patient_num, Plane, Brain_plane, Train
+    (Brain_plane values: 'Not A Brain', 'Trans-thalamic', 'Trans-cerebellum',
+    'Trans-ventricular'). Adjust column names if your Kaggle mirror differs
+    - always inspect df.columns and df.head() first.
+  - No accuracy figure is guaranteed. Numbers below are what the literature
+    reports on comparable setups (93-95% on this exact task/dataset) --
+    treat as a reference range, not a promise.
+================================================================================
+"""
+
+import os
+import numpy as np
+import pandas as pd
+import tensorflow as tf
+from tensorflow.keras import layers, models, optimizers
+from tensorflow.keras.applications import MobileNetV2, EfficientNetV2S
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import (accuracy_score, precision_recall_fscore_support,
+                              confusion_matrix, classification_report)
+from sklearn.utils.class_weight import compute_class_weight
+import cv2
+import matplotlib.pyplot as plt
+
+# ------------------------------------------------------------------------
+# 0. CONFIG -- EDIT THESE PATHS FOR YOUR KAGGLE ENVIRONMENT
+# ------------------------------------------------------------------------
+DATA_DIR = "/kaggle/input/datasets/fahadnajeeb/common-maternal-fetal-ultrasound-images/Images/Images"
+CSV_PATH = "/kaggle/input/datasets/fahadnajeeb/common-maternal-fetal-ultrasound-images/FETAL_PLANES_DB_data.xlsx"
+IMG_SIZE   = 224
+BATCH_SIZE = 32
+EPOCHS     = 50
+BACKBONE   = "mobilenetv2"   # "mobilenetv2" (paper's choice) or "efficientnetv2s" (ablation)
+USE_FOCAL_LOSS = True
+SEED = 42
+tf.random.set_seed(SEED)
+np.random.seed(SEED)
+
+CLASS_NAMES = ["Trans-thalamic", "Trans-cerebellum", "Trans-ventricular"]
+
+# ------------------------------------------------------------------------
+# 1. LOAD METADATA, FILTER TO BRAIN SUB-PLANES, PATIENT-LEVEL SPLIT
+# ------------------------------------------------------------------------
+df = pd.read_excel(CSV_PATH)
+df.columns = [c.strip() for c in df.columns]
+
+brain_df = df[df["Brain_plane"].isin(CLASS_NAMES)].copy()
+print(f"Brain sub-plane images found: {len(brain_df)}")
+print(brain_df["Brain_plane"].value_counts())
+
+# Patient-level split: same patient never appears in both train and val
+train_patients, val_patients = train_test_split(
+    brain_df["Patient_num"].unique(), test_size=0.2, random_state=SEED
+)
+train_df = brain_df[brain_df["Patient_num"].isin(train_patients)].reset_index(drop=True)
+val_df   = brain_df[brain_df["Patient_num"].isin(val_patients)].reset_index(drop=True)
+print(f"Train images: {len(train_df)} | Val images: {len(val_df)}")
+
+# ------------------------------------------------------------------------
+# 2. MLVUM PREPROCESSING (Maximum Local Variation-based Unsharp Masking)
+#    Simplified faithful implementation of the paper's Eqs. (1)-(4).
+# ------------------------------------------------------------------------
+def mlvum(img, radius=3, lam=0.6):
+    img = img.astype(np.float32)
+    gray = cv2.cvtColor(img.astype(np.uint8), cv2.COLOR_RGB2GRAY).astype(np.float32) \
+           if img.ndim == 3 else img
+    # Maximum Local Variation (max abs diff to 8 neighbours)
+    pad = np.pad(gray, radius, mode="reflect")
+    mlv = np.zeros_like(gray)
+    shifts = [(-1,-1),(-1,0),(-1,1),(0,-1),(0,1),(1,-1),(1,0),(1,1)]
+    for dy, dx in shifts:
+        shifted = pad[radius+dy:radius+dy+gray.shape[0], radius+dx:radius+dx+gray.shape[1]]
+        mlv = np.maximum(mlv, np.abs(gray - shifted))
+    mlv_norm = mlv / (mlv.max() + 1e-6)
+    smooth = cv2.GaussianBlur(gray, (2*radius+1, 2*radius+1), 0)
+    D = (gray - smooth) * mlv_norm
+    Y = gray + lam * D
+    Y = np.clip(Y, 0, 255).astype(np.uint8)
+    if img.ndim == 3:
+        Y = cv2.cvtColor(Y, cv2.COLOR_GRAY2RGB)
+    return Y
+
+def load_and_preprocess(path):
+    img = cv2.imread(path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
+    img = mlvum(img)
+    return img.astype(np.float32) / 255.0
+
+def make_dataset(dataframe, augment=False):
+    paths = [os.path.join(DATA_DIR, n + ".png") for n in dataframe["Image_name"]]
+    labels = [CLASS_NAMES.index(p) for p in dataframe["Brain_plane"]]
+    X = np.stack([load_and_preprocess(p) for p in paths])
+    y = tf.keras.utils.to_categorical(labels, num_classes=3)
+    return X, y
+
+print("Loading & preprocessing images (this can take a while on first run)...")
+X_train, y_train = make_dataset(train_df)
+X_val, y_val = make_dataset(val_df)
+
+datagen = ImageDataGenerator(
+    rotation_range=90,        # covers the paper's 90/180/270 rotations
+    horizontal_flip=True,
+    vertical_flip=True,
+    zoom_range=0.5,           # up to 1.5x as in the paper
+    fill_mode="reflect",
+)
+train_flow = datagen.flow(X_train, y_train, batch_size=BATCH_SIZE, seed=SEED)
+
+# Class weights (kept even though brain subset is fairly balanced; harmless,
+# and necessary if you later extend this script to the full 6-class task)
+class_weights = compute_class_weight(
+    "balanced", classes=np.arange(3), y=np.argmax(y_train, axis=1)
+)
+class_weight_dict = dict(enumerate(class_weights))
+
+# ------------------------------------------------------------------------
+# 3. FOCAL LOSS
+# ------------------------------------------------------------------------
+def categorical_focal_loss(gamma=2.0, alpha=0.25):
+    def loss_fn(y_true, y_pred):
+        y_pred = tf.clip_by_value(y_pred, 1e-7, 1 - 1e-7)
+        ce = -y_true * tf.math.log(y_pred)
+        weight = alpha * tf.pow(1 - y_pred, gamma)
+        return tf.reduce_sum(weight * ce, axis=-1)
+    return loss_fn
+
+loss_fn = categorical_focal_loss() if USE_FOCAL_LOSS else "categorical_crossentropy"
+
+# ------------------------------------------------------------------------
+# 4. AC_Branch_MobileNet ARCHITECTURE (faithful to Table 1 / Fig. 6)
+# ------------------------------------------------------------------------
+def build_ac_branch_model(backbone_name="mobilenetv2"):
+    inputs = layers.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
+
+    if backbone_name == "mobilenetv2":
+        base = MobileNetV2(include_top=False, weights="imagenet", input_tensor=inputs)
+    elif backbone_name == "efficientnetv2s":
+        base = EfficientNetV2S(include_top=False, weights="imagenet", input_tensor=inputs)
+    else:
+        raise ValueError("backbone must be 'mobilenetv2' or 'efficientnetv2s'")
+    base.trainable = True
+    feat = base.output  # (H, W, C)
+
+    # --- Attention branch (1x1 convs, ELU, sigmoid-style gating via multiply) ---
+    a = layers.Conv2D(128, 1, activation="elu")(feat)
+    a = layers.Conv2D(32, 1, activation="elu")(a)
+    a = layers.AveragePooling2D(pool_size=1)(a)
+    a = layers.Conv2D(1, 1, activation="elu")(a)
+    attn_out = layers.Multiply()([a, feat])   # broadcast multiply
+
+    # --- Convolution branch (3x3 convs, ELU) ---
+    c = layers.Conv2D(64, 3, padding="same", activation="elu")(feat)
+    c = layers.Conv2D(32, 3, padding="same", activation="elu")(c)
+    c = layers.MaxPooling2D(pool_size=1)(c)
+    conv_out = layers.Conv2D(16, 3, padding="same", activation="elu")(c)
+
+    # --- Concatenate branches, classify ---
+    merged = layers.Concatenate()([attn_out, conv_out])
+    x = layers.GlobalAveragePooling2D()(merged)
+    x = layers.Dropout(0.3)(x)
+    x = layers.Dense(32, activation="elu")(x)
+    x = layers.Dropout(0.3)(x)
+    outputs = layers.Dense(3, activation="softmax")(x)
+
+    model = models.Model(inputs, outputs, name=f"AC_Branch_{backbone_name}")
+    return model
+
+model = build_ac_branch_model(BACKBONE)
+model.compile(optimizer=optimizers.Adam(learning_rate=1e-3),
+              loss=loss_fn, metrics=["accuracy"])
+model.summary()
+
+# ------------------------------------------------------------------------
+# 5. TRAIN
+# ------------------------------------------------------------------------
+callbacks = [
+    tf.keras.callbacks.EarlyStopping(monitor="val_accuracy", patience=10,
+                                      restore_best_weights=True),
+    tf.keras.callbacks.ModelCheckpoint("best_model.keras", monitor="val_accuracy",
+                                        save_best_only=True),
+    tf.keras.callbacks.ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=5),
+]
+
+history = model.fit(
+    train_flow,
+    validation_data=(X_val, y_val),
+    epochs=EPOCHS,
+    class_weight=class_weight_dict,
+    callbacks=callbacks,
+)
+
+# ------------------------------------------------------------------------
+# 6. EVALUATE (honest metrics -- not just accuracy)
+# ------------------------------------------------------------------------
+y_pred_probs = model.predict(X_val)
+y_pred = np.argmax(y_pred_probs, axis=1)
+y_true = np.argmax(y_val, axis=1)
+
+acc = accuracy_score(y_true, y_pred)
+prec, rec, f1, _ = precision_recall_fscore_support(y_true, y_pred, average="macro")
+print(f"\nValidation Accuracy : {acc*100:.2f}%")
+print(f"Macro Precision     : {prec*100:.2f}%")
+print(f"Macro Recall        : {rec*100:.2f}%")
+print(f"Macro F1-score      : {f1*100:.2f}%")
+print("\nPer-class report:\n", classification_report(y_true, y_pred, target_names=CLASS_NAMES))
+
+cm = confusion_matrix(y_true, y_pred)
+plt.figure(figsize=(5, 4))
+plt.imshow(cm, cmap="Blues")
+plt.xticks(range(3), CLASS_NAMES, rotation=45)
+plt.yticks(range(3), CLASS_NAMES)
+plt.title("Confusion Matrix")
+plt.colorbar()
+for i in range(3):
+    for j in range(3):
+        plt.text(j, i, cm[i, j], ha="center", va="center")
+plt.tight_layout()
+plt.savefig("confusion_matrix.png")
+plt.show()
+
+# ------------------------------------------------------------------------
+# 7. EXPLAINABILITY -- Grad-CAM (as in the paper)
+# ------------------------------------------------------------------------
+def grad_cam(model, img_array, last_conv_layer_name=None):
+    if last_conv_layer_name is None:
+        for layer in reversed(model.layers):
+            if isinstance(layer, layers.Concatenate):
+                last_conv_layer_name = layer.name
+                break
+    grad_model = models.Model(
+        [model.inputs], [model.get_layer(last_conv_layer_name).output, model.output]
+    )
+    with tf.GradientTape() as tape:
+        conv_out, preds = grad_model(np.expand_dims(img_array, 0))
+        class_idx = tf.argmax(preds[0])
+        loss = preds[:, class_idx]
+    grads = tape.gradient(loss, conv_out)
+    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+    heatmap = tf.reduce_sum(conv_out[0] * pooled_grads, axis=-1)
+    heatmap = tf.maximum(heatmap, 0) / (tf.reduce_max(heatmap) + 1e-8)
+    return heatmap.numpy()
+
+def show_gradcam(model, img_array, save_path="gradcam_example.png"):
+    heatmap = grad_cam(model, img_array)
+    heatmap = cv2.resize(heatmap, (IMG_SIZE, IMG_SIZE))
+    heatmap = np.uint8(255 * heatmap)
+    heatmap_color = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+    overlay = np.uint8(255 * img_array) * 0.6 + heatmap_color * 0.4
+    cv2.imwrite(save_path, overlay.astype(np.uint8))
+    print(f"Grad-CAM saved to {save_path}")
+
+show_gradcam(model, X_val[0])
+
+# ------------------------------------------------------------------------
+# 8. EXPLAINABILITY -- LIME (added on top of the paper's Grad-CAM, for
+#    dual, independently-corroborated interpretability)
+#    pip install lime  (add "!pip install lime -q" as the first line on Kaggle)
+# ------------------------------------------------------------------------
+try:
+    from lime import lime_image
+    from skimage.segmentation import mark_boundaries
+
+    explainer = lime_image.LimeImageExplainer()
+
+    def predict_fn(images):
+        return model.predict(images)
+
+    explanation = explainer.explain_instance(
+        X_val[0], predict_fn, top_labels=3, hide_color=0, num_samples=500
+    )
+    temp, mask = explanation.get_image_and_mask(
+        explanation.top_labels[0], positive_only=True, num_features=5, hide_rest=False
+    )
+    plt.figure(figsize=(5, 5))
+    plt.imshow(mark_boundaries(temp, mask))
+    plt.title("LIME explanation")
+    plt.axis("off")
+    plt.savefig("lime_example.png")
+    plt.show()
+except ImportError:
+    print("LIME not installed -- run `!pip install lime -q` on Kaggle to enable this section.")
+
+# ------------------------------------------------------------------------
+# 9. NOTES FOR THE ABLATION (backbone comparison)
+# ------------------------------------------------------------------------
+# To run the EfficientNetV2S ablation exactly as the paper's own Fig.8/Table 2
+# methodology: set BACKBONE = "efficientnetv2s" at the top and re-run this
+# entire cell, then compare the printed accuracy/precision/recall/F1 and the
+# saved confusion_matrix.png against the MobileNetV2 run. Report BOTH runs in
+# your thesis/paper as an ablation table -- do not cherry-pick only the
+# better-performing backbone without disclosing the comparison.

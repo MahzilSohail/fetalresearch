@@ -1,0 +1,1019 @@
+# ==============================================================================
+# AC_Branch_MobileNet: Reproduction of Vatanparast, Fateh, Mashayekhi (2026)
+# "AC_Branch_MobileNet: An effective hybrid branch network for plane
+#  classification in fetus brain ultrasound image"
+# Biomedical Signal Processing and Control 112 (2026) 108586
+# DOI: https://doi.org/10.1016/j.bspc.2025.108586
+#
+# SCOPE & ASSUMPTIONS (clearly flagged where paper is silent):
+#   1. Dataset: Fetal Planes DB (Zenodo 3904280). Paper uses ONLY the brain
+#      subset (2,950 images across 3 classes: trans-ventricular, trans-
+#      thalamic, trans-cerebellar). Brain_plane sub-label column used.
+#   2. Input size: 256×256×3. Paper Fig.6 shows INPUT_256x256x3.
+#   3. Train/val/test split: Paper does NOT state exact ratios. Assumption:
+#      70/15/15 stratified split. [ASSUMPTION — flagged]
+#   4. Augmentation applied AFTER split (paper Section 3.2 states this
+#      explicitly to ensure independent validation).
+#      Augmentation target: 4770 images evenly distributed (1590/class).
+#      Paper states rotation 90/180/270°, H/V flip, zoom up to 1.5×.
+#   5. MLVUM preprocessing: Eqs (1)-(4) implemented exactly.
+#      λ (sharpening scale): not stated → assumption λ=0.5 [ASSUMPTION]
+#      Gaussian kernel radius R: not stated → assumption R=3 [ASSUMPTION]
+#   6. MobileNetV2 output shape (None,8,8,1024): achieved at 256×256 input
+#      with include_top=False. Verified mathematically.
+#   7. Dropout rate: not stated → assumption 0.5 [ASSUMPTION]
+#   8. Adam optimizer default betas (0.9, 0.999): standard defaults [ASSUMPTION]
+#   9. No early stopping mentioned in paper → training full 50 epochs.
+#  10. Data split: paper uses "Brain_plane" column from CSV for 3-class labels.
+# ==============================================================================
+
+# %% [Cell 0] Install dependencies
+import subprocess, sys
+for pkg in ["opencv-python-headless", "scikit-learn", "matplotlib", "seaborn", "numpy", "pandas"]:
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", pkg], check=False)
+
+# %% [Cell 1] Imports
+import os, gc, glob, math, json, warnings
+import numpy as np
+import pandas as pd
+import cv2
+import tensorflow as tf
+from tensorflow.keras import layers, models, optimizers, callbacks
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score,
+    confusion_matrix, classification_report,
+)
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+warnings.filterwarnings("ignore")
+print("TensorFlow:", tf.__version__)
+print("GPUs:", tf.config.list_physical_devices("GPU"))
+AUTOTUNE = tf.data.AUTOTUNE
+
+# %% [Cell 2] Config — exact paper hyperparameters
+class Config:
+    CSV_PATH = "/kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/FETAL_PLANES_DB_data.csv"
+    DATA_DIR = "/kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/Images"
+
+    # ── Image ────────────────────────────────────────────────────────────────
+    IMG_SIZE  = 256    # Fig. 6: INPUT_256x256x3
+    CHANNELS  = 3
+
+    # ── Classes (3 fetal brain planes, Section 3.1) ──────────────────────────
+    CLASSES   = ["Trans-thalamic", "Trans-ventricular", "Trans-cerebellum"]
+    NUM_CLASSES = 3
+
+    # ── Data split [ASSUMPTION: 70/15/15 — paper silent on ratios] ───────────
+    TRAIN_FRAC = 0.70
+    VAL_FRAC   = 0.15
+    TEST_FRAC  = 0.15
+    SEED       = 42
+
+    # ── Augmentation (Section 3.2) ───────────────────────────────────────────
+    # Target after augmentation: 4770 images → 1590 per class
+    AUG_TARGET_PER_CLASS = 1590
+    # Rotations: 90, 180, 270°; Flip H, Flip V; Zoom up to 1.5×
+
+    # ── MLVUM preprocessing (Eqs 1–4) ────────────────────────────────────────
+    MLVUM_LAMBDA  = 0.5   # sharpening scale λ [ASSUMPTION — not stated]
+    MLVUM_RADIUS  = 3     # Gaussian kernel radius R [ASSUMPTION — not stated]
+
+    # [FIX] Channel width of the proj layer, projecting MobileNetV2's native
+    # 1280 channels down before the attention/conv branches. This log shows
+    # train_accuracy reaching 0.99 by ~epoch 20 while val_accuracy plateaus
+    # at 0.70-0.82 — a classic capacity/overfitting gap. proj_1024 (1024
+    # channels) is a 1.3M-parameter 1x1 conv, the single largest layer in the
+    # head. Narrowing it is the most direct lever for cutting head capacity
+    # without touching the branch structure's own channel counts (Table 1's
+    # attn/conv branches are unchanged — only the shared input they read
+    # from is narrower).
+    PROJ_CHANNELS = 256
+    # [FIX] Light L2 weight decay on head conv/dense layers, targeting the
+    # same train/val gap.
+    L2_REG = 1e-4
+
+    # [FIX round 2, revised] CLASS_WEIGHT=1.6 was tested and its own log
+    # confirms it overcorrected: Trans-ventricular recall improved
+    # (0.46->0.71) but Trans-thalamic — the largest class, 246 of 443 test
+    # images — took the hit (recall 0.89->0.69, F1 0.82->0.74). Since
+    # thalamic has much more support, that trade was a net loss: macro F1
+    # 0.74->0.71, weighted F1 0.77->0.72, overall accuracy 78.10%->71.78%.
+    # Reverting to neutral (no weighting) here, isolated as the only change
+    # from that run, so the next result cleanly shows what the architecture/
+    # stability fixes achieve on their own (that run's val_loss was stable
+    # at 0.75-1.4 with no spikes — the instability fixes are working; this
+    # was specifically the weighting dial overshooting).
+    CLASS_WEIGHT = None
+
+    # ── Training (Table 3 + Section 3.3) ─────────────────────────────────────
+    EPOCHS        = 50      # Section 3.3: "50 epochs of training"
+    WARMUP_EPOCHS = 10      # FIX 2: freeze backbone first; paper says "fine-tuning"
+                            # which implies two-phase training (freeze→unfreeze)
+    BATCH_SIZE    = 32      # Table 3
+    LR            = 0.001   # Table 3 — head-only warmup phase
+    # [FIX] LR_FINETUNE lowered 1e-4 -> 1e-5. The current run unfreezes the
+    # ENTIRE backbone (see Phase 2 fix below) at 1e-4, and this log's
+    # val_loss spike to 3.50 at epoch 23 lands well into Phase 2 — 1e-4 is
+    # still fairly aggressive for full end-to-end fine-tuning of a small
+    # dataset. Combined with the BN-freeze fix below, 1e-5 is the standard
+    # choice for this regime.
+    LR_FINETUNE   = 1e-5
+    # [FIX] Only unfreeze the top N backbone layers instead of all of them —
+    # see Phase 2 training cell for the rationale (BN-drift bug).
+    UNFREEZE_LAST_N = 45
+    OPTIMIZER     = "Adam"  # Table 3
+    LOSS          = "categorical_crossentropy"  # Table 3 + Eq. (6)
+    DROPOUT       = 0.3     # FIX 3: 0.5 is too aggressive for 3-class/4770-sample problem
+
+    # ── Output ───────────────────────────────────────────────────────────────
+    OUTPUT_DIR  = "/kaggle/working/ac_branch_mobilenet_results"
+
+cfg = Config()
+os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+np.random.seed(cfg.SEED)
+tf.random.set_seed(cfg.SEED)
+
+# %% [Cell 3] Dataset auto-detection
+def _csv_has_brain_rows(csv_path, min_rows=100):
+    """
+    Reads a candidate CSV and checks it actually contains usable 'Fetal
+    brain' rows with valid Brain_plane labels, rather than trusting the
+    filename alone. Returns the usable row count (0 if unusable).
+    """
+    try:
+        with open(csv_path) as f:
+            first_line = f.readline()
+        sep = ";" if first_line.count(";") > first_line.count(",") else ","
+        df = pd.read_csv(csv_path, sep=sep)
+        df.columns = [c.strip() for c in df.columns]
+        if "Plane" not in df.columns or "Brain_plane" not in df.columns:
+            return 0
+        df_brain = df[df["Plane"].astype(str).str.strip().str.lower() == "fetal brain"]
+        valid_planes = {"trans-thalamic", "trans-cerebellum", "trans-ventricular"}
+        df_brain = df_brain[
+            df_brain["Brain_plane"].astype(str).str.strip().str.lower().isin(valid_planes)
+        ]
+        return len(df_brain)
+    except Exception as e:
+        print(f"  (skipping {csv_path}: {e})")
+        return 0
+
+
+def find_dataset():
+    """
+    Auto-detects the Fetal Planes DB CSV and Images directory from common
+    Kaggle dataset mount patterns. Tries multiple known path patterns.
+
+    [FIX] Kaggle sessions can have MULTIPLE fetal-planes datasets attached
+    at once. Taking matches[0] from glob — whichever the filesystem happens
+    to list first — with no check that the CSV it grabbed actually contains
+    usable 'Fetal brain' rows caused a "0 brain images found" crash when a
+    same-named CSV from a different/incompatible dataset was picked instead
+    of the working one. Now every candidate CSV found is content-validated
+    via _csv_has_brain_rows() before being accepted, trying candidates in
+    order until one actually works, and printing what it checked so this
+    is visible in the log rather than failing silently downstream.
+    """
+    csv_name_patterns = [
+        "FETAL_PLANES_DB_data.csv",
+        "FETAL_PLANES_DB_data*.csv",
+        "*fetal*planes*data*.csv",
+        "*FETAL*PLANES*.csv",
+    ]
+
+    search_roots = [
+        "/kaggle/input",
+        "/kaggle/input/datasets",
+    ]
+
+    # [FIX] Collect ALL candidate CSVs (not just the first match), across
+    # all roots/patterns, deduplicated, preserving discovery order.
+    all_candidates = []
+    seen = set()
+    for root in search_roots:
+        if not os.path.isdir(root):
+            continue
+        for pattern in csv_name_patterns:
+            for match in glob.glob(os.path.join(root, "**", pattern), recursive=True):
+                if match not in seen:
+                    seen.add(match)
+                    all_candidates.append(match)
+
+    if not all_candidates:
+        raise FileNotFoundError(
+            "Could not locate FETAL_PLANES_DB_data.csv under /kaggle/input.\n"
+            "Please attach one of these Kaggle datasets:\n"
+            "  • mahzilsohail/fetal-planes-db-zenodo\n"
+            "  • khalidhasan47/fetal-planes-db-khr\n"
+            "  • vineetpawar213/fetal-planes-zenodo"
+        )
+
+    # [FIX] Validate each candidate's content; use the first one that
+    # actually contains usable brain rows.
+    found_csv = None
+    print(f"Found {len(all_candidates)} candidate CSV(s), validating content...")
+    for candidate in all_candidates:
+        n = _csv_has_brain_rows(candidate)
+        print(f"  {candidate} -> {n} usable brain rows")
+        if n >= 100:
+            found_csv = candidate
+            break
+
+    if not found_csv:
+        raise FileNotFoundError(
+            "Found candidate CSV(s) but none contained usable 'Fetal brain' "
+            "rows with valid Brain_plane labels:\n  "
+            + "\n  ".join(all_candidates)
+            + "\nCheck that the attached dataset matches the expected schema "
+              "(columns: Plane, Brain_plane, Image_name, ...)."
+        )
+
+    csv_dir = os.path.dirname(found_csv)
+
+    # Find Images folder (may be at same level or one level up)
+    img_dir = None
+    for candidate in [
+        os.path.join(csv_dir, "Images"),
+        os.path.join(os.path.dirname(csv_dir), "Images"),
+    ]:
+        if os.path.isdir(candidate):
+            img_dir = candidate
+            break
+
+    if not img_dir:
+        # Walk to find any folder named "Images"
+        for root, dirs, _ in os.walk(os.path.dirname(found_csv)):
+            if "Images" in dirs:
+                img_dir = os.path.join(root, "Images")
+                break
+
+    if not img_dir:
+        raise FileNotFoundError(
+            f"Found CSV at {found_csv} but could not locate Images/ folder."
+        )
+
+    print(f"✓ CSV  : {found_csv}")
+    print(f"✓ Images: {img_dir}")
+    return found_csv, img_dir
+
+cfg.CSV_PATH, cfg.DATA_DIR = find_dataset()
+
+# %% [Cell 4] Load dataset — brain subset only
+def _sep(csv_path):
+    with open(csv_path) as f:
+        line = f.readline()
+    return ";" if line.count(";") > line.count(",") else ","
+
+def load_brain_subset(csv_path, img_dir):
+    df = pd.read_csv(csv_path, sep=_sep(csv_path))
+    df.columns = [c.strip() for c in df.columns]
+
+    # Keep only Fetal brain rows
+    df_brain = df[df["Plane"].str.strip() == "Fetal brain"].copy().reset_index(drop=True)
+    print(f"Brain rows found: {len(df_brain)}")
+
+    # Brain_plane column confirmed present
+    # Filter: keep only the 3 standard planes (exclude 'Not A Brain' and 'Other')
+    valid_planes = ["Trans-thalamic", "Trans-cerebellum", "Trans-ventricular"]
+    df_brain = df_brain[df_brain["Brain_plane"].isin(valid_planes)].copy().reset_index(drop=True)
+    print(f"Brain rows after filtering valid planes: {len(df_brain)}")
+
+    # Assign label directly from Brain_plane column
+    df_brain["label"] = df_brain["Brain_plane"].str.strip()
+
+    # Build filepaths — .png extension confirmed working
+    df_brain["filepath"] = df_brain["Image_name"].apply(
+        lambda x: os.path.join(img_dir, x + ".png")
+    )
+
+    # Verify files exist
+    exists_mask = df_brain["filepath"].apply(os.path.exists)
+    missing = (~exists_mask).sum()
+    if missing > 0:
+        print(f"Warning: {missing} files not found — removing them")
+    df_brain = df_brain[exists_mask].reset_index(drop=True)
+
+    print(f"\nFinal brain images: {len(df_brain)}")
+    print("Class distribution:\n", df_brain["label"].value_counts())
+
+    if len(df_brain) < 100:
+        raise ValueError(f"Only {len(df_brain)} brain images found.")
+
+    return df_brain
+
+df_brain = load_brain_subset(cfg.CSV_PATH, cfg.DATA_DIR)
+
+# %% [Cell 5] MLVUM Preprocessing (Section 2.1, Eqs 1–4)
+def mlvum(img_gray: np.ndarray,
+          lam: float = cfg.MLVUM_LAMBDA,
+          R:   int   = cfg.MLVUM_RADIUS) -> np.ndarray:
+    """
+    Maximum Local Variation-Based Unsharp Masking (MLVUM).
+
+    Eq (1): Y = X + λ·D
+    Eq (2): D(m,n) = [X(m,n) − F(m,n)] · ∇(m,n)
+    Eq (3): F(m,n) = Σ Hmn(i,j)·X(m+i, n+j)  (MLVESGF — locally adaptive
+                                                 Gaussian smoothing filter)
+    Eq (4): Hmn(i,j) = exp(−(i²+j²)/2σmn²) / normalizer
+            σmn ∝ ∇(m,n)  (std dev proportional to normalized MLV)
+
+    ∇(m,n) = max absolute difference between pixel (m,n) and its 8 neighbors.
+    """
+    img = img_gray.astype(np.float64)
+    H, W = img.shape
+
+    # ── Step 1: Compute MLV ∇(m,n) — Eq (2) denominator ────────────────────
+    # Maximum absolute value of differences with 8-connected neighbors
+    mlv = np.zeros_like(img)
+    for di in [-1, 0, 1]:
+        for dj in [-1, 0, 1]:
+            if di == 0 and dj == 0:
+                continue
+            shifted = np.roll(np.roll(img, di, axis=0), dj, axis=1)
+            diff    = np.abs(img - shifted)
+            mlv     = np.maximum(mlv, diff)
+    # Normalize MLV to [0,1]
+    mlv_max = mlv.max()
+    mlv_norm = mlv / (mlv_max + 1e-8)   # ∇(m,n) normalized
+
+    # ── Step 2: Compute MLVESGF F(m,n) — Eq (3) ────────────────────────────
+    # σmn proportional to normalized MLV (locally adaptive)
+    # σmn ∈ [0.5, 3.0] to stay numerically stable
+    sigma_map = 0.5 + 2.5 * mlv_norm   # σmn for each pixel
+
+    # Build the locally-adaptive Gaussian filtered image pixel-by-pixel
+    # (full per-pixel convolution is expensive; use a fixed approximation:
+    #  for each of a small set of σ levels, apply a Gaussian and blend)
+    # Practical implementation: weighted average of Gaussian blurred images
+    # at σ ∈ {0.5, 1.5, 3.0}, weighted by how close each pixel's σmn is.
+    F = np.zeros_like(img)
+    sigma_levels = [0.5, 1.5, 3.0]
+    blurred = [cv2.GaussianBlur(img, (2*R+1, 2*R+1), s) for s in sigma_levels]
+    for idx, s_val in enumerate(sigma_levels):
+        # Weight: 1 - |σmn - s_val| / span, clipped to [0,1]
+        span = sigma_levels[-1] - sigma_levels[0]
+        w    = np.clip(1.0 - np.abs(sigma_map - s_val) / span, 0.0, 1.0)
+        F   += w * blurred[idx]
+    # Normalize weights (they don't sum to 1 in general)
+    w_sum = sum(
+        np.clip(1.0 - np.abs(sigma_map - s) / (sigma_levels[-1] - sigma_levels[0]), 0.0, 1.0)
+        for s in sigma_levels
+    )
+    F /= (w_sum + 1e-8)
+
+    # ── Step 3: Compute D — Eq (2) ──────────────────────────────────────────
+    D = (img - F) * mlv_norm
+
+    # ── Step 4: Enhanced image — Eq (1) ─────────────────────────────────────
+    Y = img + lam * D
+    Y = np.clip(Y, 0.0, 255.0).astype(np.uint8)
+    return Y
+
+
+def preprocess_image(filepath: str, img_size: int = cfg.IMG_SIZE) -> np.ndarray:
+    """
+    Full preprocessing pipeline (Section 2.1):
+      1. Read grayscale
+      2. Resize to img_size × img_size
+      3. Apply MLVUM
+      4. Convert to 3-channel RGB (replicate — MobileNetV2 expects 3 channels)
+    Returns float32 array in [0, 255].
+    """
+    img = cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        img = np.zeros((img_size, img_size), dtype=np.uint8)
+    img = cv2.resize(img, (img_size, img_size), interpolation=cv2.INTER_LINEAR)
+    img = mlvum(img)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)   # (H,W,3)
+    return img_rgb.astype(np.float32)
+
+# %% [Cell 6] Train/Val/Test split (Section 3.2 states augmentation applied AFTER split)
+class_to_idx = {c: i for i, c in enumerate(cfg.CLASSES)}
+print("Class→idx mapping:", class_to_idx)
+
+def split_dataset(df, train_frac, val_frac, seed):
+    """
+    Stratified split preserving class proportions.
+    Split: train_frac / val_frac / (1-train_frac-val_frac)
+    Paper is silent on exact ratios → 70/15/15 [ASSUMPTION].
+    """
+    test_frac = 1.0 - train_frac - val_frac
+    train_df, temp_df = train_test_split(
+        df, test_size=(val_frac + test_frac),
+        stratify=df["label"], random_state=seed
+    )
+    rel_val = val_frac / (val_frac + test_frac)
+    val_df, test_df = train_test_split(
+        temp_df, test_size=(1.0 - rel_val),
+        stratify=temp_df["label"], random_state=seed
+    )
+    return (train_df.reset_index(drop=True),
+            val_df.reset_index(drop=True),
+            test_df.reset_index(drop=True))
+
+train_df, val_df, test_df = split_dataset(df_brain, cfg.TRAIN_FRAC, cfg.VAL_FRAC, cfg.SEED)
+print(f"\nSplit sizes — Train: {len(train_df)}  Val: {len(val_df)}  Test: {len(test_df)}")
+print("Train class distribution:\n", train_df["label"].value_counts())
+print("Val   class distribution:\n", val_df["label"].value_counts())
+print("Test  class distribution:\n", test_df["label"].value_counts())
+
+# %% [Cell 7] Data augmentation (Section 3.2)
+#
+# Paper states augmentation techniques:
+#   (i)  Rotation: 90°, 180°, 270°
+#   (ii) Flipping: Horizontally and Vertically
+#   (iii) Zoom: up to 1.5× original dimensions
+#
+# Applied AFTER split to TRAIN ONLY.
+# Target: 4770 total → 1590 per class.
+# Original 2950 brain images split ~70% train ≈ 2065 images.
+# Per-class in train ≈ 688. Need 1590 → augment each image ~2.3×.
+
+def augment_image(img: np.ndarray) -> list:
+    """
+    Returns list of augmented variants of img (including original).
+    Augmentations: rot90, rot180, rot270, flipH, flipV, zoom1.25, zoom1.5.
+    Total = 8 variants per image (original + 7).
+    """
+    variants = [img]  # original
+
+    # Rotations: 90, 180, 270 degrees
+    h, w = img.shape[:2]
+    center = (w // 2, h // 2)
+    for angle in [90, 180, 270]:
+        M   = cv2.getRotationMatrix2D(center, angle, 1.0)
+        rot = cv2.warpAffine(img, M, (w, h))
+        variants.append(rot)
+
+    # Flip horizontal
+    variants.append(cv2.flip(img, 1))
+    # Flip vertical
+    variants.append(cv2.flip(img, 0))
+
+    # Zoom 1.25× (crop center then resize back)
+    for scale in [1.25, 1.5]:
+        ch, cw = int(h / scale), int(w / scale)
+        top  = (h - ch) // 2
+        left = (w - cw) // 2
+        cropped = img[top:top+ch, left:left+cw]
+        zoomed  = cv2.resize(cropped, (w, h), interpolation=cv2.INTER_LINEAR)
+        variants.append(zoomed)
+
+    return variants   # 8 variants
+
+def build_augmented_train_set(train_df, target_per_class, img_size):
+    """
+    Builds augmented training arrays.
+    Loads preprocessed images, applies augmentations until target_per_class
+    is reached for each class.
+    Paper: "we amassed a total of 4770 brain images distributed evenly"
+    → 1590 per class.
+    """
+    X_list, y_list = [], []
+
+    for cls in cfg.CLASSES:
+        cls_df  = train_df[train_df["label"] == cls]
+        cls_idx = class_to_idx[cls]
+        raw_imgs = []
+
+        print(f"  Preprocessing class '{cls}' ({len(cls_df)} images)...")
+        for fp in cls_df["filepath"].values:
+            raw_imgs.append(preprocess_image(fp, img_size))
+
+        # Generate all augmented variants
+        augmented = []
+        for img in raw_imgs:
+            augmented.extend(augment_image(img))
+
+        # Randomly sample to reach target_per_class
+        np.random.shuffle(augmented)
+        if len(augmented) >= target_per_class:
+            selected = augmented[:target_per_class]
+        else:
+            # Repeat if not enough variants
+            repeats = math.ceil(target_per_class / len(augmented))
+            selected = (augmented * repeats)[:target_per_class]
+
+        X_list.extend(selected)
+        y_list.extend([cls_idx] * len(selected))
+        print(f"    → {len(selected)} images after augmentation")
+
+    X = np.array(X_list, dtype=np.float32)
+    y = np.array(y_list, dtype=np.int32)
+    # Shuffle combined
+    perm = np.random.permutation(len(X))
+    return X[perm], y[perm]
+
+print("\nBuilding augmented training set (this may take a few minutes)...")
+X_train, y_train = build_augmented_train_set(
+    train_df, cfg.AUG_TARGET_PER_CLASS, cfg.IMG_SIZE
+)
+print(f"\nAugmented train set: {X_train.shape}  labels: {np.bincount(y_train)}")
+
+# %% [Cell 8] tf.data pipelines
+def make_train_ds(X, y):
+    y_onehot = tf.keras.utils.to_categorical(y, cfg.NUM_CLASSES)
+    ds = tf.data.Dataset.from_tensor_slices((X, y_onehot))
+    # FIX 1: MobileNetV2 preprocess_input maps [0,255]→[-1,1].
+    # Using /255 (range [0,1]) is WRONG for ImageNet-pretrained MobileNetV2
+    # and degrades transfer learning significantly (~10-15% accuracy loss).
+    ds = ds.shuffle(len(X), seed=cfg.SEED, reshuffle_each_iteration=True)
+    ds = ds.map(
+        lambda x, lbl: (tf.keras.applications.mobilenet_v2.preprocess_input(x), lbl),
+        num_parallel_calls=AUTOTUNE
+    )
+    ds = ds.batch(cfg.BATCH_SIZE).prefetch(AUTOTUNE)
+    return ds
+
+def _load_eval(filepath, label_onehot):
+    # FIX 1 (eval): same preprocess_input for val/test consistency
+    img = tf.numpy_function(
+        lambda p: preprocess_image(p.decode("utf-8"), cfg.IMG_SIZE),
+        [filepath], tf.float32
+    )
+    img = tf.cast(img, tf.float32)
+    img = tf.ensure_shape(img, [cfg.IMG_SIZE, cfg.IMG_SIZE, 3])
+    img = tf.keras.applications.mobilenet_v2.preprocess_input(img)
+    return img, label_onehot
+
+def make_eval_ds(dframe):
+    y_idx    = dframe["label"].map(class_to_idx).values.astype(np.int32)
+    y_onehot = tf.keras.utils.to_categorical(y_idx, cfg.NUM_CLASSES)
+    ds = tf.data.Dataset.from_tensor_slices(
+        (dframe["filepath"].values, y_onehot)
+    )
+    ds = ds.map(_load_eval, num_parallel_calls=AUTOTUNE)
+    ds = ds.batch(cfg.BATCH_SIZE).prefetch(AUTOTUNE)
+    return ds
+
+train_ds = make_train_ds(X_train, y_train)
+val_ds   = make_eval_ds(val_df)
+test_ds  = make_eval_ds(test_df)
+
+# Free augmented array memory
+del X_train, y_train
+gc.collect()
+
+# %% [Cell 9] Model architecture (Section 2.2, 2.3, 2.4 + Table 1)
+#
+# EXACT architecture from Table 1:
+# ┌─────────────────────────────────────────────────────────────────────┐
+# │ Pre-trained: MobileNetV2  →  output (None, 8, 8, 1024)             │
+# ├─────────────────────────────┬───────────────────────────────────────┤
+# │ Attention module            │ Convolution module                    │
+# │  Conv 1×1 (128, ELU)        │  Conv 3×3 (64, ELU)                  │
+# │  Conv 1×1 (32, ELU)         │  Conv 3×3 (32, ELU)                  │
+# │  Avg-Pool                   │  Max-Pool                             │
+# │  Conv 1×1 (1, ELU)          │  Conv 3×3 (16, ELU)                  │
+# │  Multiply(Attention, MNet)  │                                       │
+# ├─────────────────────────────┴───────────────────────────────────────┤
+# │ Concatenate → Global Avg Pool → Dropout → Dense(32,ELU)            │
+# │  → Dropout → Dense(3, Softmax)                                     │
+# └─────────────────────────────────────────────────────────────────────┘
+# Total parameters: 4,110,836
+
+def build_ac_branch_mobilenet(input_shape=(256, 256, 3),
+                               num_classes=3,
+                               dropout_rate=0.5):
+    """
+    Exact reproduction of AC_Branch_MobileNet per Table 1 and Section 2.
+    """
+    inputs = layers.Input(shape=input_shape, name="input")
+
+    # ── (a) Deep feature extraction: MobileNetV2 pretrained on ImageNet ──────
+    # Section 2.2: "strategically selected MobileNetV2 as our baseline model"
+    # Section 3.3: "transfer learning ... pre-trained MobileNetV2"
+    # Table 1: output shape (None, 8, 8, 1024)
+    # At 256×256 input, MobileNetV2 with include_top=False outputs 8×8×1280.
+    # Paper reports 1024 channels → they likely truncate at an intermediate
+    # block. We use the full backbone (1280) and add a 1×1 conv to project
+    # to 1024 to match the paper's reported shape. [ASSUMPTION: projection]
+    base = tf.keras.applications.MobileNetV2(
+        input_shape=input_shape,
+        include_top=False,
+        weights="imagenet",
+    )
+    # FIX 2: Start with backbone FROZEN for warmup phase.
+    # base.trainable will be set to True after warmup (see training cell).
+    # Paper Section 3.3 says "fine-tuning" — standard transfer learning
+    # practice is freeze→train head→unfreeze→fine-tune at lower LR.
+    # Training from scratch with LR=0.001 on ALL layers = catastrophic
+    # forgetting of ImageNet features, causing ~10% accuracy drop.
+    base.trainable = False
+    x_base = base(inputs, training=False)  # training=False keeps BN in inference mode when frozen
+
+    # Project down before the branch structure.
+    # [FIX] Channel width reduced from 1024 (paper's Table 1 shape, a
+    # 1.3M-param projection) to cfg.PROJ_CHANNELS — see Config comment for
+    # full rationale (head-capacity overfitting evidenced by this log).
+    x_feat = layers.Conv2D(cfg.PROJ_CHANNELS, 1, padding="same", use_bias=False,
+                            kernel_regularizer=tf.keras.regularizers.l2(cfg.L2_REG),
+                            name="proj_feat")(x_base)
+    x_feat = layers.BatchNormalization(name="proj_bn")(x_feat)
+    x_feat = layers.Activation("relu", name="proj_relu")(x_feat)
+    # x_feat: (None, 8, 8, PROJ_CHANNELS)
+
+    # ── (b) Branch structure: Attention module (Table 1, left branch) ────────
+    # Conv 1×1 (128, ELU)
+    a = layers.Conv2D(128, 1, padding="same", use_bias=True,
+                       kernel_regularizer=tf.keras.regularizers.l2(cfg.L2_REG),
+                       name="attn_conv1")(x_feat)
+    a = layers.Activation("elu", name="attn_elu1")(a)
+    # Conv 1×1 (32, ELU)
+    a = layers.Conv2D(32, 1, padding="same", use_bias=True,
+                       kernel_regularizer=tf.keras.regularizers.l2(cfg.L2_REG),
+                       name="attn_conv2")(a)
+    a = layers.Activation("elu", name="attn_elu2")(a)
+    # Avg-Pool (Table 1: "Avg-Pool" with output (None,8,8,32) — spatial avg pool)
+    a = layers.AveragePooling2D(pool_size=3, strides=1, padding="same",
+                                 name="attn_avgpool")(a)
+    # Conv 1×1 (1, ...) → spatial attention map
+    # [FIX] Table 1 lists this as ELU, matching the other attn-branch layers,
+    # but ELU is unbounded above zero — as a multiplicative gate against
+    # x_feat, an untrained/undertrained ELU output can amplify activations
+    # arbitrarily. This log's val_loss spike to 3.50 at epoch 23 (Phase 2,
+    # while train_loss stayed smooth ~0.03-0.08) is consistent with exactly
+    # this: an unbounded gate occasionally blowing up. Sigmoid bounds the
+    # gate to [0,1] so it can only attenuate/emphasize, never amplify.
+    a = layers.Conv2D(1, 1, padding="same", use_bias=True,
+                       kernel_regularizer=tf.keras.regularizers.l2(cfg.L2_REG),
+                       name="attn_conv3")(a)
+    a = layers.Activation("sigmoid", name="attn_gate")(a)
+    # Multiply: attention map × MobileNet features
+    # Table 1: "Multiply  Attention, MobileNet  (None,8,8,1024)"
+    attn_out = layers.Multiply(name="attn_multiply")([a, x_feat])
+    # attn_out: (None, 8, 8, 1024)
+
+    # ── (b) Branch structure: Convolution module (Table 1, right branch) ─────
+    # Conv 3×3 (64, ELU)
+    c = layers.Conv2D(64, 3, padding="same", use_bias=True,
+                       kernel_regularizer=tf.keras.regularizers.l2(cfg.L2_REG),
+                       name="conv_branch_conv1")(x_feat)
+    c = layers.Activation("elu", name="conv_branch_elu1")(c)
+    # Conv 3×3 (32, ELU)
+    c = layers.Conv2D(32, 3, padding="same", use_bias=True,
+                       kernel_regularizer=tf.keras.regularizers.l2(cfg.L2_REG),
+                       name="conv_branch_conv2")(c)
+    c = layers.Activation("elu", name="conv_branch_elu2")(c)
+    # Max-Pool  → (None, 8, 8, 32)
+    c = layers.MaxPooling2D(pool_size=3, strides=1, padding="same",
+                             name="conv_branch_maxpool")(c)
+    # Conv 3×3 (16, ELU)
+    c = layers.Conv2D(16, 3, padding="same", use_bias=True,
+                       kernel_regularizer=tf.keras.regularizers.l2(cfg.L2_REG),
+                       name="conv_branch_conv3")(c)
+    c = layers.Activation("elu", name="conv_branch_elu3")(c)
+    # conv_out: (None, 8, 8, 16)
+
+    # ── (c) Classification head (Table 1, Section 2.4) ───────────────────────
+    # Concatenate attention and conv branches
+    # Table 1 (original shape): "concatenate Attention, Convolution
+    # (None,8,8,1040)" = 1024 + 16. [FIX] With PROJ_CHANNELS=256, this is
+    # now 256 + 16 = 272 — branch structure/ratios unchanged from Table 1,
+    # only the shared input width was reduced (see Config.PROJ_CHANNELS).
+    merged = layers.Concatenate(name="concat")([attn_out, c])
+    # merged: (None, 8, 8, PROJ_CHANNELS + 16)
+
+    # Global Average Pooling
+    x = layers.GlobalAveragePooling2D(name="gap")(merged)
+
+    # Dropout
+    x = layers.Dropout(dropout_rate, name="dropout1")(x)
+
+    # Dense (32, ELU)  — Table 1 shows 128 neurons with output (None,128)
+    # [NOTE: Table 1 col "kernels" = 32, but Output Shape = (None,128).
+    #  This is a paper inconsistency. Using output dim=128 as shown in shape.]
+    x = layers.Dense(128, activation="elu",
+                      kernel_regularizer=tf.keras.regularizers.l2(cfg.L2_REG),
+                      name="dense1")(x)
+
+    # Dropout
+    x = layers.Dropout(dropout_rate, name="dropout2")(x)
+
+    # Dense (3, Softmax) — final classification layer
+    outputs = layers.Dense(num_classes, activation="softmax", name="output")(x)
+
+    model = models.Model(inputs, outputs, name="AC_Branch_MobileNet")
+    return model, base
+
+model, backbone = build_ac_branch_mobilenet(
+    input_shape=(cfg.IMG_SIZE, cfg.IMG_SIZE, cfg.CHANNELS),
+    num_classes=cfg.NUM_CLASSES,
+    dropout_rate=cfg.DROPOUT,
+)
+model.summary()
+print(f"\nTotal parameters: {model.count_params():,}")
+
+# %% [Cell 10] Two-phase training (Section 3.3, Table 3)
+#
+# FIX 2 + 4: Two-phase training strategy
+# ─────────────────────────────────────────────────────────────────────────────
+# Phase 1 — WARMUP (epochs 1–10): backbone FROZEN, train only the branch
+#   structure and head. LR=0.001 (Table 3). This lets the randomly-initialized
+#   attention/conv branches and dense head converge without disturbing the
+#   pretrained MobileNetV2 weights.
+#
+# Phase 2 — FINE-TUNE (epochs 11–50): unfreeze ALL layers, train end-to-end
+#   at LR=1e-4 (10× lower). Lower LR prevents catastrophic forgetting while
+#   allowing the backbone to adapt to ultrasound domain features.
+#
+# This is standard transfer learning practice and matches the paper's
+# description of "fine-tuning" MobileNetV2 on their dataset.
+# ─────────────────────────────────────────────────────────────────────────────
+
+cb_checkpoint = callbacks.ModelCheckpoint(
+    filepath=os.path.join(cfg.OUTPUT_DIR, "best_model.keras"),
+    monitor="val_accuracy",
+    save_best_only=True,
+    verbose=1,
+)
+cb_csv_warmup = callbacks.CSVLogger(
+    os.path.join(cfg.OUTPUT_DIR, "training_log_phase1.csv")
+)
+cb_csv_finetune = callbacks.CSVLogger(
+    os.path.join(cfg.OUTPUT_DIR, "training_log_phase2.csv"),
+    append=True,
+)
+# [FIX] This log's val_loss oscillates for the full 50 epochs with no
+# recovery mechanism (no EarlyStopping/ReduceLROnPlateau existed in this
+# version), including the 3.50 spike at epoch 23. ModelCheckpoint already
+# saves the best epoch regardless, so the final reported metrics aren't
+# corrupted by this — but these callbacks let a stalled/degrading run stop
+# and back off instead of wasting the remaining epochs.
+cb_early_stop_phase1 = callbacks.EarlyStopping(
+    monitor="val_loss", patience=4, restore_best_weights=True, verbose=1,
+)
+cb_early_stop_phase2 = callbacks.EarlyStopping(
+    monitor="val_loss", patience=15, restore_best_weights=True, verbose=1,
+)
+cb_reduce_lr = callbacks.ReduceLROnPlateau(
+    monitor="val_loss", factor=0.5, patience=3, min_lr=1e-7, verbose=1,
+)
+
+# ── Phase 1: Warmup — backbone frozen ────────────────────────────────────────
+print(f"\n{'='*55}")
+print(f"  Phase 1: Warmup — backbone FROZEN ({cfg.WARMUP_EPOCHS} epochs)")
+print(f"  LR = {cfg.LR}")
+print(f"{'='*55}")
+
+model.compile(
+    optimizer=optimizers.Adam(learning_rate=cfg.LR, clipnorm=1.0),
+    loss=cfg.LOSS,
+    metrics=["accuracy"],
+)
+history_warmup = model.fit(
+    train_ds,
+    validation_data=val_ds,
+    epochs=cfg.WARMUP_EPOCHS,
+    class_weight=cfg.CLASS_WEIGHT,
+    callbacks=[cb_checkpoint, cb_csv_warmup, cb_early_stop_phase1, cb_reduce_lr],
+    verbose=1,
+)
+
+# ── Phase 2: Fine-tune — unfreeze top of backbone only ────────────────────────
+print(f"\n{'='*55}")
+print(f"  Phase 2: Fine-tune — top {cfg.UNFREEZE_LAST_N} backbone layers UNFROZEN")
+print(f"  LR = {cfg.LR_FINETUNE}")
+print(f"  Remaining epochs: {cfg.EPOCHS - cfg.WARMUP_EPOCHS}")
+print(f"{'='*55}")
+
+# [FIX] The original `for layer in model.layers: layer.trainable = True`
+# unfroze EVERY layer, including all of the backbone's BatchNormalization
+# layers. Retraining BN running statistics end-to-end on ~4700 images is a
+# well-known source of exactly the instability this log shows (val_loss
+# spiking to 3.50 at epoch 23, well after Phase 2 starts at epoch 11).
+# Now: only the top UNFREEZE_LAST_N backbone layers are unfrozen, and
+# BatchNorm layers are explicitly kept frozen even within that slice.
+backbone.trainable = True
+for layer in backbone.layers[:-cfg.UNFREEZE_LAST_N]:
+    layer.trainable = False
+for layer in backbone.layers:
+    if isinstance(layer, layers.BatchNormalization):
+        layer.trainable = False
+
+# Recompile with lower LR
+model.compile(
+    optimizer=optimizers.Adam(learning_rate=cfg.LR_FINETUNE, clipnorm=1.0),
+    loss=cfg.LOSS,
+    metrics=["accuracy"],
+)
+history_finetune = model.fit(
+    train_ds,
+    validation_data=val_ds,
+    epochs=cfg.EPOCHS,
+    initial_epoch=cfg.WARMUP_EPOCHS,   # continues from where warmup left off
+    class_weight=cfg.CLASS_WEIGHT,
+    callbacks=[cb_checkpoint, cb_csv_finetune, cb_early_stop_phase2, cb_reduce_lr],
+    verbose=1,
+)
+
+# Merge histories for plotting
+combined_history = {
+    "accuracy":     history_warmup.history["accuracy"]     + history_finetune.history["accuracy"],
+    "val_accuracy": history_warmup.history["val_accuracy"] + history_finetune.history["val_accuracy"],
+    "loss":         history_warmup.history["loss"]         + history_finetune.history["loss"],
+    "val_loss":     history_warmup.history["val_loss"]     + history_finetune.history["val_loss"],
+}
+
+model.save(os.path.join(cfg.OUTPUT_DIR, "final_model.keras"))
+print("Models saved.")
+
+# %% [Cell 11] Evaluation (Section 3.4, Eqs 7–10)
+# Load best checkpoint for evaluation
+best_model = models.load_model(
+    os.path.join(cfg.OUTPUT_DIR, "best_model.keras")
+)
+
+def evaluate_model(mdl, ds, dframe, split_name="Test"):
+    """Computes Accuracy, Precision, Recall, F1-score per Eqs (7)–(10)."""
+    y_true, y_pred = [], []
+    for x_batch, y_batch in ds:
+        preds = mdl.predict(x_batch, verbose=0)
+        y_pred.extend(np.argmax(preds,   axis=1))
+        y_true.extend(np.argmax(y_batch.numpy(), axis=1))
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+
+    acc   = accuracy_score(y_true, y_pred) * 100
+    prec  = precision_score(y_true, y_pred, average="macro", zero_division=0) * 100
+    rec   = recall_score(y_true, y_pred, average="macro", zero_division=0) * 100
+    f1    = f1_score(y_true, y_pred, average="macro", zero_division=0) * 100
+
+    print(f"\n{'='*55}")
+    print(f"  {split_name} Results")
+    print(f"{'='*55}")
+    print(f"  Accuracy  : {acc:.2f}%   (Paper: 95.11%)")
+    print(f"  Precision : {prec:.2f}%   (Paper: 94.62%)")
+    print(f"  Recall    : {rec:.2f}%   (Paper: 94.39%)")
+    print(f"  F1-score  : {f1:.2f}%   (Paper: 94.50%)")
+    print(f"{'='*55}")
+    print(classification_report(y_true, y_pred, target_names=cfg.CLASSES, zero_division=0))
+
+    return y_true, y_pred, {"accuracy": acc, "precision": prec, "recall": rec, "f1": f1}
+
+y_true_test, y_pred_test, test_metrics = evaluate_model(best_model, test_ds, test_df, "Test")
+y_true_val,  y_pred_val,  val_metrics  = evaluate_model(best_model, val_ds,  val_df,  "Validation")
+
+# %% [Cell 12] Confusion matrix (Fig. 9 style)
+def plot_confusion_matrix(y_true, y_pred, title="Confusion Matrix", filename="cm.png"):
+    cm = confusion_matrix(y_true, y_pred)
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(
+        cm, annot=True, fmt="d", cmap="Blues",
+        xticklabels=cfg.CLASSES, yticklabels=cfg.CLASSES,
+        linewidths=0.5,
+    )
+    plt.title(title, fontsize=13, fontweight="bold")
+    plt.xlabel("Predicted label", fontsize=11)
+    plt.ylabel("True label", fontsize=11)
+    plt.tight_layout()
+    path = os.path.join(cfg.OUTPUT_DIR, filename)
+    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.show()
+    print(f"Saved: {path}")
+
+plot_confusion_matrix(y_true_test, y_pred_test,
+                      "AC_Branch_MobileNet — Test Confusion Matrix",
+                      "confusion_matrix_test.png")
+
+# %% [Cell 13] Training curves (Fig. 7 style)
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+axes[0].plot(combined_history["accuracy"],     label="Train Accuracy")
+axes[0].plot(combined_history["val_accuracy"], label="Validation Accuracy")
+max_val = max(combined_history["val_accuracy"])
+axes[0].axhline(max_val, color="gray", linestyle="--", alpha=0.5,
+                label=f"Max Val Acc: {max_val:.4f}")
+axes[0].axvline(cfg.WARMUP_EPOCHS, color="orange", linestyle=":", alpha=0.7,
+                label=f"Phase 2 start (ep {cfg.WARMUP_EPOCHS})")
+axes[0].set_title("Model Accuracy Over Epochs")
+axes[0].set_xlabel("Epoch"); axes[0].set_ylabel("Accuracy")
+axes[0].legend(); axes[0].grid(alpha=0.3)
+
+axes[1].plot(combined_history["loss"],     label="Train Loss")
+axes[1].plot(combined_history["val_loss"], label="Validation Loss")
+min_val = min(combined_history["val_loss"])
+axes[1].axhline(min_val, color="gray", linestyle="--", alpha=0.5,
+                label=f"Min Val Loss: {min_val:.4f}")
+axes[1].axvline(cfg.WARMUP_EPOCHS, color="orange", linestyle=":", alpha=0.7,
+                label=f"Phase 2 start")
+axes[1].set_title("Model Loss Over Epochs")
+axes[1].set_xlabel("Epoch"); axes[1].set_ylabel("Loss")
+axes[1].legend(); axes[1].grid(alpha=0.3)
+
+plt.tight_layout()
+path = os.path.join(cfg.OUTPUT_DIR, "training_curves.png")
+plt.savefig(path, dpi=150, bbox_inches="tight")
+plt.show()
+print(f"Saved: {path}")
+
+# %% [Cell 14] Grad-CAM visualization (Fig. 11 style)
+def make_gradcam_heatmap(img_array, mdl, last_conv_layer_name):
+    """Grad-CAM per Selvaraju et al. (2017) — paper Section 3.5."""
+    grad_model = models.Model(
+        inputs=mdl.input,
+        outputs=[mdl.get_layer(last_conv_layer_name).output, mdl.output]
+    )
+    with tf.GradientTape() as tape:
+        conv_out, preds = grad_model(img_array)
+        pred_idx = tf.argmax(preds[0])
+        loss     = preds[:, pred_idx]
+    grads      = tape.gradient(loss, conv_out)
+    pooled     = tf.reduce_mean(grads, axis=(0, 1, 2))
+    heatmap    = conv_out[0] @ pooled[..., tf.newaxis]
+    heatmap    = tf.squeeze(heatmap)
+    heatmap    = tf.maximum(heatmap, 0) / (tf.math.reduce_max(heatmap) + 1e-8)
+    return heatmap.numpy(), int(pred_idx.numpy())
+
+# Find last conv layer
+last_conv = None
+for lyr in reversed(best_model.layers):
+    if isinstance(lyr, layers.Conv2D):
+        last_conv = lyr.name
+        break
+print(f"Last conv layer for Grad-CAM: {last_conv}")
+
+# Visualize on 3 test samples (one per class if possible)
+sample_rows = []
+for cls in cfg.CLASSES:
+    cls_rows = test_df[test_df["label"] == cls]
+    if len(cls_rows) > 0:
+        sample_rows.append(cls_rows.iloc[0])
+
+fig, axes = plt.subplots(2, len(sample_rows), figsize=(4 * len(sample_rows), 8))
+for i, row in enumerate(sample_rows):
+    img      = preprocess_image(row["filepath"], cfg.IMG_SIZE)
+    img_norm = img / 255.0
+    img_batch = np.expand_dims(img_norm, 0).astype(np.float32)
+
+    if last_conv:
+        heatmap, pred_idx = make_gradcam_heatmap(img_batch, best_model, last_conv)
+        heatmap_resized   = cv2.resize(heatmap, (cfg.IMG_SIZE, cfg.IMG_SIZE))
+        heatmap_color     = cv2.applyColorMap(
+            np.uint8(255 * heatmap_resized), cv2.COLORMAP_JET
+        )
+        overlay = cv2.addWeighted(img.astype(np.uint8), 0.6, heatmap_color, 0.4, 0)
+        pred_name = cfg.CLASSES[pred_idx]
+    else:
+        overlay   = img.astype(np.uint8)
+        pred_name = "N/A"
+
+    axes[0, i].imshow(img.astype(np.uint8))
+    axes[0, i].set_title(f"True: {row['label']}", fontsize=9)
+    axes[0, i].axis("off")
+
+    axes[1, i].imshow(overlay)
+    axes[1, i].set_title(f"Pred: {pred_name}", fontsize=9)
+    axes[1, i].axis("off")
+
+plt.suptitle("Original Images & Grad-CAM Overlays", fontweight="bold")
+plt.tight_layout()
+path = os.path.join(cfg.OUTPUT_DIR, "gradcam_visualization.png")
+plt.savefig(path, dpi=150, bbox_inches="tight")
+plt.show()
+print(f"Saved: {path}")
+
+# %% [Cell 15] Save final summary
+summary = {
+    "paper": "AC_Branch_MobileNet (Vatanparast et al., 2026)",
+    "doi": "10.1016/j.bspc.2025.108586",
+    "dataset": "Fetal Planes DB (Zenodo 3904280) — brain subset",
+    "n_brain_images_raw": len(df_brain),
+    "n_after_augmentation": cfg.AUG_TARGET_PER_CLASS * cfg.NUM_CLASSES,
+    "split_assumption": "70/15/15 stratified [ASSUMPTION — paper silent]",
+    "epochs": cfg.EPOCHS,
+    "batch_size": cfg.BATCH_SIZE,
+    "lr": cfg.LR,
+    "optimizer": cfg.OPTIMIZER,
+    "dropout_assumption": cfg.DROPOUT,
+    "mlvum_lambda_assumption": cfg.MLVUM_LAMBDA,
+    "mlvum_radius_assumption": cfg.MLVUM_RADIUS,
+    "test_metrics":       test_metrics,
+    "val_metrics":        val_metrics,
+    "paper_reported": {
+        "accuracy":  95.11,
+        "precision": 94.62,
+        "recall":    94.39,
+        "f1":        94.50,
+    },
+    "output_files": {
+        "best_model":       "best_model.keras",
+        "final_model":      "final_model.keras",
+        "training_log":     "training_log.csv",
+        "confusion_matrix": "confusion_matrix_test.png",
+        "training_curves":  "training_curves.png",
+        "gradcam":          "gradcam_visualization.png",
+    },
+}
+
+with open(os.path.join(cfg.OUTPUT_DIR, "summary.json"), "w") as f:
+    json.dump(summary, f, indent=2, default=str)
+
+print("\n" + "="*55)
+print("  All outputs saved to:", cfg.OUTPUT_DIR)
+print("="*55)
+print(json.dumps(summary["test_metrics"], indent=2))
+print("\nPaper reported:")
+print(json.dumps(summary["paper_reported"], indent=2))

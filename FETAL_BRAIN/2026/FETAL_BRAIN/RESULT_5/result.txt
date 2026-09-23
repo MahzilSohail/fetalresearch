@@ -1,0 +1,330 @@
+TensorFlow: 2.20.0
+GPUs: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+Found 2 candidate CSV(s), validating content...
+  /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/FETAL_PLANES_DB_data.csv -> 2949 usable brain rows
+✓ CSV  : /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/FETAL_PLANES_DB_data.csv
+✓ Images: /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/Images
+Brain rows found: 3092
+Brain rows after filtering valid planes: 2949
+
+Final brain images: 2949
+Class distribution:
+ label
+Trans-thalamic       1638
+Trans-cerebellum      714
+Trans-ventricular     597
+Name: count, dtype: int64
+Class→idx mapping: {'Trans-thalamic': 0, 'Trans-ventricular': 1, 'Trans-cerebellum': 2}
+
+Split sizes — Train: 2064  Val: 442  Test: 443
+Train class distribution:
+ label
+Trans-thalamic       1146
+Trans-cerebellum      500
+Trans-ventricular     418
+Name: count, dtype: int64
+Val   class distribution:
+ label
+Trans-thalamic       246
+Trans-cerebellum     107
+Trans-ventricular     89
+Name: count, dtype: int64
+Test  class distribution:
+ label
+Trans-thalamic       246
+Trans-cerebellum     107
+Trans-ventricular     90
+Name: count, dtype: int64
+
+Building augmented training set (this may take a few minutes)...
+  Preprocessing class 'Trans-thalamic' (1146 images)...
+    → 1590 images after augmentation
+  Preprocessing class 'Trans-ventricular' (418 images)...
+    → 1590 images after augmentation
+  Preprocessing class 'Trans-cerebellum' (500 images)...
+    → 1590 images after augmentation
+
+Augmented train set: (4770, 256, 256, 3)  labels: [1590 1590 1590]
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1787311416.336583      23 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 13756 MB memory:  -> device: 0, name: Tesla T4, pci bus id: 0000:00:04.0, compute capability: 7.5
+I0000 00:00:1787311416.339487      23 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 13756 MB memory:  -> device: 1, name: Tesla T4, pci bus id: 0000:00:05.0, compute capability: 7.5
+Downloading data from https://storage.googleapis.com/tensorflow/keras-applications/mobilenet_v2/mobilenet_v2_weights_tf_dim_ordering_tf_kernels_1.0_224_no_top.h5
+9406464/9406464 ━━━━━━━━━━━━━━━━━━━━ 0s 0us/step
+Model: "AC_Branch_MobileNet"
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)        ┃ Output Shape      ┃    Param # ┃ Connected to      ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ input (InputLayer)  │ (None, 256, 256,  │          0 │ -                 │
+│                     │ 3)                │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ mobilenetv2_1.00_2… │ (None, 8, 8,      │  2,257,984 │ input[0][0]       │
+│ (Functional)        │ 1280)             │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ proj_feat (Conv2D)  │ (None, 8, 8, 256) │    327,680 │ mobilenetv2_1.00… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ proj_bn             │ (None, 8, 8, 256) │      1,024 │ proj_feat[0][0]   │
+│ (BatchNormalizatio… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ proj_relu           │ (None, 8, 8, 256) │          0 │ proj_bn[0][0]     │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv1 (Conv2D) │ (None, 8, 8, 128) │     32,896 │ proj_relu[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_elu1           │ (None, 8, 8, 128) │          0 │ attn_conv1[0][0]  │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_conv1   │ (None, 8, 8, 64)  │    147,520 │ proj_relu[0][0]   │
+│ (Conv2D)            │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv2 (Conv2D) │ (None, 8, 8, 32)  │      4,128 │ attn_elu1[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_elu1    │ (None, 8, 8, 64)  │          0 │ conv_branch_conv… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_elu2           │ (None, 8, 8, 32)  │          0 │ attn_conv2[0][0]  │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_conv2   │ (None, 8, 8, 32)  │     18,464 │ conv_branch_elu1… │
+│ (Conv2D)            │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_avgpool        │ (None, 8, 8, 32)  │          0 │ attn_elu2[0][0]   │
+│ (AveragePooling2D)  │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_elu2    │ (None, 8, 8, 32)  │          0 │ conv_branch_conv… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv3 (Conv2D) │ (None, 8, 8, 1)   │         33 │ attn_avgpool[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_maxpool │ (None, 8, 8, 32)  │          0 │ conv_branch_elu2… │
+│ (MaxPooling2D)      │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_gate           │ (None, 8, 8, 1)   │          0 │ attn_conv3[0][0]  │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_conv3   │ (None, 8, 8, 16)  │      4,624 │ conv_branch_maxp… │
+│ (Conv2D)            │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_multiply       │ (None, 8, 8, 256) │          0 │ attn_gate[0][0],  │
+│ (Multiply)          │                   │            │ proj_relu[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_elu3    │ (None, 8, 8, 16)  │          0 │ conv_branch_conv… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ concat              │ (None, 8, 8, 272) │          0 │ attn_multiply[0]… │
+│ (Concatenate)       │                   │            │ conv_branch_elu3… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ gap                 │ (None, 272)       │          0 │ concat[0][0]      │
+│ (GlobalAveragePool… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout1 (Dropout)  │ (None, 272)       │          0 │ gap[0][0]         │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dense1 (Dense)      │ (None, 128)       │     34,944 │ dropout1[0][0]    │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout2 (Dropout)  │ (None, 128)       │          0 │ dense1[0][0]      │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ output (Dense)      │ (None, 3)         │        387 │ dropout2[0][0]    │
+└─────────────────────┴───────────────────┴────────────┴───────────────────┘
+ Total params: 2,829,684 (10.79 MB)
+ Trainable params: 571,188 (2.18 MB)
+ Non-trainable params: 2,258,496 (8.62 MB)
+Total parameters: 2,829,684
+
+=======================================================
+  Phase 1: Warmup — backbone FROZEN (10 epochs)
+  LR = 0.001
+=======================================================
+Epoch 1/10
+2026-08-21 11:24:08.462435: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-08-21 11:24:08.600931: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+I0000 00:00:1787311454.366417      92 device_compiler.h:196] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 34ms/step - accuracy: 0.4612 - loss: 1.2987
+2026-08-21 11:24:30.613164: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-08-21 11:24:30.749549: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 146ms/step - accuracy: 0.4616 - loss: 1.2980
+2026-08-21 11:24:56.935450: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-08-21 11:24:57.072753: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+Epoch 1: val_accuracy improved from None to 0.63122, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 1: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 76s 308ms/step - accuracy: 0.5340 - loss: 1.1945 - val_accuracy: 0.6312 - val_loss: 0.9097 - learning_rate: 0.0010
+Epoch 2/10
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 35ms/step - accuracy: 0.6764 - loss: 0.9493
+Epoch 2: val_accuracy improved from 0.63122 to 0.70362, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 2: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 9s 57ms/step - accuracy: 0.6958 - loss: 0.9047 - val_accuracy: 0.7036 - val_loss: 0.7855 - learning_rate: 0.0010
+Epoch 3/10
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 35ms/step - accuracy: 0.7600 - loss: 0.7489
+Epoch 3: val_accuracy did not improve from 0.70362
+150/150 ━━━━━━━━━━━━━━━━━━━━ 8s 53ms/step - accuracy: 0.7625 - loss: 0.7574 - val_accuracy: 0.6448 - val_loss: 0.9393 - learning_rate: 0.0010
+Epoch 4/10
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 35ms/step - accuracy: 0.8193 - loss: 0.6152
+Epoch 4: val_accuracy did not improve from 0.70362
+150/150 ━━━━━━━━━━━━━━━━━━━━ 8s 53ms/step - accuracy: 0.8088 - loss: 0.6369 - val_accuracy: 0.6606 - val_loss: 1.0465 - learning_rate: 0.0010
+Epoch 5/10
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 35ms/step - accuracy: 0.8447 - loss: 0.5473
+Epoch 5: val_accuracy did not improve from 0.70362
+
+Epoch 5: ReduceLROnPlateau reducing learning rate to 0.0005000000237487257.
+150/150 ━━━━━━━━━━━━━━━━━━━━ 8s 54ms/step - accuracy: 0.8530 - loss: 0.5266 - val_accuracy: 0.5905 - val_loss: 1.4048 - learning_rate: 0.0010
+Epoch 6/10
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 36ms/step - accuracy: 0.9133 - loss: 0.3596
+Epoch 6: val_accuracy improved from 0.70362 to 0.72172, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 6: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 9s 59ms/step - accuracy: 0.9130 - loss: 0.3651 - val_accuracy: 0.7217 - val_loss: 1.0090 - learning_rate: 5.0000e-04
+Epoch 6: early stopping
+Restoring model weights from the end of the best epoch: 2.
+
+=======================================================
+  Phase 2: Fine-tune — top 45 backbone layers UNFROZEN
+  LR = 1e-05
+  Remaining epochs: 40
+=======================================================
+Epoch 11/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 136ms/step - accuracy: 0.7802 - loss: 0.7023
+Epoch 11: val_accuracy did not improve from 0.72172
+150/150 ━━━━━━━━━━━━━━━━━━━━ 60s 234ms/step - accuracy: 0.7811 - loss: 0.6951 - val_accuracy: 0.6516 - val_loss: 0.8859 - learning_rate: 1.0000e-05
+Epoch 12/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 47ms/step - accuracy: 0.8065 - loss: 0.6295
+Epoch 12: val_accuracy did not improve from 0.72172
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 66ms/step - accuracy: 0.8174 - loss: 0.6210 - val_accuracy: 0.7217 - val_loss: 0.7483 - learning_rate: 1.0000e-05
+Epoch 13/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 48ms/step - accuracy: 0.8517 - loss: 0.5514
+Epoch 13: val_accuracy did not improve from 0.72172
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 67ms/step - accuracy: 0.8518 - loss: 0.5526 - val_accuracy: 0.6742 - val_loss: 0.9149 - learning_rate: 1.0000e-05
+Epoch 14/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 48ms/step - accuracy: 0.8672 - loss: 0.5020
+Epoch 14: val_accuracy did not improve from 0.72172
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 66ms/step - accuracy: 0.8692 - loss: 0.5007 - val_accuracy: 0.6742 - val_loss: 0.9073 - learning_rate: 1.0000e-05
+Epoch 15/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 47ms/step - accuracy: 0.8968 - loss: 0.4396
+Epoch 15: val_accuracy did not improve from 0.72172
+
+Epoch 15: ReduceLROnPlateau reducing learning rate to 4.999999873689376e-06.
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 66ms/step - accuracy: 0.8933 - loss: 0.4398 - val_accuracy: 0.7104 - val_loss: 0.7767 - learning_rate: 1.0000e-05
+Epoch 16/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 47ms/step - accuracy: 0.9275 - loss: 0.3601
+Epoch 16: val_accuracy did not improve from 0.72172
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 65ms/step - accuracy: 0.9260 - loss: 0.3635 - val_accuracy: 0.7172 - val_loss: 0.8843 - learning_rate: 5.0000e-06
+Epoch 17/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 46ms/step - accuracy: 0.9334 - loss: 0.3450
+Epoch 17: val_accuracy improved from 0.72172 to 0.72851, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 17: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 68ms/step - accuracy: 0.9348 - loss: 0.3314 - val_accuracy: 0.7285 - val_loss: 0.8368 - learning_rate: 5.0000e-06
+Epoch 18/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 46ms/step - accuracy: 0.9481 - loss: 0.2961
+Epoch 18: val_accuracy did not improve from 0.72851
+
+Epoch 18: ReduceLROnPlateau reducing learning rate to 2.499999936844688e-06.
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 64ms/step - accuracy: 0.9491 - loss: 0.3017 - val_accuracy: 0.6719 - val_loss: 1.0161 - learning_rate: 5.0000e-06
+Epoch 19/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 46ms/step - accuracy: 0.9547 - loss: 0.2788
+Epoch 19: val_accuracy did not improve from 0.72851
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 64ms/step - accuracy: 0.9562 - loss: 0.2725 - val_accuracy: 0.7036 - val_loss: 0.9636 - learning_rate: 2.5000e-06
+Epoch 20/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 46ms/step - accuracy: 0.9634 - loss: 0.2667
+Epoch 20: val_accuracy did not improve from 0.72851
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 64ms/step - accuracy: 0.9637 - loss: 0.2593 - val_accuracy: 0.7014 - val_loss: 0.9692 - learning_rate: 2.5000e-06
+Epoch 21/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 46ms/step - accuracy: 0.9636 - loss: 0.2557
+Epoch 21: val_accuracy did not improve from 0.72851
+
+Epoch 21: ReduceLROnPlateau reducing learning rate to 1.249999968422344e-06.
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 64ms/step - accuracy: 0.9650 - loss: 0.2513 - val_accuracy: 0.7240 - val_loss: 0.9010 - learning_rate: 2.5000e-06
+Epoch 22/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 47ms/step - accuracy: 0.9768 - loss: 0.2215
+Epoch 22: val_accuracy did not improve from 0.72851
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 64ms/step - accuracy: 0.9736 - loss: 0.2320 - val_accuracy: 0.7104 - val_loss: 0.9439 - learning_rate: 1.2500e-06
+Epoch 23/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 47ms/step - accuracy: 0.9777 - loss: 0.2263
+Epoch 23: val_accuracy did not improve from 0.72851
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 65ms/step - accuracy: 0.9763 - loss: 0.2273 - val_accuracy: 0.7036 - val_loss: 0.9681 - learning_rate: 1.2500e-06
+Epoch 24/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 47ms/step - accuracy: 0.9792 - loss: 0.2174
+Epoch 24: val_accuracy did not improve from 0.72851
+
+Epoch 24: ReduceLROnPlateau reducing learning rate to 6.24999984211172e-07.
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 65ms/step - accuracy: 0.9759 - loss: 0.2217 - val_accuracy: 0.7036 - val_loss: 0.9893 - learning_rate: 1.2500e-06
+Epoch 25/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 47ms/step - accuracy: 0.9839 - loss: 0.2032
+Epoch 25: val_accuracy did not improve from 0.72851
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 64ms/step - accuracy: 0.9780 - loss: 0.2125 - val_accuracy: 0.7104 - val_loss: 0.9579 - learning_rate: 6.2500e-07
+Epoch 26/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 47ms/step - accuracy: 0.9812 - loss: 0.2097
+Epoch 26: val_accuracy did not improve from 0.72851
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 64ms/step - accuracy: 0.9790 - loss: 0.2117 - val_accuracy: 0.7081 - val_loss: 0.9628 - learning_rate: 6.2500e-07
+Epoch 27/50
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 47ms/step - accuracy: 0.9817 - loss: 0.2057
+Epoch 27: val_accuracy did not improve from 0.72851
+
+Epoch 27: ReduceLROnPlateau reducing learning rate to 3.12499992105586e-07.
+150/150 ━━━━━━━━━━━━━━━━━━━━ 10s 65ms/step - accuracy: 0.9811 - loss: 0.2079 - val_accuracy: 0.7104 - val_loss: 0.9619 - learning_rate: 6.2500e-07
+Epoch 27: early stopping
+Restoring model weights from the end of the best epoch: 12.
+Models saved.
+2026-08-21 11:29:43.021980: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-08-21 11:29:43.158457: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+=======================================================
+  Test Results
+=======================================================
+  Accuracy  : 71.78%   (Paper: 95.11%)
+  Precision : 69.55%   (Paper: 94.62%)
+  Recall    : 73.08%   (Paper: 94.39%)
+  F1-score  : 70.82%   (Paper: 94.50%)
+=======================================================
+                   precision    recall  f1-score   support
+
+   Trans-thalamic       0.80      0.69      0.74       246
+Trans-ventricular       0.56      0.71      0.62        90
+ Trans-cerebellum       0.73      0.79      0.76       107
+
+         accuracy                           0.72       443
+        macro avg       0.70      0.73      0.71       443
+     weighted avg       0.73      0.72      0.72       443
+
+
+=======================================================
+  Validation Results
+=======================================================
+  Accuracy  : 72.85%   (Paper: 95.11%)
+  Precision : 70.59%   (Paper: 94.62%)
+  Recall    : 74.68%   (Paper: 94.39%)
+  F1-score  : 72.00%   (Paper: 94.50%)
+=======================================================
+                   precision    recall  f1-score   support
+
+   Trans-thalamic       0.81      0.70      0.75       246
+Trans-ventricular       0.60      0.80      0.69        89
+ Trans-cerebellum       0.70      0.75      0.72       107
+
+         accuracy                           0.73       442
+        macro avg       0.71      0.75      0.72       442
+     weighted avg       0.74      0.73      0.73       442
+
+
+Saved: /kaggle/working/ac_branch_mobilenet_results/confusion_matrix_test.png
+
+Saved: /kaggle/working/ac_branch_mobilenet_results/training_curves.png
+Last conv layer for Grad-CAM: conv_branch_conv3
+
+Saved: /kaggle/working/ac_branch_mobilenet_results/gradcam_visualization.png
+
+=======================================================
+  All outputs saved to: /kaggle/working/ac_branch_mobilenet_results
+=======================================================
+{
+  "accuracy": 71.78329571106094,
+  "precision": 69.54833903802816,
+  "recall": 73.08318347980988,
+  "f1": 70.82377829476691
+}
+
+Paper reported:
+{
+  "accuracy": 95.11,
+  "precision": 94.62,
+  "recall": 94.39,
+  "f1": 94.5
+}

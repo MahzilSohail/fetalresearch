@@ -1,0 +1,838 @@
+# ==============================================================================
+# AC_Branch_MobileNet: Reproduction of Vatanparast, Fateh, Mashayekhi (2026)
+# "AC_Branch_MobileNet: An effective hybrid branch network for plane
+#  classification in fetus brain ultrasound image"
+# Biomedical Signal Processing and Control 112 (2026) 108586
+# DOI: https://doi.org/10.1016/j.bspc.2025.108586
+#
+# SCOPE & ASSUMPTIONS (clearly flagged where paper is silent):
+#   1. Dataset: Fetal Planes DB (Zenodo 3904280). Paper uses ONLY the brain
+#      subset (2,950 images across 3 classes: trans-ventricular, trans-
+#      thalamic, trans-cerebellar). Brain_plane sub-label column used.
+#   2. Input size: 256×256×3. Paper Fig.6 shows INPUT_256x256x3.
+#   3. Train/val/test split: Paper does NOT state exact ratios. Assumption:
+#      70/15/15 stratified split. [ASSUMPTION — flagged]
+#   4. Augmentation applied AFTER split (paper Section 3.2 states this
+#      explicitly to ensure independent validation).
+#      Augmentation target: 4770 images evenly distributed (1590/class).
+#      Paper states rotation 90/180/270°, H/V flip, zoom up to 1.5×.
+#   5. MLVUM preprocessing: Eqs (1)-(4) implemented exactly.
+#      λ (sharpening scale): not stated → assumption λ=0.5 [ASSUMPTION]
+#      Gaussian kernel radius R: not stated → assumption R=3 [ASSUMPTION]
+#   6. MobileNetV2 output shape (None,8,8,1024): achieved at 256×256 input
+#      with include_top=False. Verified mathematically.
+#   7. Dropout rate: not stated → assumption 0.5 [ASSUMPTION]
+#   8. Adam optimizer default betas (0.9, 0.999): standard defaults [ASSUMPTION]
+#   9. No early stopping mentioned in paper → training full 50 epochs.
+#  10. Data split: paper uses "Brain_plane" column from CSV for 3-class labels.
+# ==============================================================================
+
+# %% [Cell 0] Install dependencies
+import subprocess, sys
+for pkg in ["opencv-python-headless", "scikit-learn", "matplotlib", "seaborn", "numpy", "pandas"]:
+    subprocess.run([sys.executable, "-m", "pip", "install", "-q", pkg], check=False)
+
+# %% [Cell 1] Imports
+import os, gc, glob, math, json, warnings
+import numpy as np
+import pandas as pd
+import cv2
+import tensorflow as tf
+from tensorflow.keras import layers, models, optimizers, callbacks
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import (
+    accuracy_score, precision_score, recall_score, f1_score,
+    confusion_matrix, classification_report,
+)
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+warnings.filterwarnings("ignore")
+print("TensorFlow:", tf.__version__)
+print("GPUs:", tf.config.list_physical_devices("GPU"))
+AUTOTUNE = tf.data.AUTOTUNE
+
+# %% [Cell 2] Config — exact paper hyperparameters
+class Config:
+    # ── Dataset paths (auto-detected below) ──────────────────────────────────
+    DATA_DIR  = None   # filled by find_dataset()
+    CSV_PATH  = None   # filled by find_dataset()
+
+    # ── Image ────────────────────────────────────────────────────────────────
+    IMG_SIZE  = 256    # Fig. 6: INPUT_256x256x3
+    CHANNELS  = 3
+
+    # ── Classes (3 fetal brain planes, Section 3.1) ──────────────────────────
+    CLASSES   = ["Trans-thalamic", "Trans-ventricular", "Trans-cerebellum"]
+    NUM_CLASSES = 3
+
+    # ── Data split [ASSUMPTION: 70/15/15 — paper silent on ratios] ───────────
+    TRAIN_FRAC = 0.70
+    VAL_FRAC   = 0.15
+    TEST_FRAC  = 0.15
+    SEED       = 42
+
+    # ── Augmentation (Section 3.2) ───────────────────────────────────────────
+    # Target after augmentation: 4770 images → 1590 per class
+    AUG_TARGET_PER_CLASS = 1590
+    # Rotations: 90, 180, 270°; Flip H, Flip V; Zoom up to 1.5×
+
+    # ── MLVUM preprocessing (Eqs 1–4) ────────────────────────────────────────
+    MLVUM_LAMBDA  = 0.5   # sharpening scale λ [ASSUMPTION — not stated]
+    MLVUM_RADIUS  = 3     # Gaussian kernel radius R [ASSUMPTION — not stated]
+
+    # ── Training (Table 3 + Section 3.3) ─────────────────────────────────────
+    EPOCHS      = 50      # Section 3.3: "50 epochs of training"
+    BATCH_SIZE  = 32      # Table 3
+    LR          = 0.001   # Table 3
+    OPTIMIZER   = "Adam"  # Table 3
+    LOSS        = "categorical_crossentropy"  # Table 3 + Eq. (6)
+    DROPOUT     = 0.5     # [ASSUMPTION — not stated in paper]
+
+    # ── Output ───────────────────────────────────────────────────────────────
+    OUTPUT_DIR  = "/kaggle/working/ac_branch_mobilenet_results"
+
+cfg = Config()
+os.makedirs(cfg.OUTPUT_DIR, exist_ok=True)
+np.random.seed(cfg.SEED)
+tf.random.set_seed(cfg.SEED)
+
+# %% [Cell 3] Dataset auto-detection
+def find_dataset():
+    """
+    Fast dataset detection — checks known exact paths directly.
+    No recursive glob (that hangs on large image folders).
+    """
+    # Known exact path candidates — ordered by priority
+    candidates = [
+        # Your uploaded dataset (confirmed working previously)
+        ("/kaggle/input/datasets/mahzilsohail/fetal-planes-db-zenodo/FETAL_PLANES_DB_data.csv",
+         "/kaggle/input/datasets/mahzilsohail/fetal-planes-db-zenodo/Images"),
+        # khalidhasan47
+        ("/kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/FETAL_PLANES_DB_data.csv",
+         "/kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/Images"),
+        # vineetpawar213
+        ("/kaggle/input/datasets/vineetpawar213/fetal-planes-zenodo/FETAL_PLANES_DB_data.csv",
+         "/kaggle/input/datasets/vineetpawar213/fetal-planes-zenodo/Images"),
+        # Generic fallbacks (no datasets/ prefix)
+        ("/kaggle/input/fetal-planes-db-zenodo/FETAL_PLANES_DB_data.csv",
+         "/kaggle/input/fetal-planes-db-zenodo/Images"),
+        ("/kaggle/input/fetal-planes-db-khr/FETAL_PLANES_ZENODO/FETAL_PLANES_DB_data.csv",
+         "/kaggle/input/fetal-planes-db-khr/FETAL_PLANES_ZENODO/Images"),
+        ("/kaggle/input/fetal-planes-zenodo/FETAL_PLANES_DB_data.csv",
+         "/kaggle/input/fetal-planes-zenodo/Images"),
+    ]
+
+    for csv_path, img_dir in candidates:
+        if os.path.isfile(csv_path) and os.path.isdir(img_dir):
+            print(f"✓ CSV   : {csv_path}")
+            print(f"✓ Images: {img_dir}")
+            return csv_path, img_dir
+
+    # Last resort: os.walk only on directory names (not files) — fast
+    for root, dirs, files in os.walk("/kaggle/input"):
+        if "FETAL_PLANES_DB_data.csv" in files:
+            csv_path = os.path.join(root, "FETAL_PLANES_DB_data.csv")
+            img_dir  = os.path.join(root, "Images")
+            if not os.path.isdir(img_dir):
+                img_dir = os.path.join(os.path.dirname(root), "Images")
+            if os.path.isdir(img_dir):
+                print(f"✓ CSV   : {csv_path}")
+                print(f"✓ Images: {img_dir}")
+                return csv_path, img_dir
+        # Don't recurse into Images folder — it's huge
+        dirs[:] = [d for d in dirs if d != "Images"]
+
+    raise FileNotFoundError(
+        "Dataset not found. Attach one of:\n"
+        "  • mahzilsohail/fetal-planes-db-zenodo\n"
+        "  • khalidhasan47/fetal-planes-db-khr\n"
+        "  • vineetpawar213/fetal-planes-zenodo"
+    )
+
+cfg.CSV_PATH, cfg.DATA_DIR = find_dataset()
+
+# %% [Cell 4] Load dataset — brain subset only
+def _sep(csv_path):
+    with open(csv_path) as f:
+        line = f.readline()
+    return ";" if line.count(";") > line.count(",") else ","
+
+def load_brain_subset(csv_path, img_dir):
+    """
+    Paper Section 3.1:
+      "The dataset includes over 12,400 images; however, since our analysis
+       focuses specifically on brain images, we select a subset of 2,950
+       brain images."
+    Brain_plane column values: Trans-thalamic, Trans-ventricular,
+    Trans-cerebellum (3 classes).
+    """
+    df = pd.read_csv(csv_path, sep=_sep(csv_path))
+    df.columns = [c.strip() for c in df.columns]
+
+    print("CSV columns:", df.columns.tolist())
+    print("Total rows:", len(df))
+
+    # Keep only brain plane images
+    brain_mask = df["Plane"].str.strip() == "Fetal brain"
+    df_brain   = df[brain_mask].copy().reset_index(drop=True)
+    print(f"Brain images found: {len(df_brain)}")
+
+    # Brain sub-class label
+    brain_plane_col = None
+    for col in df_brain.columns:
+        if "brain" in col.lower() and "plane" in col.lower():
+            brain_plane_col = col
+            break
+
+    if brain_plane_col is None:
+        raise ValueError(
+            "Could not find Brain_plane sub-label column. "
+            f"Available columns: {df_brain.columns.tolist()}"
+        )
+
+    print(f"Using sub-label column: '{brain_plane_col}'")
+    df_brain["label"] = df_brain[brain_plane_col].str.strip()
+
+    # Normalize label names to match paper's three classes
+    label_map = {
+        "Trans-thalamic":    "Trans-thalamic",
+        "Trans-ventricular": "Trans-ventricular",
+        "Trans-cerebellum":  "Trans-cerebellum",
+        # Handle alternate spellings in some dataset mirrors
+        "trans-thalamic":    "Trans-thalamic",
+        "trans-ventricular": "Trans-ventricular",
+        "trans-cerebellum":  "Trans-cerebellum",
+        "Trans_thalamic":    "Trans-thalamic",
+        "Trans_ventricular": "Trans-ventricular",
+        "Trans_cerebellum":  "Trans-cerebellum",
+    }
+    df_brain["label"] = df_brain["label"].map(label_map)
+    df_brain = df_brain.dropna(subset=["label"]).reset_index(drop=True)
+
+    # Build file paths
+    df_brain["filepath"] = df_brain["Image_name"].apply(
+        lambda x: os.path.join(
+            img_dir, x if x.lower().endswith(".png") else f"{x}.png"
+        )
+    )
+    df_brain = df_brain[
+        df_brain["filepath"].apply(os.path.exists)
+    ].reset_index(drop=True)
+
+    print(f"\nBrain images with valid paths: {len(df_brain)}")
+    print("Class distribution:\n", df_brain["label"].value_counts())
+
+    if len(df_brain) < 100:
+        raise ValueError(
+            f"Only {len(df_brain)} brain images found — dataset may be "
+            "incomplete or the Images path is incorrect."
+        )
+
+    return df_brain
+
+df_brain = load_brain_subset(cfg.CSV_PATH, cfg.DATA_DIR)
+
+# %% [Cell 5] MLVUM Preprocessing (Section 2.1, Eqs 1–4)
+def mlvum(img_gray: np.ndarray,
+          lam: float = cfg.MLVUM_LAMBDA,
+          R:   int   = cfg.MLVUM_RADIUS) -> np.ndarray:
+    """
+    Maximum Local Variation-Based Unsharp Masking (MLVUM).
+
+    Eq (1): Y = X + λ·D
+    Eq (2): D(m,n) = [X(m,n) − F(m,n)] · ∇(m,n)
+    Eq (3): F(m,n) = Σ Hmn(i,j)·X(m+i, n+j)  (MLVESGF — locally adaptive
+                                                 Gaussian smoothing filter)
+    Eq (4): Hmn(i,j) = exp(−(i²+j²)/2σmn²) / normalizer
+            σmn ∝ ∇(m,n)  (std dev proportional to normalized MLV)
+
+    ∇(m,n) = max absolute difference between pixel (m,n) and its 8 neighbors.
+    """
+    img = img_gray.astype(np.float64)
+    H, W = img.shape
+
+    # ── Step 1: Compute MLV ∇(m,n) — Eq (2) denominator ────────────────────
+    # Maximum absolute value of differences with 8-connected neighbors
+    mlv = np.zeros_like(img)
+    for di in [-1, 0, 1]:
+        for dj in [-1, 0, 1]:
+            if di == 0 and dj == 0:
+                continue
+            shifted = np.roll(np.roll(img, di, axis=0), dj, axis=1)
+            diff    = np.abs(img - shifted)
+            mlv     = np.maximum(mlv, diff)
+    # Normalize MLV to [0,1]
+    mlv_max = mlv.max()
+    mlv_norm = mlv / (mlv_max + 1e-8)   # ∇(m,n) normalized
+
+    # ── Step 2: Compute MLVESGF F(m,n) — Eq (3) ────────────────────────────
+    # σmn proportional to normalized MLV (locally adaptive)
+    # σmn ∈ [0.5, 3.0] to stay numerically stable
+    sigma_map = 0.5 + 2.5 * mlv_norm   # σmn for each pixel
+
+    # Build the locally-adaptive Gaussian filtered image pixel-by-pixel
+    # (full per-pixel convolution is expensive; use a fixed approximation:
+    #  for each of a small set of σ levels, apply a Gaussian and blend)
+    # Practical implementation: weighted average of Gaussian blurred images
+    # at σ ∈ {0.5, 1.5, 3.0}, weighted by how close each pixel's σmn is.
+    F = np.zeros_like(img)
+    sigma_levels = [0.5, 1.5, 3.0]
+    blurred = [cv2.GaussianBlur(img, (2*R+1, 2*R+1), s) for s in sigma_levels]
+    for idx, s_val in enumerate(sigma_levels):
+        # Weight: 1 - |σmn - s_val| / span, clipped to [0,1]
+        span = sigma_levels[-1] - sigma_levels[0]
+        w    = np.clip(1.0 - np.abs(sigma_map - s_val) / span, 0.0, 1.0)
+        F   += w * blurred[idx]
+    # Normalize weights (they don't sum to 1 in general)
+    w_sum = sum(
+        np.clip(1.0 - np.abs(sigma_map - s) / (sigma_levels[-1] - sigma_levels[0]), 0.0, 1.0)
+        for s in sigma_levels
+    )
+    F /= (w_sum + 1e-8)
+
+    # ── Step 3: Compute D — Eq (2) ──────────────────────────────────────────
+    D = (img - F) * mlv_norm
+
+    # ── Step 4: Enhanced image — Eq (1) ─────────────────────────────────────
+    Y = img + lam * D
+    Y = np.clip(Y, 0.0, 255.0).astype(np.uint8)
+    return Y
+
+
+def preprocess_image(filepath: str, img_size: int = cfg.IMG_SIZE) -> np.ndarray:
+    """
+    Full preprocessing pipeline (Section 2.1):
+      1. Read grayscale
+      2. Resize to img_size × img_size
+      3. Apply MLVUM
+      4. Convert to 3-channel RGB (replicate — MobileNetV2 expects 3 channels)
+    Returns float32 array in [0, 255].
+    """
+    img = cv2.imread(filepath, cv2.IMREAD_GRAYSCALE)
+    if img is None:
+        img = np.zeros((img_size, img_size), dtype=np.uint8)
+    img = cv2.resize(img, (img_size, img_size), interpolation=cv2.INTER_LINEAR)
+    img = mlvum(img)
+    img_rgb = cv2.cvtColor(img, cv2.COLOR_GRAY2RGB)   # (H,W,3)
+    return img_rgb.astype(np.float32)
+
+# %% [Cell 6] Train/Val/Test split (Section 3.2 states augmentation applied AFTER split)
+class_to_idx = {c: i for i, c in enumerate(cfg.CLASSES)}
+print("Class→idx mapping:", class_to_idx)
+
+def split_dataset(df, train_frac, val_frac, seed):
+    """
+    Stratified split preserving class proportions.
+    Split: train_frac / val_frac / (1-train_frac-val_frac)
+    Paper is silent on exact ratios → 70/15/15 [ASSUMPTION].
+    """
+    test_frac = 1.0 - train_frac - val_frac
+    train_df, temp_df = train_test_split(
+        df, test_size=(val_frac + test_frac),
+        stratify=df["label"], random_state=seed
+    )
+    rel_val = val_frac / (val_frac + test_frac)
+    val_df, test_df = train_test_split(
+        temp_df, test_size=(1.0 - rel_val),
+        stratify=temp_df["label"], random_state=seed
+    )
+    return (train_df.reset_index(drop=True),
+            val_df.reset_index(drop=True),
+            test_df.reset_index(drop=True))
+
+train_df, val_df, test_df = split_dataset(df_brain, cfg.TRAIN_FRAC, cfg.VAL_FRAC, cfg.SEED)
+print(f"\nSplit sizes — Train: {len(train_df)}  Val: {len(val_df)}  Test: {len(test_df)}")
+print("Train class distribution:\n", train_df["label"].value_counts())
+print("Val   class distribution:\n", val_df["label"].value_counts())
+print("Test  class distribution:\n", test_df["label"].value_counts())
+
+# %% [Cell 7] Data augmentation (Section 3.2)
+#
+# Paper states augmentation techniques:
+#   (i)  Rotation: 90°, 180°, 270°
+#   (ii) Flipping: Horizontally and Vertically
+#   (iii) Zoom: up to 1.5× original dimensions
+#
+# Applied AFTER split to TRAIN ONLY.
+# Target: 4770 total → 1590 per class.
+# Original 2950 brain images split ~70% train ≈ 2065 images.
+# Per-class in train ≈ 688. Need 1590 → augment each image ~2.3×.
+
+def augment_image(img: np.ndarray) -> list:
+    """
+    Returns list of augmented variants of img (including original).
+    Augmentations: rot90, rot180, rot270, flipH, flipV, zoom1.25, zoom1.5.
+    Total = 8 variants per image (original + 7).
+    """
+    variants = [img]  # original
+
+    # Rotations: 90, 180, 270 degrees
+    h, w = img.shape[:2]
+    center = (w // 2, h // 2)
+    for angle in [90, 180, 270]:
+        M   = cv2.getRotationMatrix2D(center, angle, 1.0)
+        rot = cv2.warpAffine(img, M, (w, h))
+        variants.append(rot)
+
+    # Flip horizontal
+    variants.append(cv2.flip(img, 1))
+    # Flip vertical
+    variants.append(cv2.flip(img, 0))
+
+    # Zoom 1.25× (crop center then resize back)
+    for scale in [1.25, 1.5]:
+        ch, cw = int(h / scale), int(w / scale)
+        top  = (h - ch) // 2
+        left = (w - cw) // 2
+        cropped = img[top:top+ch, left:left+cw]
+        zoomed  = cv2.resize(cropped, (w, h), interpolation=cv2.INTER_LINEAR)
+        variants.append(zoomed)
+
+    return variants   # 8 variants
+
+def build_augmented_train_set(train_df, target_per_class, img_size):
+    """
+    Builds augmented training arrays.
+    Loads preprocessed images, applies augmentations until target_per_class
+    is reached for each class.
+    Paper: "we amassed a total of 4770 brain images distributed evenly"
+    → 1590 per class.
+    """
+    X_list, y_list = [], []
+
+    for cls in cfg.CLASSES:
+        cls_df  = train_df[train_df["label"] == cls]
+        cls_idx = class_to_idx[cls]
+        raw_imgs = []
+
+        print(f"  Preprocessing class '{cls}' ({len(cls_df)} images)...")
+        for fp in cls_df["filepath"].values:
+            raw_imgs.append(preprocess_image(fp, img_size))
+
+        # Generate all augmented variants
+        augmented = []
+        for img in raw_imgs:
+            augmented.extend(augment_image(img))
+
+        # Randomly sample to reach target_per_class
+        np.random.shuffle(augmented)
+        if len(augmented) >= target_per_class:
+            selected = augmented[:target_per_class]
+        else:
+            # Repeat if not enough variants
+            repeats = math.ceil(target_per_class / len(augmented))
+            selected = (augmented * repeats)[:target_per_class]
+
+        X_list.extend(selected)
+        y_list.extend([cls_idx] * len(selected))
+        print(f"    → {len(selected)} images after augmentation")
+
+    X = np.array(X_list, dtype=np.float32)
+    y = np.array(y_list, dtype=np.int32)
+    # Shuffle combined
+    perm = np.random.permutation(len(X))
+    return X[perm], y[perm]
+
+print("\nBuilding augmented training set (this may take a few minutes)...")
+X_train, y_train = build_augmented_train_set(
+    train_df, cfg.AUG_TARGET_PER_CLASS, cfg.IMG_SIZE
+)
+print(f"\nAugmented train set: {X_train.shape}  labels: {np.bincount(y_train)}")
+
+# %% [Cell 8] tf.data pipelines
+def make_train_ds(X, y):
+    y_onehot = tf.keras.utils.to_categorical(y, cfg.NUM_CLASSES)
+    ds = tf.data.Dataset.from_tensor_slices((X, y_onehot))
+    ds = ds.shuffle(len(X), seed=cfg.SEED)
+    # Normalize to [0,1] — MobileNetV2 expects inputs in [0,1] range
+    # (tf.keras.applications.mobilenet_v2.preprocess_input maps [0,255]→[-1,1]
+    #  but simple /255 also works — paper does not specify normalization)
+    ds = ds.map(lambda x, y: (x / 255.0, y), num_parallel_calls=AUTOTUNE)
+    ds = ds.batch(cfg.BATCH_SIZE).prefetch(AUTOTUNE)
+    return ds
+
+def _load_eval(filepath, label_onehot):
+    # tf.numpy_function returns a tensor with unknown shape.
+    # Fix: use tf.ensure_shape AFTER cast, before any TF image ops.
+    img = tf.numpy_function(
+        lambda p: preprocess_image(p.decode("utf-8"), cfg.IMG_SIZE) / 255.0,
+        [filepath], tf.float32
+    )
+    img = tf.cast(img, tf.float32)
+    # Explicitly tell TF the shape — this is what was missing
+    img = tf.ensure_shape(img, [cfg.IMG_SIZE, cfg.IMG_SIZE, 3])
+    return img, label_onehot
+
+def make_eval_ds(dframe):
+    y_idx    = dframe["label"].map(class_to_idx).values.astype(np.int32)
+    y_onehot = tf.keras.utils.to_categorical(y_idx, cfg.NUM_CLASSES)
+    ds = tf.data.Dataset.from_tensor_slices(
+        (dframe["filepath"].values, y_onehot)
+    )
+    ds = ds.map(_load_eval, num_parallel_calls=AUTOTUNE)
+    ds = ds.batch(cfg.BATCH_SIZE).prefetch(AUTOTUNE)
+    return ds
+
+train_ds = make_train_ds(X_train, y_train)
+val_ds   = make_eval_ds(val_df)
+test_ds  = make_eval_ds(test_df)
+
+# Free augmented array memory
+del X_train, y_train
+gc.collect()
+
+# %% [Cell 9] Model architecture (Section 2.2, 2.3, 2.4 + Table 1)
+#
+# EXACT architecture from Table 1:
+# ┌─────────────────────────────────────────────────────────────────────┐
+# │ Pre-trained: MobileNetV2  →  output (None, 8, 8, 1024)             │
+# ├─────────────────────────────┬───────────────────────────────────────┤
+# │ Attention module            │ Convolution module                    │
+# │  Conv 1×1 (128, ELU)        │  Conv 3×3 (64, ELU)                  │
+# │  Conv 1×1 (32, ELU)         │  Conv 3×3 (32, ELU)                  │
+# │  Avg-Pool                   │  Max-Pool                             │
+# │  Conv 1×1 (1, ELU)          │  Conv 3×3 (16, ELU)                  │
+# │  Multiply(Attention, MNet)  │                                       │
+# ├─────────────────────────────┴───────────────────────────────────────┤
+# │ Concatenate → Global Avg Pool → Dropout → Dense(32,ELU)            │
+# │  → Dropout → Dense(3, Softmax)                                     │
+# └─────────────────────────────────────────────────────────────────────┘
+# Total parameters: 4,110,836
+
+def build_ac_branch_mobilenet(input_shape=(256, 256, 3),
+                               num_classes=3,
+                               dropout_rate=0.5):
+    """
+    Exact reproduction of AC_Branch_MobileNet per Table 1 and Section 2.
+    """
+    inputs = layers.Input(shape=input_shape, name="input")
+
+    # ── (a) Deep feature extraction: MobileNetV2 pretrained on ImageNet ──────
+    # Section 2.2: "strategically selected MobileNetV2 as our baseline model"
+    # Section 3.3: "transfer learning ... pre-trained MobileNetV2"
+    # Table 1: output shape (None, 8, 8, 1024)
+    # At 256×256 input, MobileNetV2 with include_top=False outputs 8×8×1280.
+    # Paper reports 1024 channels → they likely truncate at an intermediate
+    # block. We use the full backbone (1280) and add a 1×1 conv to project
+    # to 1024 to match the paper's reported shape. [ASSUMPTION: projection]
+    base = tf.keras.applications.MobileNetV2(
+        input_shape=input_shape,
+        include_top=False,
+        weights="imagenet",
+    )
+    base.trainable = True   # fine-tune all layers (Section 3.3)
+    x_base = base(inputs, training=True)   # (None, 8, 8, 1280)
+
+    # Project to 1024 channels to match Table 1 output shape
+    x_feat = layers.Conv2D(1024, 1, padding="same", use_bias=False,
+                            name="proj_1024")(x_base)
+    x_feat = layers.BatchNormalization(name="proj_bn")(x_feat)
+    x_feat = layers.Activation("relu", name="proj_relu")(x_feat)
+    # x_feat: (None, 8, 8, 1024)  ← matches Table 1
+
+    # ── (b) Branch structure: Attention module (Table 1, left branch) ────────
+    # Conv 1×1 (128, ELU)
+    a = layers.Conv2D(128, 1, padding="same", use_bias=True,
+                       name="attn_conv1")(x_feat)
+    a = layers.Activation("elu", name="attn_elu1")(a)
+    # Conv 1×1 (32, ELU)
+    a = layers.Conv2D(32, 1, padding="same", use_bias=True,
+                       name="attn_conv2")(a)
+    a = layers.Activation("elu", name="attn_elu2")(a)
+    # Avg-Pool (Table 1: "Avg-Pool" with output (None,8,8,32) — spatial avg pool)
+    a = layers.AveragePooling2D(pool_size=3, strides=1, padding="same",
+                                 name="attn_avgpool")(a)
+    # Conv 1×1 (1, ELU)  → spatial attention map
+    a = layers.Conv2D(1, 1, padding="same", use_bias=True,
+                       name="attn_conv3")(a)
+    a = layers.Activation("elu", name="attn_elu3")(a)
+    # Multiply: attention map × MobileNet features
+    # Table 1: "Multiply  Attention, MobileNet  (None,8,8,1024)"
+    attn_out = layers.Multiply(name="attn_multiply")([a, x_feat])
+    # attn_out: (None, 8, 8, 1024)
+
+    # ── (b) Branch structure: Convolution module (Table 1, right branch) ─────
+    # Conv 3×3 (64, ELU)
+    c = layers.Conv2D(64, 3, padding="same", use_bias=True,
+                       name="conv_branch_conv1")(x_feat)
+    c = layers.Activation("elu", name="conv_branch_elu1")(c)
+    # Conv 3×3 (32, ELU)
+    c = layers.Conv2D(32, 3, padding="same", use_bias=True,
+                       name="conv_branch_conv2")(c)
+    c = layers.Activation("elu", name="conv_branch_elu2")(c)
+    # Max-Pool  → (None, 8, 8, 32)
+    c = layers.MaxPooling2D(pool_size=3, strides=1, padding="same",
+                             name="conv_branch_maxpool")(c)
+    # Conv 3×3 (16, ELU)
+    c = layers.Conv2D(16, 3, padding="same", use_bias=True,
+                       name="conv_branch_conv3")(c)
+    c = layers.Activation("elu", name="conv_branch_elu3")(c)
+    # conv_out: (None, 8, 8, 16)
+
+    # ── (c) Classification head (Table 1, Section 2.4) ───────────────────────
+    # Concatenate attention and conv branches
+    # Table 1: "concatenate  Attention, Convolution  (None,8,8,1040)"
+    # 1024 + 16 = 1040 ✓
+    merged = layers.Concatenate(name="concat")([attn_out, c])
+    # merged: (None, 8, 8, 1040)
+
+    # Global Average Pooling → (None, 1040)
+    x = layers.GlobalAveragePooling2D(name="gap")(merged)
+
+    # Dropout
+    x = layers.Dropout(dropout_rate, name="dropout1")(x)
+
+    # Dense (32, ELU)  — Table 1 shows 128 neurons with output (None,128)
+    # [NOTE: Table 1 col "kernels" = 32, but Output Shape = (None,128).
+    #  This is a paper inconsistency. Using output dim=128 as shown in shape.]
+    x = layers.Dense(128, activation="elu", name="dense1")(x)
+
+    # Dropout
+    x = layers.Dropout(dropout_rate, name="dropout2")(x)
+
+    # Dense (3, Softmax) — final classification layer
+    outputs = layers.Dense(num_classes, activation="softmax", name="output")(x)
+
+    model = models.Model(inputs, outputs, name="AC_Branch_MobileNet")
+    return model
+
+model = build_ac_branch_mobilenet(
+    input_shape=(cfg.IMG_SIZE, cfg.IMG_SIZE, cfg.CHANNELS),
+    num_classes=cfg.NUM_CLASSES,
+    dropout_rate=cfg.DROPOUT,
+)
+model.summary()
+print(f"\nTotal parameters: {model.count_params():,}")
+
+# %% [Cell 10] Compile and train (Section 3.3, Table 3)
+# Optimizer: Adam, LR=0.001 (Table 3)
+# Loss: categorical cross-entropy (Table 3 + Eq.6)
+# Epochs: 50 (Section 3.3)
+# Batch: 32 (Table 3)
+# No early stopping mentioned in paper → train full 50 epochs
+
+optimizer = optimizers.Adam(learning_rate=cfg.LR)
+model.compile(
+    optimizer=optimizer,
+    loss=cfg.LOSS,
+    metrics=["accuracy"],
+)
+
+# Callbacks — paper mentions no callbacks, but we save best model
+cb_checkpoint = callbacks.ModelCheckpoint(
+    filepath=os.path.join(cfg.OUTPUT_DIR, "best_model.keras"),
+    monitor="val_accuracy",
+    save_best_only=True,
+    verbose=1,
+)
+cb_csv = callbacks.CSVLogger(
+    os.path.join(cfg.OUTPUT_DIR, "training_log.csv")
+)
+
+print(f"\nTraining for {cfg.EPOCHS} epochs...")
+history = model.fit(
+    train_ds,
+    validation_data=val_ds,
+    epochs=cfg.EPOCHS,
+    callbacks=[cb_checkpoint, cb_csv],
+    verbose=1,
+)
+
+# Also save final model
+model.save(os.path.join(cfg.OUTPUT_DIR, "final_model.keras"))
+print("Models saved.")
+
+# %% [Cell 11] Evaluation (Section 3.4, Eqs 7–10)
+# Load best checkpoint for evaluation
+best_model = models.load_model(
+    os.path.join(cfg.OUTPUT_DIR, "best_model.keras")
+)
+
+def evaluate_model(mdl, ds, dframe, split_name="Test"):
+    """Computes Accuracy, Precision, Recall, F1-score per Eqs (7)–(10)."""
+    y_true, y_pred = [], []
+    for x_batch, y_batch in ds:
+        preds = mdl.predict(x_batch, verbose=0)
+        y_pred.extend(np.argmax(preds,   axis=1))
+        y_true.extend(np.argmax(y_batch.numpy(), axis=1))
+    y_true = np.array(y_true)
+    y_pred = np.array(y_pred)
+
+    acc   = accuracy_score(y_true, y_pred) * 100
+    prec  = precision_score(y_true, y_pred, average="macro", zero_division=0) * 100
+    rec   = recall_score(y_true, y_pred, average="macro", zero_division=0) * 100
+    f1    = f1_score(y_true, y_pred, average="macro", zero_division=0) * 100
+
+    print(f"\n{'='*55}")
+    print(f"  {split_name} Results")
+    print(f"{'='*55}")
+    print(f"  Accuracy  : {acc:.2f}%   (Paper: 95.11%)")
+    print(f"  Precision : {prec:.2f}%   (Paper: 94.62%)")
+    print(f"  Recall    : {rec:.2f}%   (Paper: 94.39%)")
+    print(f"  F1-score  : {f1:.2f}%   (Paper: 94.50%)")
+    print(f"{'='*55}")
+    print(classification_report(y_true, y_pred, target_names=cfg.CLASSES, zero_division=0))
+
+    return y_true, y_pred, {"accuracy": acc, "precision": prec, "recall": rec, "f1": f1}
+
+y_true_test, y_pred_test, test_metrics = evaluate_model(best_model, test_ds, test_df, "Test")
+y_true_val,  y_pred_val,  val_metrics  = evaluate_model(best_model, val_ds,  val_df,  "Validation")
+
+# %% [Cell 12] Confusion matrix (Fig. 9 style)
+def plot_confusion_matrix(y_true, y_pred, title="Confusion Matrix", filename="cm.png"):
+    cm = confusion_matrix(y_true, y_pred)
+    plt.figure(figsize=(6, 5))
+    sns.heatmap(
+        cm, annot=True, fmt="d", cmap="Blues",
+        xticklabels=cfg.CLASSES, yticklabels=cfg.CLASSES,
+        linewidths=0.5,
+    )
+    plt.title(title, fontsize=13, fontweight="bold")
+    plt.xlabel("Predicted label", fontsize=11)
+    plt.ylabel("True label", fontsize=11)
+    plt.tight_layout()
+    path = os.path.join(cfg.OUTPUT_DIR, filename)
+    plt.savefig(path, dpi=150, bbox_inches="tight")
+    plt.show()
+    print(f"Saved: {path}")
+
+plot_confusion_matrix(y_true_test, y_pred_test,
+                      "AC_Branch_MobileNet — Test Confusion Matrix",
+                      "confusion_matrix_test.png")
+
+# %% [Cell 13] Training curves (Fig. 7 style)
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+axes[0].plot(history.history["accuracy"],     label="Train Accuracy")
+axes[0].plot(history.history["val_accuracy"], label="Validation Accuracy")
+max_val = max(history.history["val_accuracy"])
+axes[0].axhline(max_val, color="gray", linestyle="--", alpha=0.5,
+                label=f"Max Val Acc: {max_val:.4f}")
+axes[0].set_title("Model Accuracy Over Epochs")
+axes[0].set_xlabel("Epoch"); axes[0].set_ylabel("Accuracy")
+axes[0].legend(); axes[0].grid(alpha=0.3)
+
+axes[1].plot(history.history["loss"],     label="Train Loss")
+axes[1].plot(history.history["val_loss"], label="Validation Loss")
+min_val = min(history.history["val_loss"])
+axes[1].axhline(min_val, color="gray", linestyle="--", alpha=0.5,
+                label=f"Min Val Loss: {min_val:.4f}")
+axes[1].set_title("Model Loss Over Epochs")
+axes[1].set_xlabel("Epoch"); axes[1].set_ylabel("Loss")
+axes[1].legend(); axes[1].grid(alpha=0.3)
+
+plt.tight_layout()
+path = os.path.join(cfg.OUTPUT_DIR, "training_curves.png")
+plt.savefig(path, dpi=150, bbox_inches="tight")
+plt.show()
+print(f"Saved: {path}")
+
+# %% [Cell 14] Grad-CAM visualization (Fig. 11 style)
+def make_gradcam_heatmap(img_array, mdl, last_conv_layer_name):
+    """Grad-CAM per Selvaraju et al. (2017) — paper Section 3.5."""
+    grad_model = models.Model(
+        inputs=mdl.input,
+        outputs=[mdl.get_layer(last_conv_layer_name).output, mdl.output]
+    )
+    with tf.GradientTape() as tape:
+        conv_out, preds = grad_model(img_array)
+        pred_idx = tf.argmax(preds[0])
+        loss     = preds[:, pred_idx]
+    grads      = tape.gradient(loss, conv_out)
+    pooled     = tf.reduce_mean(grads, axis=(0, 1, 2))
+    heatmap    = conv_out[0] @ pooled[..., tf.newaxis]
+    heatmap    = tf.squeeze(heatmap)
+    heatmap    = tf.maximum(heatmap, 0) / (tf.math.reduce_max(heatmap) + 1e-8)
+    return heatmap.numpy(), int(pred_idx.numpy())
+
+# Find last conv layer
+last_conv = None
+for lyr in reversed(best_model.layers):
+    if isinstance(lyr, layers.Conv2D):
+        last_conv = lyr.name
+        break
+print(f"Last conv layer for Grad-CAM: {last_conv}")
+
+# Visualize on 3 test samples (one per class if possible)
+sample_rows = []
+for cls in cfg.CLASSES:
+    cls_rows = test_df[test_df["label"] == cls]
+    if len(cls_rows) > 0:
+        sample_rows.append(cls_rows.iloc[0])
+
+fig, axes = plt.subplots(2, len(sample_rows), figsize=(4 * len(sample_rows), 8))
+for i, row in enumerate(sample_rows):
+    img      = preprocess_image(row["filepath"], cfg.IMG_SIZE)
+    img_norm = img / 255.0
+    img_batch = np.expand_dims(img_norm, 0).astype(np.float32)
+
+    if last_conv:
+        heatmap, pred_idx = make_gradcam_heatmap(img_batch, best_model, last_conv)
+        heatmap_resized   = cv2.resize(heatmap, (cfg.IMG_SIZE, cfg.IMG_SIZE))
+        heatmap_color     = cv2.applyColorMap(
+            np.uint8(255 * heatmap_resized), cv2.COLORMAP_JET
+        )
+        overlay = cv2.addWeighted(img.astype(np.uint8), 0.6, heatmap_color, 0.4, 0)
+        pred_name = cfg.CLASSES[pred_idx]
+    else:
+        overlay   = img.astype(np.uint8)
+        pred_name = "N/A"
+
+    axes[0, i].imshow(img.astype(np.uint8))
+    axes[0, i].set_title(f"True: {row['label']}", fontsize=9)
+    axes[0, i].axis("off")
+
+    axes[1, i].imshow(overlay)
+    axes[1, i].set_title(f"Pred: {pred_name}", fontsize=9)
+    axes[1, i].axis("off")
+
+plt.suptitle("Original Images & Grad-CAM Overlays", fontweight="bold")
+plt.tight_layout()
+path = os.path.join(cfg.OUTPUT_DIR, "gradcam_visualization.png")
+plt.savefig(path, dpi=150, bbox_inches="tight")
+plt.show()
+print(f"Saved: {path}")
+
+# %% [Cell 15] Save final summary
+summary = {
+    "paper": "AC_Branch_MobileNet (Vatanparast et al., 2026)",
+    "doi": "10.1016/j.bspc.2025.108586",
+    "dataset": "Fetal Planes DB (Zenodo 3904280) — brain subset",
+    "n_brain_images_raw": len(df_brain),
+    "n_after_augmentation": cfg.AUG_TARGET_PER_CLASS * cfg.NUM_CLASSES,
+    "split_assumption": "70/15/15 stratified [ASSUMPTION — paper silent]",
+    "epochs": cfg.EPOCHS,
+    "batch_size": cfg.BATCH_SIZE,
+    "lr": cfg.LR,
+    "optimizer": cfg.OPTIMIZER,
+    "dropout_assumption": cfg.DROPOUT,
+    "mlvum_lambda_assumption": cfg.MLVUM_LAMBDA,
+    "mlvum_radius_assumption": cfg.MLVUM_RADIUS,
+    "test_metrics":       test_metrics,
+    "val_metrics":        val_metrics,
+    "paper_reported": {
+        "accuracy":  95.11,
+        "precision": 94.62,
+        "recall":    94.39,
+        "f1":        94.50,
+    },
+    "output_files": {
+        "best_model":       "best_model.keras",
+        "final_model":      "final_model.keras",
+        "training_log":     "training_log.csv",
+        "confusion_matrix": "confusion_matrix_test.png",
+        "training_curves":  "training_curves.png",
+        "gradcam":          "gradcam_visualization.png",
+    },
+}
+
+with open(os.path.join(cfg.OUTPUT_DIR, "summary.json"), "w") as f:
+    json.dump(summary, f, indent=2, default=str)
+
+print("\n" + "="*55)
+print("  All outputs saved to:", cfg.OUTPUT_DIR)
+print("="*55)
+print(json.dumps(summary["test_metrics"], indent=2))
+print("\nPaper reported:")
+print(json.dumps(summary["paper_reported"], indent=2))

@@ -1,0 +1,3 @@
+Common maternal-fetal ultrasound images
+DATA_DIR = "/kaggle/input/datasets/fahadnajeeb/common-maternal-fetal-ultrasound-images/Images/Images"
+CSV_PATH = "/kaggle/input/datasets/fahadnajeeb/common-maternal-fetal-ultrasound-images/FETAL_PLANES_DB_data.xlsx"

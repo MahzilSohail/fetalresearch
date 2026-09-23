@@ -1,0 +1,253 @@
+# ============================================================
+# Fetal Plane Classification — complete, error-free pipeline
+# Works with the 'minhnhtl05/fetal-planes-db-dataset' folder
+# structure: Fetal_Planes_DB/{train,val}/<class_name>/*.png
+# ============================================================
+
+import os, glob, time, copy
+import numpy as np
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.utils.data import DataLoader
+from torchvision import datasets, transforms, models
+from sklearn.metrics import classification_report, confusion_matrix
+
+torch.manual_seed(42)
+np.random.seed(42)
+
+# ------------------------------------------------------------
+# 1. Auto-detect dataset root
+# ------------------------------------------------------------
+def _auto_find_dataset_root():
+    search_root = "/kaggle/input"
+    if not os.path.isdir(search_root) or not os.listdir(search_root):
+        raise FileNotFoundError(
+            "/kaggle/input is empty. Attach the 'Fetal Planes DB' dataset "
+            "via '+ Add Data', then restart/rerun the notebook."
+        )
+
+    candidates = []
+    for root, dirs, files in os.walk(search_root):
+        if "train" in dirs:
+            train_path = os.path.join(root, "train")
+            subdirs = [d for d in os.listdir(train_path)
+                       if os.path.isdir(os.path.join(train_path, d))]
+            if subdirs:
+                candidates.append(root)
+
+    if not candidates:
+        raise FileNotFoundError(
+            "Could not find a 'train' folder with class subfolders under "
+            "/kaggle/input. Check the attached dataset's structure."
+        )
+
+    dataset_root = candidates[0]
+    print(f"Detected dataset root: {dataset_root}")
+
+    available_splits = [d for d in os.listdir(dataset_root)
+                         if os.path.isdir(os.path.join(dataset_root, d))
+                         and d.lower() in ("train", "val", "test")]
+    print(f"Available splits: {available_splits}")
+    return dataset_root, available_splits
+
+
+# ------------------------------------------------------------
+# 2. Config
+# ------------------------------------------------------------
+class Config:
+    IMG_SIZE = 224
+    BATCH_SIZE = 32
+    NUM_EPOCHS = 15
+    LR = 3e-4
+    WEIGHT_DECAY = 1e-4
+    DROPOUT = 0.1
+    NUM_WORKERS = 2
+    OUTPUT_DIR = "/kaggle/working/results"
+
+    DATASET_ROOT, SPLITS = _auto_find_dataset_root()
+    TRAIN_DIR = os.path.join(DATASET_ROOT, "train")
+    VAL_DIR = os.path.join(DATASET_ROOT, "val") if "val" in SPLITS else None
+    TEST_DIR = os.path.join(DATASET_ROOT, "test") if "test" in SPLITS else None
+
+os.makedirs(Config.OUTPUT_DIR, exist_ok=True)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("Device:", device)
+
+# ------------------------------------------------------------
+# 3. Transforms
+# ------------------------------------------------------------
+mean = [0.485, 0.456, 0.406]
+std = [0.229, 0.224, 0.225]
+
+train_tfms = transforms.Compose([
+    transforms.Grayscale(num_output_channels=3),
+    transforms.Resize((Config.IMG_SIZE, Config.IMG_SIZE)),
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomRotation(10),
+    transforms.ColorJitter(brightness=0.15, contrast=0.15),
+    transforms.ToTensor(),
+    transforms.Normalize(mean, std),
+])
+
+eval_tfms = transforms.Compose([
+    transforms.Grayscale(num_output_channels=3),
+    transforms.Resize((Config.IMG_SIZE, Config.IMG_SIZE)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean, std),
+])
+
+# ------------------------------------------------------------
+# 4. Datasets & DataLoaders
+# ------------------------------------------------------------
+train_dataset = datasets.ImageFolder(Config.TRAIN_DIR, transform=train_tfms)
+class_names = train_dataset.classes
+num_classes = len(class_names)
+print(f"Classes ({num_classes}): {class_names}")
+
+if Config.VAL_DIR:
+    val_dataset = datasets.ImageFolder(Config.VAL_DIR, transform=eval_tfms)
+else:
+    # if no val split exists, carve one out of train
+    val_size = int(0.15 * len(train_dataset))
+    train_size = len(train_dataset) - val_size
+    train_dataset, val_dataset = torch.utils.data.random_split(
+        train_dataset, [train_size, val_size],
+        generator=torch.Generator().manual_seed(42)
+    )
+
+test_dataset = None
+if Config.TEST_DIR:
+    test_dataset = datasets.ImageFolder(Config.TEST_DIR, transform=eval_tfms)
+
+print(f"Train size: {len(train_dataset)} | Val size: {len(val_dataset)}"
+      + (f" | Test size: {len(test_dataset)}" if test_dataset else ""))
+
+train_loader = DataLoader(train_dataset, batch_size=Config.BATCH_SIZE,
+                           shuffle=True, num_workers=Config.NUM_WORKERS,
+                           pin_memory=True, drop_last=True)
+val_loader = DataLoader(val_dataset, batch_size=Config.BATCH_SIZE,
+                         shuffle=False, num_workers=Config.NUM_WORKERS,
+                         pin_memory=True)
+if test_dataset:
+    test_loader = DataLoader(test_dataset, batch_size=Config.BATCH_SIZE,
+                              shuffle=False, num_workers=Config.NUM_WORKERS,
+                              pin_memory=True)
+
+# ------------------------------------------------------------
+# 5. Class weights (handles class imbalance)
+# ------------------------------------------------------------
+targets = np.array(train_dataset.dataset.targets)[train_dataset.indices] \
+    if isinstance(train_dataset, torch.utils.data.Subset) else np.array(train_dataset.targets)
+
+class_counts = np.bincount(targets, minlength=num_classes)
+class_counts = np.where(class_counts == 0, 1, class_counts)  # avoid div-by-zero
+class_weights = (1.0 / class_counts)
+class_weights = class_weights / class_weights.sum() * num_classes
+class_weights_t = torch.tensor(class_weights, dtype=torch.float32).to(device)
+print("Class counts:", dict(zip(class_names, class_counts)))
+
+# ------------------------------------------------------------
+# 6. Model — EfficientNet-B0 (pretrained), custom head
+# ------------------------------------------------------------
+def build_model(num_classes, dropout=0.1):
+    model = models.efficientnet_b0(weights=models.EfficientNet_B0_Weights.IMAGENET1K_V1)
+    in_features = model.classifier[1].in_features
+    model.classifier = nn.Sequential(
+        nn.Dropout(dropout),
+        nn.Linear(in_features, num_classes)
+    )
+    return model
+
+model = build_model(num_classes, Config.DROPOUT).to(device)
+
+criterion = nn.CrossEntropyLoss(weight=class_weights_t, label_smoothing=0.05)
+optimizer = optim.AdamW(model.parameters(), lr=Config.LR, weight_decay=Config.WEIGHT_DECAY)
+scheduler = optim.lr_scheduler.OneCycleLR(
+    optimizer, max_lr=Config.LR, epochs=Config.NUM_EPOCHS,
+    steps_per_epoch=len(train_loader)
+)
+
+# ------------------------------------------------------------
+# 7. Train / eval loops
+# ------------------------------------------------------------
+def run_epoch(loader, train=True):
+    model.train() if train else model.eval()
+    total_loss, correct, total = 0.0, 0, 0
+
+    torch.set_grad_enabled(train)
+    for imgs, labels in loader:
+        imgs, labels = imgs.to(device), labels.to(device)
+
+        if train:
+            optimizer.zero_grad()
+
+        outputs = model(imgs)
+        loss = criterion(outputs, labels)
+
+        if train:
+            loss.backward()
+            optimizer.step()
+            scheduler.step()
+
+        total_loss += loss.item() * imgs.size(0)
+        preds = outputs.argmax(dim=1)
+        correct += (preds == labels).sum().item()
+        total += imgs.size(0)
+
+    return total_loss / total, correct / total
+
+
+best_val_acc = 0.0
+best_state = None
+history = {"train_loss": [], "train_acc": [], "val_loss": [], "val_acc": []}
+
+print("\nStarting training...")
+for epoch in range(Config.NUM_EPOCHS):
+    t0 = time.time()
+    train_loss, train_acc = run_epoch(train_loader, train=True)
+    val_loss, val_acc = run_epoch(val_loader, train=False)
+
+    history["train_loss"].append(train_loss)
+    history["train_acc"].append(train_acc)
+    history["val_loss"].append(val_loss)
+    history["val_acc"].append(val_acc)
+
+    if val_acc > best_val_acc:
+        best_val_acc = val_acc
+        best_state = copy.deepcopy(model.state_dict())
+
+    print(f"Epoch {epoch+1}/{Config.NUM_EPOCHS} "
+          f"[{time.time()-t0:.1f}s] "
+          f"train_loss={train_loss:.4f} train_acc={train_acc:.4f} "
+          f"val_loss={val_loss:.4f} val_acc={val_acc:.4f}")
+
+print(f"\nBest validation accuracy: {best_val_acc:.4f}")
+model.load_state_dict(best_state)
+torch.save(model.state_dict(), os.path.join(Config.OUTPUT_DIR, "best_model.pt"))
+
+# ------------------------------------------------------------
+# 8. Final evaluation + report
+# ------------------------------------------------------------
+def evaluate_full(loader, name="Validation"):
+    model.eval()
+    all_preds, all_labels = [], []
+    with torch.no_grad():
+        for imgs, labels in loader:
+            imgs = imgs.to(device)
+            outputs = model(imgs)
+            preds = outputs.argmax(dim=1).cpu().numpy()
+            all_preds.extend(preds)
+            all_labels.extend(labels.numpy())
+
+    print(f"\n--- {name} classification report ---")
+    print(classification_report(all_labels, all_preds, target_names=class_names, zero_division=0))
+    cm = confusion_matrix(all_labels, all_preds)
+    print(f"{name} confusion matrix:\n", cm)
+    return all_preds, all_labels
+
+evaluate_full(val_loader, "Validation")
+if test_dataset:
+    evaluate_full(test_loader, "Test")
+
+print(f"\nDone. Best model saved to {Config.OUTPUT_DIR}/best_model.pt")

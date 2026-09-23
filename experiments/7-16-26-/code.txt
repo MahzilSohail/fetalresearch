@@ -1,0 +1,490 @@
+# =============================================================================
+# FetalMLOps — Reproduction of the paper's ML methodology (SPEED-OPTIMIZED)
+# Testi, Fiorentino, Ballabio, Visani, Ciccozzi, Frontoni, Moccia, Vessio (2025)
+# "FetalMLOps: operationalizing machine learning models for standard fetal
+#  ultrasound plane classification" — Med Biol Eng Comput 64:75-90
+#
+# This script reproduces Sections 2.2.1-2.2.3 (Data acquisition, ML methodology,
+# ML training/testing), 2.4.1 (Explainability - Grad-CAM) and 2.4.2
+# (Sustainability - CodeCarbon) of the paper.
+#
+# METHODOLOGY IS UNCHANGED from the paper:
+#   - Same 3 architectures (VGG19, ResNet50, MobileNetV2), same custom head
+#     (Conv 512@3x3+BN+ReLU -> Conv 3@1x1+BN -> GAP -> BN -> Softmax)
+#   - Same optimizer (SGD, lr=0.001), same loss (categorical cross-entropy)
+#   - Same preprocessing (224x224x3, mean subtraction) and augmentation
+#     (rotation +-30deg, brightness jitter, horizontal flip)
+#
+# WHAT CHANGED (engineering only, not methodology):
+#   1. ImageDataGenerator -> tf.data pipeline with on-disk caching. The old
+#      generator re-reads/re-decodes images from Kaggle's slow input mount
+#      every single batch, every epoch -> this is almost certainly why
+#      training stalled around epoch 75/100. tf.data caches the decoded
+#      image tensors after the first epoch, so every epoch after that is
+#      pure GPU-bound and much faster.
+#   2. Mixed precision (float16 compute) -> ~1.5-2x speedup on GPU with
+#      no accuracy loss (output layer kept float32 for numerical stability).
+#   3. EarlyStopping + ReduceLROnPlateau + ModelCheckpoint -> stops each
+#      model once validation loss stops improving (instead of always
+#      grinding through all 100 epochs), restores the BEST epoch's weights
+#      (usually improves test accuracy vs. just taking the last epoch,
+#      since the last epoch can be mildly overfit), and lowers the
+#      learning rate on plateaus to help escape stalls and converge better.
+#   4. GPU memory-growth enabled -> avoids the kind of TF/CUDA memory
+#      fragmentation that can silently freeze a run mid-epoch.
+#
+# HOW TO USE ON KAGGLE:
+# 1. New Kaggle Notebook, enable GPU (Settings -> Accelerator -> GPU T4 x2).
+# 2. Add the "Fetal_Planes_DB_dataset" dataset via "+ Add Input". Expected
+#    structure (auto-discovered in CELL 4):
+#       Fetal_Planes_DB/{train,val,test}/<class name>/*.png
+#    class name in: "Fetal abdomen", "Fetal brain", "Fetal femur",
+#    "Fetal thorax", "Maternal cervix", "Other".
+# 3. Paste each "# %% CELL" block into its own notebook cell, then
+#    Restart Session -> Run All.
+# =============================================================================
+
+# %% CELL 1 — Install extra deps (TensorFlow/Keras are preinstalled on Kaggle)
+# IMPORTANT: codecarbon's dependency resolver can silently upgrade `cryptography`
+# to a version incompatible with Kaggle's preinstalled oauth2client/pyOpenSSL
+# stack (which TensorFlow imports transitively via its GCE cluster resolver),
+# breaking `import tensorflow` with: AttributeError: module 'lib' has no
+# attribute 'GEN_EMAIL'. Fix: pin `cryptography` so pip does NOT bump it.
+import subprocess, sys
+subprocess.run([sys.executable, "-m", "pip", "install", "-q",
+                 "codecarbon", "grad-cam", "cryptography<44,>=42.0.0"],
+                check=False)
+# If you already hit that AttributeError once this session, the pin alone
+# will NOT fix it (a broken cryptography is already loaded in memory).
+# Run menu -> "Restart Session", then Run All again.
+
+# %% CELL 2 — Imports + performance setup
+import os, shutil
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"   # suppress noisy TF/cuDNN INFO+WARNING logs
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import cv2
+import tensorflow as tf
+from tensorflow.keras import layers, models, optimizers, mixed_precision
+from tensorflow.keras.applications import VGG19, ResNet50, MobileNetV2
+from sklearn.metrics import (precision_recall_fscore_support, roc_curve, auc,
+                              confusion_matrix)
+from sklearn.preprocessing import label_binarize
+from codecarbon import EmissionsTracker
+
+tf.random.set_seed(42)
+np.random.seed(42)
+
+# Prevent CUDA memory fragmentation / silent hangs
+for gpu in tf.config.list_physical_devices('GPU'):
+    try:
+        tf.config.experimental.set_memory_growth(gpu, True)
+    except Exception as e:
+        print("Could not set memory growth on", gpu, "->", e)
+
+# Mixed precision: big speedup on T4/P100 GPUs, negligible accuracy impact
+mixed_precision.set_global_policy('mixed_float16')
+
+print("TF version:", tf.__version__)
+print("GPUs available:", tf.config.list_physical_devices('GPU'))
+print("Mixed precision policy:", mixed_precision.global_policy())
+
+# %% CELL 3 — CONFIG
+CONFIG = {
+    "dataset_search_root": "/kaggle/input",
+    "dataset_folder_name": "Fetal_Planes_DB",
+    "img_size": 224,                 # 224x224x3, per paper
+    "batch_size": 32,                # per paper
+    "epochs": 100,                   # per paper (upper bound; EarlyStopping usually stops sooner)
+    "learning_rate": 0.001,          # per paper
+    "early_stop_patience": 12,
+    "reduce_lr_patience": 5,
+    "classes": ["Fetal brain", "Fetal thorax", "Maternal cervix"],
+    "output_dir": "/kaggle/working/fetalmlops_outputs",
+}
+os.makedirs(CONFIG["output_dir"], exist_ok=True)
+
+IMG_SIZE = CONFIG["img_size"]
+BATCH = CONFIG["batch_size"]
+AUTOTUNE = tf.data.AUTOTUNE
+
+# =============================================================================
+# SECTION 2.2.1 — DATA ACQUISITION
+# =============================================================================
+
+# %% CELL 4 — Locate the dataset root, then build train/val/test dataframes
+def find_dataset_root(search_root, folder_name):
+    for root, dirs, _files in os.walk(search_root):
+        if folder_name in dirs:
+            candidate = os.path.join(root, folder_name)
+            if all(os.path.isdir(os.path.join(candidate, s)) for s in ("train", "val", "test")):
+                return candidate
+    raise FileNotFoundError(
+        f"Could not locate a '{folder_name}' folder with train/val/test "
+        f"subfolders under {search_root}."
+    )
+
+DATASET_ROOT = find_dataset_root(CONFIG["dataset_search_root"], CONFIG["dataset_folder_name"])
+print("Dataset root found at:", DATASET_ROOT)
+
+def build_split_dataframe(dataset_root, split_name, classes):
+    rows = []
+    split_dir = os.path.join(dataset_root, split_name)
+    for cls in classes:
+        cls_dir = os.path.join(split_dir, cls)
+        if not os.path.isdir(cls_dir):
+            print(f"WARNING: class folder not found, skipping: {cls_dir}")
+            continue
+        for fname in os.listdir(cls_dir):
+            if fname.lower().endswith((".png", ".jpg", ".jpeg")):
+                rows.append({"filepath": os.path.join(cls_dir, fname), "Plane": cls})
+    return pd.DataFrame(rows)
+
+train_df = build_split_dataframe(DATASET_ROOT, "train", CONFIG["classes"])
+val_df   = build_split_dataframe(DATASET_ROOT, "val",   CONFIG["classes"])
+test_df  = build_split_dataframe(DATASET_ROOT, "test",  CONFIG["classes"])
+
+if len(train_df) == 0 or len(val_df) == 0 or len(test_df) == 0:
+    raise RuntimeError("One of train/val/test came back empty — check class-folder names.")
+
+print(f"Train: {len(train_df)} | Val: {len(val_df)} | Test: {len(test_df)}")
+for name, part in [("train", train_df), ("val", val_df), ("test", test_df)]:
+    print(name, part["Plane"].value_counts().to_dict())
+
+CLASS_TO_IDX = {c: i for i, c in enumerate(CONFIG["classes"])}
+NUM_CLASSES = len(CONFIG["classes"])
+
+# =============================================================================
+# SECTION 2.2.2/2.2.3 — ML METHODOLOGY & TRAINING
+# Object classification, 3 backbones with a shared custom head, SGD lr=0.001,
+# batch=32, categorical cross-entropy. Preprocessing: resize 224x224x3, mean
+# subtraction, augmentation (rotation +-30deg, brightness jitter, h-flip).
+# =============================================================================
+
+# %% CELL 5 — Estimate per-channel mean (for "removing the intensity average")
+sample_paths = train_df["filepath"].sample(min(500, len(train_df)), random_state=42)
+sample_imgs = []
+for p in sample_paths:
+    img = cv2.imread(p)
+    if img is None:
+        continue
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
+    sample_imgs.append(img)
+sample_imgs = np.array(sample_imgs, dtype=np.float32)
+CHANNEL_MEAN = sample_imgs.mean(axis=(0, 1, 2))   # shape (3,)
+print("Estimated per-channel mean (RGB):", CHANNEL_MEAN)
+CHANNEL_MEAN_TF = tf.constant(CHANNEL_MEAN, dtype=tf.float32)
+
+# %% CELL 6 — tf.data pipeline (fast, cached, no hangs)
+data_augmentation = tf.keras.Sequential([
+    layers.RandomFlip("horizontal"),
+    layers.RandomRotation(30 / 360),      # ~ +-30 degrees
+    layers.RandomBrightness(0.3),          # brightness jitter
+], name="augmentation")
+
+def _load_image(filepath, label):
+    img = tf.io.read_file(filepath)
+    img = tf.image.decode_image(img, channels=3, expand_animations=False)
+    img = tf.image.resize(img, [IMG_SIZE, IMG_SIZE])
+    img = tf.cast(img, tf.float32)
+    img.set_shape([IMG_SIZE, IMG_SIZE, 3])
+    return img, label
+
+def _normalize(img, label):
+    img = tf.cast(img, tf.float32)   # augmentation layers can emit float16 under mixed_precision
+    return img - CHANNEL_MEAN_TF, label
+
+def _augment(img, label):
+    img = data_augmentation(img, training=True)
+    return img, label
+
+def build_dataset(df, split_name, augment, shuffle):
+    filepaths = df["filepath"].values
+    labels = df["Plane"].map(CLASS_TO_IDX).values
+    labels_onehot = tf.keras.utils.to_categorical(labels, num_classes=NUM_CLASSES)
+
+    ds = tf.data.Dataset.from_tensor_slices((filepaths, labels_onehot))
+    ds = ds.map(_load_image, num_parallel_calls=AUTOTUNE)
+    # In-memory cache (not disk-based): the 3-class subset is only a few GB,
+    # comfortably fits in Kaggle's RAM, and — unlike a disk cache — it can
+    # never be left half-written if a run gets interrupted, so there is no
+    # "corrupted cache" failure mode to worry about on a re-run.
+    ds = ds.cache()
+
+    if shuffle:
+        ds = ds.shuffle(buffer_size=len(df), seed=42, reshuffle_each_iteration=True)
+    if augment:
+        ds = ds.map(_augment, num_parallel_calls=AUTOTUNE)
+
+    ds = ds.map(_normalize, num_parallel_calls=AUTOTUNE)
+    ds = ds.batch(BATCH)
+    ds = ds.prefetch(AUTOTUNE)
+    return ds
+
+train_ds = build_dataset(train_df, "train", augment=True,  shuffle=True)
+val_ds   = build_dataset(val_df,   "val",   augment=False, shuffle=False)
+test_ds  = build_dataset(test_df,  "test",  augment=False, shuffle=False)
+
+y_true_test = test_df["Plane"].map(CLASS_TO_IDX).values  # ground truth, fixed order
+
+# %% CELL 7 — Model builder (identical custom head across all 3 backbones)
+def build_model(backbone_name: str, num_classes: int = NUM_CLASSES, input_shape=(224, 224, 3)):
+    if backbone_name == "VGG19":
+        base = VGG19(weights="imagenet", include_top=False, input_shape=input_shape)
+    elif backbone_name == "ResNet50":
+        base = ResNet50(weights="imagenet", include_top=False, input_shape=input_shape)
+    elif backbone_name == "MobileNetV2":
+        base = MobileNetV2(weights="imagenet", include_top=False, input_shape=input_shape)
+    else:
+        raise ValueError(backbone_name)
+
+    base.trainable = True  # fine-tune end-to-end, per paper
+
+    x = base.output
+    x = layers.Conv2D(512, (3, 3), strides=1, padding="same", name="head_conv1")(x)
+    x = layers.BatchNormalization(name="head_bn1")(x)
+    x = layers.ReLU(name="head_relu1")(x)
+    x = layers.Conv2D(num_classes, (1, 1), strides=1, padding="same", name="head_conv2")(x)
+    x = layers.BatchNormalization(name="head_bn2")(x)
+    x = layers.GlobalAveragePooling2D(name="head_gap")(x)
+    x = layers.BatchNormalization(name="head_bn3")(x)
+    # Keep the final activation in float32 for numerical stability under mixed precision
+    outputs = layers.Activation("softmax", dtype="float32", name="predictions")(x)
+
+    return models.Model(inputs=base.input, outputs=outputs, name=f"{backbone_name}_fetal")
+
+# %% CELL 8 — Train all three models with CodeCarbon tracking (Section 2.4.2)
+architectures = ["VGG19", "ResNet50", "MobileNetV2"]
+histories = {}
+trained_models = {}
+emissions_summary = []
+
+for arch in architectures:
+    print(f"\n{'='*60}\nTraining {arch}\n{'='*60}")
+
+    model = build_model(arch, num_classes=NUM_CLASSES)
+    model.compile(
+        optimizer=optimizers.SGD(learning_rate=CONFIG["learning_rate"]),
+        loss="categorical_crossentropy",
+        metrics=["accuracy"],
+    )
+
+    ckpt_path = os.path.join(CONFIG["output_dir"], f"{arch}_best.keras")
+    callbacks = [
+        tf.keras.callbacks.EarlyStopping(
+            monitor="val_loss", patience=CONFIG["early_stop_patience"],
+            restore_best_weights=True, verbose=1),
+        tf.keras.callbacks.ReduceLROnPlateau(
+            monitor="val_loss", factor=0.5, patience=CONFIG["reduce_lr_patience"],
+            min_lr=1e-6, verbose=1),
+        tf.keras.callbacks.ModelCheckpoint(
+            ckpt_path, monitor="val_loss", save_best_only=True, verbose=0),
+    ]
+
+    tracker = EmissionsTracker(
+        project_name=f"FetalMLOps_{arch}",
+        output_dir=CONFIG["output_dir"],
+        output_file=f"emissions_{arch}.csv",
+        log_level="error",
+    )
+    tracker.start()
+    try:
+        history = model.fit(
+            train_ds,
+            validation_data=val_ds,
+            epochs=CONFIG["epochs"],
+            callbacks=callbacks,
+            verbose=1,
+        )
+    finally:
+        # Always stop the tracker, even if training is interrupted or errors
+        # out, so codecarbon doesn't stay attached in the background and
+        # break the next EmissionsTracker() call.
+        co2_kg = tracker.stop()
+    emissions_summary.append({"model": arch, "kg_CO2": co2_kg,
+                               "epochs_run": len(history.history["loss"])})
+
+    histories[arch] = history.history
+    trained_models[arch] = model
+    model.save(os.path.join(CONFIG["output_dir"], f"{arch}_fetal_final.keras"))
+
+emissions_df = pd.DataFrame(emissions_summary)
+print("\nEstimated carbon emissions + actual epochs run per model:")
+print(emissions_df)
+emissions_df.to_csv(os.path.join(CONFIG["output_dir"], "emissions_summary.csv"), index=False)
+
+# %% CELL 9 — Training curves (reproduces Fig. 4)
+fig, axes = plt.subplots(2, 2, figsize=(12, 8))
+for arch in architectures:
+    h = histories[arch]
+    axes[0, 0].plot(h["accuracy"], label=arch)
+    axes[0, 1].plot(h["loss"], label=arch)
+    axes[1, 0].plot(h["val_accuracy"], label=arch)
+    axes[1, 1].plot(h["val_loss"], label=arch)
+
+axes[0, 0].set_title("Training Accuracy per Epoch")
+axes[0, 1].set_title("Training Loss per Epoch")
+axes[1, 0].set_title("Validation Accuracy per Epoch")
+axes[1, 1].set_title("Validation Loss per Epoch")
+for ax in axes.flat:
+    ax.set_xlabel("Epoch")
+    ax.legend()
+plt.tight_layout()
+plt.savefig(os.path.join(CONFIG["output_dir"], "training_curves.png"), dpi=150)
+plt.show()
+
+# =============================================================================
+# EVALUATION — Table 1 (precision/recall/F1), Fig. 5 (ROC + confusion matrix)
+# =============================================================================
+
+# %% CELL 10 — Precision / Recall / F1 per class, per model (Table 1)
+results_table = []
+predictions_store = {}
+
+for arch in architectures:
+    model = trained_models[arch]
+    y_pred_probs = model.predict(test_ds, verbose=0)
+    y_pred = np.argmax(y_pred_probs, axis=1)
+    predictions_store[arch] = (y_true_test, y_pred, y_pred_probs)
+
+    precision, recall, f1, _ = precision_recall_fscore_support(
+        y_true_test, y_pred, labels=range(NUM_CLASSES)
+    )
+    for i, cls in enumerate(CONFIG["classes"]):
+        results_table.append({
+            "Model": arch, "Class": cls,
+            "Precision": round(precision[i], 3),
+            "Recall": round(recall[i], 3),
+            "F1": round(f1[i], 3),
+        })
+
+results_df = pd.DataFrame(results_table)
+print(results_df.to_string(index=False))
+results_df.to_csv(os.path.join(CONFIG["output_dir"], "performance_table.csv"), index=False)
+
+# %% CELL 11 — ROC curves + confusion matrix (Fig. 5)
+def plot_roc_and_confusion(arch):
+    y_true, y_pred, y_probs = predictions_store[arch]
+    y_true_bin = label_binarize(y_true, classes=range(NUM_CLASSES))
+
+    fig, axes = plt.subplots(1, 2, figsize=(13, 5))
+
+    for i, cls in enumerate(CONFIG["classes"]):
+        fpr, tpr, _ = roc_curve(y_true_bin[:, i], y_probs[:, i])
+        roc_auc = auc(fpr, tpr)
+        axes[0].plot(fpr, tpr, label=f"{cls} (AUC={roc_auc:.2f})")
+    axes[0].plot([0, 1], [0, 1], "k--")
+    axes[0].set_xlabel("False Positive Rate")
+    axes[0].set_ylabel("True Positive Rate")
+    axes[0].set_title(f"ROC — {arch}")
+    axes[0].legend()
+
+    cm = confusion_matrix(y_true, y_pred, normalize="true") * 100
+    im = axes[1].imshow(cm, cmap="YlOrBr")
+    axes[1].set_xticks(range(NUM_CLASSES)); axes[1].set_xticklabels(CONFIG["classes"], rotation=45)
+    axes[1].set_yticks(range(NUM_CLASSES)); axes[1].set_yticklabels(CONFIG["classes"])
+    axes[1].set_xlabel("Predicted Label"); axes[1].set_ylabel("True Label")
+    axes[1].set_title(f"Confusion Matrix (%) — {arch}")
+    for i in range(NUM_CLASSES):
+        for j in range(NUM_CLASSES):
+            axes[1].text(j, i, f"{cm[i, j]:.2f}", ha="center", va="center")
+    fig.colorbar(im, ax=axes[1])
+    plt.tight_layout()
+    plt.savefig(os.path.join(CONFIG["output_dir"], f"roc_cm_{arch}.png"), dpi=150)
+    plt.show()
+
+for arch in architectures:
+    plot_roc_and_confusion(arch)
+
+# %% CELL 12 — Model selection rationale (paper picks MobileNetV2: comparable
+# F1 to VGG19/ResNet50 but far fewer parameters -> faster inference & lower
+# carbon footprint -> better fit for clinical deployment)
+param_counts = {arch: trained_models[arch].count_params() for arch in architectures}
+print("Parameter counts:", param_counts)
+summary = emissions_df.merge(
+    pd.DataFrame(list(param_counts.items()), columns=["model", "params"]),
+    on="model"
+)
+print(summary)
+best_model_name = "MobileNetV2"
+best_model = trained_models[best_model_name]
+
+# =============================================================================
+# SECTION 2.4.1 — EXPLAINABILITY (Grad-CAM), Fig. 9
+# =============================================================================
+
+# %% CELL 13 — Grad-CAM for the selected model (MobileNetV2)
+
+def get_last_conv_layer_name(model):
+    for layer in reversed(model.layers):
+        if isinstance(layer, layers.Conv2D):
+            return layer.name
+    raise ValueError("No Conv2D layer found.")
+
+def make_gradcam_heatmap(img_array, model, last_conv_layer_name, pred_index=None):
+    grad_model = tf.keras.models.Model(
+        [model.inputs], [model.get_layer(last_conv_layer_name).output, model.output]
+    )
+    with tf.GradientTape() as tape:
+        conv_outputs, predictions = grad_model(img_array)
+        if pred_index is None:
+            pred_index = tf.argmax(predictions[0])
+        class_channel = predictions[:, pred_index]
+
+    grads = tape.gradient(class_channel, conv_outputs)
+    pooled_grads = tf.reduce_mean(grads, axis=(0, 1, 2))
+    conv_outputs = conv_outputs[0]
+    heatmap = conv_outputs @ pooled_grads[..., tf.newaxis]
+    heatmap = tf.squeeze(heatmap)
+    heatmap = tf.maximum(heatmap, 0) / (tf.math.reduce_max(heatmap) + 1e-8)
+    heatmap = tf.cast(heatmap, tf.float32)
+    return heatmap.numpy()
+
+def overlay_gradcam(img_path, heatmap, alpha=0.4):
+    img = cv2.imread(img_path)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.resize(img, (IMG_SIZE, IMG_SIZE))
+    heatmap = np.asarray(heatmap, dtype=np.float32)
+    heatmap = cv2.resize(heatmap, (IMG_SIZE, IMG_SIZE))
+    heatmap = np.uint8(255 * heatmap)
+    heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+    heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB)
+    overlay = np.uint8(img * (1 - alpha) + heatmap * alpha)
+    return overlay
+
+last_conv = get_last_conv_layer_name(best_model)
+print("Using conv layer for Grad-CAM:", last_conv)
+
+fig, axes = plt.subplots(1, NUM_CLASSES, figsize=(15, 5))
+for i, cls in enumerate(CONFIG["classes"]):
+    row = test_df[test_df["Plane"] == cls].iloc[0]
+    img = cv2.imread(row["filepath"])
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    img = cv2.resize(img, (IMG_SIZE, IMG_SIZE)).astype(np.float32)
+    img_norm = img - CHANNEL_MEAN
+    img_array = np.expand_dims(img_norm, axis=0)
+
+    heatmap = make_gradcam_heatmap(img_array, best_model, last_conv)
+    overlay = overlay_gradcam(row["filepath"], heatmap)
+
+    axes[i].imshow(overlay)
+    axes[i].set_title(cls)
+    axes[i].axis("off")
+
+plt.tight_layout()
+plt.savefig(os.path.join(CONFIG["output_dir"], "gradcam_examples.png"), dpi=150)
+plt.show()
+# =============================================================================
+# WRAP-UP
+# =============================================================================
+print("\nAll outputs saved to:", CONFIG["output_dir"])
+print("- performance_table.csv     (Table 1 equivalent)")
+print("- emissions_summary.csv     (Table 2 equivalent, plus actual epochs run)")
+print("- training_curves.png       (Fig. 4 equivalent)")
+print("- roc_cm_<model>.png        (Fig. 5 equivalent)")
+print("- gradcam_examples.png      (Fig. 9 equivalent)")
+print("- <model>_best.keras        (best checkpoint by val_loss)")
+print("- <model>_fetal_final.keras (final weights, EarlyStopping-restored)")

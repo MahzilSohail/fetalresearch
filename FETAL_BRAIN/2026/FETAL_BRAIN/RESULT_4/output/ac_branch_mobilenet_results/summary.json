@@ -1,0 +1,41 @@
+{
+  "paper": "AC_Branch_MobileNet (Vatanparast et al., 2026)",
+  "doi": "10.1016/j.bspc.2025.108586",
+  "dataset": "Fetal Planes DB (Zenodo 3904280) \u2014 brain subset",
+  "n_brain_images_raw": 2949,
+  "n_after_augmentation": 4770,
+  "split_assumption": "70/15/15 stratified [ASSUMPTION \u2014 paper silent]",
+  "epochs": 50,
+  "batch_size": 32,
+  "lr": 0.001,
+  "optimizer": "Adam",
+  "dropout_assumption": 0.5,
+  "mlvum_lambda_assumption": 0.5,
+  "mlvum_radius_assumption": 3,
+  "test_metrics": {
+    "accuracy": 78.3295711060948,
+    "precision": 75.8874714646334,
+    "recall": 79.00784303793195,
+    "f1": 77.01383583736524
+  },
+  "val_metrics": {
+    "accuracy": 79.41176470588235,
+    "precision": 76.8131677449741,
+    "recall": 81.14150678417423,
+    "f1": 78.38898701234817
+  },
+  "paper_reported": {
+    "accuracy": 95.11,
+    "precision": 94.62,
+    "recall": 94.39,
+    "f1": 94.5
+  },
+  "output_files": {
+    "best_model": "best_model.keras",
+    "final_model": "final_model.keras",
+    "training_log": "training_log.csv",
+    "confusion_matrix": "confusion_matrix_test.png",
+    "training_curves": "training_curves.png",
+    "gradcam": "gradcam_visualization.png"
+  }
+}

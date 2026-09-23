@@ -1,0 +1,1508 @@
+Contents currently mounted under /kaggle/input:
+input/
+  datasets/
+    minhnhtl05/
+      fetal-planes-db-dataset/
+        Fetal_Planes_DB/
+    khalidhasan47/
+      fetal-planes-db-khr/
+        FETAL_PLANES_ZENODO/
+          FETAL_PLANES_DB_data.csv
+          README.md
+          FETAL_PLANES_DB_data.xlsx
+    mahzilsohail/
+      fetal-planes-db-zenodo/
+        FETAL_PLANES_DB_data.csv
+        README.md
+        FETAL_PLANES_DB_data.xlsx
+        Images/
+          Patient00088_Plane4_1_of_2.png
+          Patient01422_Plane1_16_of_19.png
+          Patient01199_Plane1_7_of_11.png
+          Patient00791_Plane3_2_of_3.png
+          Patient01473_Plane1_17_of_30.png
+          Patient01089_Plane3_1_of_2.png
+          Patient00782_Plane3_1_of_4.png
+          Patient01483_Plane3_1_of_4.png
+          Patient01635_Plane1_1_of_1.png
+          Patient00188_Plane4_1_of_1.png
+          Patient00574_Plane4_1_of_1.png
+          Patient01510_Plane1_1_of_12.png
+          Patient00809_Plane1_8_of_14.png
+          Patient01446_Plane1_20_of_29.png
+          Patient01512_Plane3_1_of_2.png
+          Patient00039_Plane1_35_of_47.png
+          Patient00800_Plane6_1_of_5.png
+          Patient00911_Plane1_1_of_6.png
+          Patient01655_Plane5_1_of_1.png
+          Patient00837_Plane5_1_of_2.png
+          Patient00767_Plane3_1_of_3.png
+          Patient00846_Plane6_2_of_4.png
+          Patient00790_Plane1_35_of_47.png
+          Patient00809_Plane1_6_of_14.png
+          Patient01196_Plane4_2_of_2.png
+          Patient01631_Plane1_3_of_16.png
+          Patient01529_Plane3_2_of_3.png
+          Patient00946_Plane1_1_of_1.png
+          Patient00033_Plane1_14_of_27.png
+          Patient00038_Plane1_11_of_38.png
+          Patient00834_Plane1_17_of_34.png
+          Patient00948_Plane6_3_of_5.png
+          Patient00830_Plane1_29_of_49.png
+          Patient00019_Plane1_5_of_18.png
+          Patient00894_Plane3_3_of_6.png
+          Patient01610_Plane4_2_of_2.png
+          Patient01707_Plane6_1_of_1.png
+          Patient01649_Plane5_2_of_2.png
+          Patient01624_Plane3_2_of_2.png
+          Patient00808_Plane3_2_of_2.png
+          Patient01566_Plane6_2_of_4.png
+          Patient00036_Plane1_10_of_39.png
+          Patient00769_Plane1_17_of_17.png
+          Patient00211_Plane4_1_of_1.png
+          Patient00909_Plane6_5_of_6.png
+          Patient01391_Plane1_6_of_26.png
+          Patient00802_Plane4_1_of_6.png
+          Patient01750_Plane2_1_of_1.png
+          Patient01128_Plane3_2_of_3.png
+          Patient00007_Plane1_25_of_34.png
+          Patient01545_Plane1_13_of_13.png
+          Patient00030_Plane1_31_of_35.png
+          Patient01633_Plane1_5_of_13.png
+          Patient00906_Plane6_1_of_1.png
+          Patient01756_Plane3_1_of_2.png
+          Patient01487_Plane1_1_of_17.png
+          Patient01550_Plane2_1_of_1.png
+          Patient00788_Plane6_2_of_3.png
+          Patient00740_Plane3_1_of_3.png
+          Patient01118_Plane5_3_of_3.png
+          Patient01251_Plane3_1_of_2.png
+          Patient01587_Plane5_1_of_1.png
+          Patient00042_Plane1_26_of_39.png
+          Patient00849_Plane1_1_of_1.png
+          Patient00825_Plane4_5_of_7.png
+          Patient00724_Plane3_2_of_3.png
+          Patient01582_Plane6_1_of_5.png
+          Patient00038_Plane1_9_of_38.png
+          Patient01538_Plane2_1_of_1.png
+          Patient00699_Plane3_1_of_4.png
+          Patient00894_Plane2_1_of_2.png
+          Patient00742_Plane1_6_of_20.png
+          Patient00367_Plane4_1_of_1.png
+          Patient01175_Plane2_2_of_2.png
+          Patient01592_Plane3_2_of_2.png
+          Patient01481_Plane2_2_of_2.png
+          Patient00909_Plane1_14_of_15.png
+          Patient00884_Plane4_1_of_4.png
+          Patient01541_Plane3_1_of_2.png
+          Patient00674_Plane1_1_of_1.png
+          Patient01409_Plane3_2_of_4.png
+          Patient01567_Plane2_1_of_3.png
+          Patient01596_Plane3_3_of_5.png
+          Patient01332_Plane1_3_of_12.png
+          Patient00795_Plane1_29_of_41.png
+          Patient01531_Plane2_1_of_1.png
+          Patient01348_Plane1_7_of_8.png
+          Patient00961_Plane2_2_of_2.png
+          Patient01710_Plane4_1_of_1.png
+          Patient00108_Plane4_1_of_1.png
+          Patient01205_Plane5_2_of_2.png
+          Patient01445_Plane3_2_of_4.png
+          Patient01408_Plane1_10_of_15.png
+          Patient01160_Plane5_2_of_2.png
+          Patient00788_Plane6_3_of_3.png
+          Patient01521_Plane5_1_of_1.png
+          Patient00791_Plane1_11_of_25.png
+          Patient01707_Plane4_3_of_3.png
+          Patient00830_Plane5_1_of_1.png
+          Patient01280_Plane3_5_of_5.png
+          Patient00950_Plane3_3_of_5.png
+          Patient01148_Plane3_3_of_3.png
+          Patient00775_Plane2_1_of_1.png
+          Patient00834_Plane1_4_of_34.png
+          Patient00793_Plane4_5_of_10.png
+          Patient00745_Plane1_1_of_1.png
+          Patient00921_Plane4_2_of_7.png
+          Patient01391_Plane1_17_of_26.png
+          Patient00765_Plane6_3_of_4.png
+          Patient00771_Plane4_2_of_4.png
+          Patient00698_Plane3_3_of_3.png
+          Patient01648_Plane5_3_of_5.png
+          Patient00792_Plane1_71_of_71.png
+          Patient00948_Plane3_2_of_3.png
+          Patient00846_Plane3_2_of_2.png
+          Patient00638_Plane4_1_of_1.png
+          Patient01574_Plane6_1_of_2.png
+          Patient01239_Plane4_1_of_4.png
+          Patient01476_Plane4_4_of_5.png
+          Patient01060_Plane3_1_of_4.png
+          Patient01535_Plane1_7_of_21.png
+          Patient01486_Plane1_12_of_26.png
+          Patient01570_Plane1_11_of_16.png
+          Patient00005_Plane1_1_of_25.png
+          Patient01413_Plane3_1_of_4.png
+          Patient01566_Plane1_13_of_29.png
+          Patient00168_Plane2_2_of_2.png
+          Patient01363_Plane2_2_of_3.png
+          Patient00713_Plane2_1_of_1.png
+          Patient00124_Plane4_1_of_1.png
+          Patient00039_Plane1_28_of_47.png
+          Patient01618_Plane6_3_of_5.png
+          Patient01364_Plane1_6_of_6.png
+          Patient01050_Plane3_1_of_2.png
+          Patient01044_Plane4_2_of_3.png
+          Patient01634_Plane2_1_of_2.png
+          Patient00830_Plane4_1_of_6.png
+          Patient00607_Plane4_1_of_1.png
+          Patient00822_Plane3_1_of_6.png
+          Patient00797_Plane1_1_of_8.png
+          Patient00831_Plane1_30_of_38.png
+          Patient01131_Plane1_1_of_1.png
+          Patient00728_Plane6_2_of_4.png
+          Patient01715_Plane1_1_of_1.png
+          Patient01118_Plane2_2_of_2.png
+          Patient01181_Plane6_1_of_2.png
+          Patient01596_Plane3_5_of_5.png
+          Patient00799_Plane1_10_of_28.png
+          Patient01641_Plane4_1_of_1.png
+          Patient01295_Plane6_6_of_8.png
+          Patient01106_Plane2_1_of_2.png
+          Patient01651_Plane3_1_of_2.png
+          Patient01151_Plane5_4_of_4.png
+          Patient00015_Plane1_2_of_18.png
+          Patient01203_Plane3_1_of_3.png
+          Patient00006_Plane1_26_of_36.png
+          Patient00865_Plane6_2_of_4.png
+          Patient00985_Plane5_2_of_4.png
+          Patient01595_Plane3_1_of_2.png
+          Patient00557_Plane4_1_of_1.png
+          Patient00870_Plane1_4_of_8.png
+          Patient01573_Plane1_4_of_8.png
+          Patient01385_Plane6_3_of_3.png
+          Patient01694_Plane3_1_of_3.png
+          Patient00029_Plane1_16_of_16.png
+          Patient01534_Plane1_6_of_11.png
+          Patient00016_Plane1_16_of_16.png
+          Patient01267_Plane3_3_of_4.png
+          Patient01541_Plane1_1_of_5.png
+          Patient00855_Plane1_30_of_39.png
+          Patient00929_Plane3_3_of_8.png
+          Patient01254_Plane3_5_of_5.png
+          Patient00168_Plane6_2_of_4.png
+          Patient01330_Plane1_16_of_16.png
+          Patient00025_Plane1_8_of_15.png
+          Patient01246_Plane1_2_of_7.png
+          Patient00723_Plane3_2_of_4.png
+          Patient01046_Plane5_2_of_3.png
+          Patient00837_Plane6_2_of_3.png
+          Patient00009_Plane1_28_of_42.png
+          Patient00791_Plane1_7_of_25.png
+          Patient00889_Plane2_1_of_1.png
+          Patient01307_Plane1_14_of_25.png
+          Patient01576_Plane3_1_of_2.png
+          Patient00848_Plane4_1_of_9.png
+          Patient00830_Plane1_39_of_49.png
+          Patient00792_Plane1_40_of_71.png
+          Patient01401_Plane1_2_of_2.png
+          Patient01120_Plane2_1_of_1.png
+          Patient01286_Plane4_1_of_5.png
+          Patient01487_Plane1_17_of_17.png
+          Patient00945_Plane1_1_of_1.png
+          Patient01678_Plane5_2_of_2.png
+          Patient00854_Plane1_21_of_32.png
+          Patient01301_Plane1_1_of_1.png
+          Patient00922_Plane3_1_of_1.png
+          Patient00705_Plane3_3_of_3.png
+          Patient00718_Plane6_2_of_2.png
+          Patient01366_Plane1_3_of_8.png
+          Patient01495_Plane6_1_of_3.png
+          Patient00781_Plane4_4_of_10.png
+          Patient00011_Plane1_6_of_20.png
+          Patient00956_Plane1_1_of_1.png
+          Patient01450_Plane2_1_of_1.png
+          Patient01137_Plane2_1_of_2.png
+          Patient00864_Plane3_1_of_2.png
+          Patient01590_Plane3_4_of_6.png
+          Patient00308_Plane4_1_of_1.png
+          Patient00950_Plane6_1_of_2.png
+          Patient01237_Plane6_1_of_2.png
+          Patient00826_Plane3_4_of_5.png
+          Patient01303_Plane3_3_of_3.png
+          Patient01505_Plane4_1_of_1.png
+          Patient01468_Plane3_4_of_4.png
+          Patient01567_Plane2_3_of_3.png
+          Patient01560_Plane2_1_of_1.png
+          Patient00977_Plane3_2_of_4.png
+          Patient01678_Plane3_2_of_8.png
+          Patient01100_Plane3_2_of_2.png
+          Patient01271_Plane3_2_of_15.png
+          Patient00971_Plane2_1_of_1.png
+          Patient00953_Plane3_1_of_3.png
+          Patient01548_Plane3_1_of_2.png
+          Patient01087_Plane6_1_of_1.png
+          Patient00722_Plane5_1_of_1.png
+          Patient00890_Plane3_2_of_4.png
+          Patient01189_Plane5_2_of_2.png
+          Patient00846_Plane2_1_of_1.png
+          Patient01545_Plane1_11_of_13.png
+          Patient00036_Plane1_31_of_39.png
+          Patient01662_Plane3_2_of_3.png
+          Patient00005_Plane1_11_of_25.png
+          Patient01156_Plane3_2_of_5.png
+          Patient00961_Plane3_1_of_4.png
+          Patient01436_Plane3_2_of_2.png
+          Patient01500_Plane1_1_of_9.png
+          Patient01331_Plane6_2_of_2.png
+          Patient01115_Plane5_1_of_1.png
+          Patient01717_Plane3_2_of_3.png
+          Patient00962_Plane3_2_of_5.png
+          Patient00018_Plane1_6_of_14.png
+          Patient00006_Plane1_3_of_36.png
+          Patient01512_Plane2_1_of_1.png
+          Patient00722_Plane1_1_of_1.png
+          Patient01169_Plane3_3_of_3.png
+          Patient01335_Plane6_1_of_1.png
+          Patient01663_Plane3_2_of_5.png
+          Patient00039_Plane1_8_of_47.png
+          Patient01620_Plane3_1_of_3.png
+          Patient00922_Plane1_1_of_1.png
+          Patient01614_Plane1_8_of_9.png
+          Patient00745_Plane6_1_of_4.png
+          Patient00776_Plane3_2_of_6.png
+          Patient00809_Plane5_1_of_1.png
+          Patient01199_Plane1_11_of_11.png
+          Patient00004_Plane1_30_of_30.png
+          Patient00007_Plane1_15_of_34.png
+          Patient01172_Plane2_1_of_1.png
+          Patient01052_Plane3_9_of_9.png
+          Patient01621_Plane5_1_of_1.png
+          Patient01408_Plane1_4_of_15.png
+          Patient00826_Plane4_3_of_3.png
+          Patient00577_Plane4_1_of_1.png
+          Patient00771_Plane3_3_of_3.png
+          Patient00799_Plane4_3_of_4.png
+          Patient01307_Plane3_1_of_2.png
+          Patient00767_Plane6_1_of_1.png
+          Patient00831_Plane1_3_of_38.png
+          Patient00794_Plane1_6_of_7.png
+          Patient01542_Plane5_1_of_1.png
+          Patient00674_Plane5_1_of_1.png
+          Patient00803_Plane3_1_of_5.png
+          Patient00888_Plane1_1_of_2.png
+          Patient01716_Plane3_3_of_3.png
+          Patient00168_Plane1_4_of_23.png
+          Patient01606_Plane1_6_of_18.png
+          Patient00661_Plane5_1_of_1.png
+          Patient01045_Plane5_2_of_2.png
+          Patient01291_Plane2_1_of_1.png
+          Patient00511_Plane4_1_of_1.png
+          Patient00750_Plane1_7_of_7.png
+          Patient01606_Plane1_12_of_18.png
+          Patient01089_Plane6_1_of_1.png
+          Patient00993_Plane4_1_of_3.png
+          Patient00881_Plane1_1_of_1.png
+          Patient01535_Plane1_16_of_21.png
+          Patient00031_Plane1_33_of_42.png
+          Patient00004_Plane1_11_of_30.png
+          Patient00025_Plane1_12_of_15.png
+          Patient00932_Plane1_1_of_1.png
+          Patient01347_Plane5_1_of_2.png
+          Patient01161_Plane3_3_of_4.png
+          Patient00043_Plane1_46_of_55.png
+          Patient01601_Plane1_1_of_1.png
+          Patient01111_Plane3_2_of_3.png
+          Patient00970_Plane3_2_of_4.png
+          Patient00830_Plane1_30_of_49.png
+          Patient00825_Plane4_6_of_7.png
+          Patient00751_Plane4_1_of_2.png
+          Patient00010_Plane1_13_of_14.png
+          Patient01765_Plane3_3_of_3.png
+          Patient00909_Plane1_9_of_15.png
+          Patient01520_Plane3_1_of_2.png
+          Patient01444_Plane1_28_of_28.png
+          Patient01026_Plane2_3_of_3.png
+          Patient01496_Plane1_7_of_7.png
+          Patient00831_Plane1_10_of_38.png
+          Patient00001_Plane1_2_of_15.png
+          Patient01225_Plane3_3_of_4.png
+          Patient01632_Plane1_2_of_4.png
+          Patient01576_Plane3_2_of_2.png
+          Patient00505_Plane4_1_of_1.png
+          Patient00768_Plane1_10_of_26.png
+          Patient01607_Plane3_2_of_2.png
+          Patient00842_Plane6_3_of_4.png
+          Patient01675_Plane1_1_of_4.png
+          Patient01784_Plane6_1_of_4.png
+          Patient01047_Plane6_1_of_3.png
+          Patient00746_Plane6_4_of_11.png
+          Patient01670_Plane2_6_of_6.png
+          Patient01344_Plane3_1_of_4.png
+          Patient01384_Plane3_2_of_3.png
+          Patient01592_Plane3_1_of_2.png
+          Patient01110_Plane4_1_of_3.png
+          Patient01708_Plane1_1_of_1.png
+          Patient00826_Plane3_2_of_5.png
+          Patient01435_Plane6_4_of_5.png
+          Patient01234_Plane6_1_of_1.png
+          Patient00791_Plane1_4_of_25.png
+          Patient00848_Plane4_5_of_9.png
+          Patient01022_Plane3_1_of_5.png
+          Patient01105_Plane4_2_of_2.png
+          Patient00771_Plane1_1_of_40.png
+          Patient00937_Plane3_1_of_1.png
+          Patient01002_Plane3_3_of_3.png
+          Patient00804_Plane4_4_of_6.png
+          Patient01547_Plane1_14_of_18.png
+          Patient01151_Plane3_10_of_13.png
+          Patient00014_Plane1_20_of_42.png
+          Patient01254_Plane3_4_of_5.png
+          Patient01113_Plane5_2_of_2.png
+          Patient01032_Plane2_1_of_1.png
+          Patient01731_Plane6_1_of_1.png
+          Patient00760_Plane3_4_of_4.png
+          Patient01330_Plane1_4_of_16.png
+          Patient01417_Plane5_2_of_2.png
+          Patient00711_Plane6_2_of_4.png
+          Patient01225_Plane3_2_of_4.png
+          Patient01070_Plane4_1_of_2.png
+          Patient00013_Plane1_8_of_20.png
+          Patient00851_Plane1_7_of_8.png
+          Patient00960_Plane3_3_of_3.png
+          Patient00930_Plane5_1_of_1.png
+          Patient00458_Plane4_1_of_1.png
+          Patient00168_Plane1_12_of_23.png
+          Patient01365_Plane1_14_of_17.png
+          Patient00765_Plane3_4_of_6.png
+          Patient00255_Plane4_1_of_1.png
+          Patient00803_Plane4_1_of_2.png
+          Patient00883_Plane6_1_of_2.png
+          Patient01203_Plane6_1_of_2.png
+          Patient01252_Plane1_8_of_17.png
+          Patient00781_Plane4_10_of_10.png
+          Patient01652_Plane5_1_of_1.png
+          Patient00484_Plane4_1_of_1.png
+          Patient01406_Plane3_1_of_3.png
+          Patient01751_Plane6_1_of_2.png
+          Patient00988_Plane3_1_of_2.png
+          Patient00905_Plane6_5_of_5.png
+          Patient00038_Plane1_14_of_38.png
+          Patient01301_Plane3_1_of_7.png
+          Patient00144_Plane4_1_of_1.png
+          Patient00056_Plane4_1_of_2.png
+          Patient00005_Plane1_18_of_25.png
+          Patient01595_Plane5_1_of_1.png
+          Patient01547_Plane1_6_of_18.png
+          Patient01045_Plane3_2_of_5.png
+          Patient00003_Plane1_17_of_21.png
+          Patient01711_Plane6_3_of_3.png
+          Patient00040_Plane1_8_of_36.png
+          Patient01682_Plane5_1_of_2.png
+          Patient01592_Plane5_3_of_5.png
+          Patient01573_Plane3_1_of_2.png
+          Patient01446_Plane1_24_of_29.png
+          Patient01762_Plane3_1_of_2.png
+          Patient00257_Plane4_1_of_1.png
+          Patient00982_Plane3_2_of_3.png
+          Patient00031_Plane1_6_of_42.png
+          Patient00793_Plane1_31_of_48.png
+          Patient00878_Plane6_2_of_2.png
+          Patient00036_Plane1_6_of_39.png
+          Patient01535_Plane1_11_of_21.png
+          Patient00963_Plane6_2_of_3.png
+          Patient00551_Plane4_1_of_1.png
+          Patient00691_Plane3_1_of_1.png
+... (truncated, tree is larger)
+
+CSV       : /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/FETAL_PLANES_DB_data.csv
+Images dir: /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/Images
+Indexed 12400 image files under /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/Images
+['Image_name', 'Patient_num', 'Plane', 'Brain_plane', 'Operator', 'US_Machine', 'Train']
+                    Image_name  Patient_num  Plane  Brain_plane Operator  \
+0  Patient00001_Plane1_1_of_15            1  Other  Not A Brain    Other   
+1  Patient00001_Plane1_2_of_15            1  Other  Not A Brain    Other   
+2  Patient00001_Plane1_3_of_15            1  Other  Not A Brain    Other   
+3  Patient00001_Plane1_4_of_15            1  Other  Not A Brain    Other   
+4  Patient00001_Plane1_5_of_15            1  Other  Not A Brain    Other   
+
+  US_Machine  Train  
+0      Aloka      1  
+1      Aloka      1  
+2      Aloka      1  
+3      Aloka      1  
+4      Aloka      1  
+Total brain sub-plane images found: 2949
+label
+Trans-thalamic       1638
+Trans-cerebellum      714
+Trans-ventricular     597
+Name: count, dtype: int64
+
+Loaded: (2949, 256, 256, 3) labels: {'Trans-thalamic': 1638, 'Trans-cerebellum': 714, 'Trans-ventricular': 597}
+Train+val pool: (2359, 256, 256, 3) Held-out test: (590, 256, 256, 3)
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1788254655.681649      22 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 13756 MB memory:  -> device: 0, name: Tesla T4, pci bus id: 0000:00:04.0, compute capability: 7.5
+I0000 00:00:1788254655.684786      22 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 13756 MB memory:  -> device: 1, name: Tesla T4, pci bus id: 0000:00:05.0, compute capability: 7.5
+Downloading data from https://storage.googleapis.com/tensorflow/keras-applications/mobilenet_v2/mobilenet_v2_weights_tf_dim_ordering_tf_kernels_1.0_224_no_top.h5
+9406464/9406464 ━━━━━━━━━━━━━━━━━━━━ 1s 0us/step
+Model: "AC_Branch_MobileNet"
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)        ┃ Output Shape      ┃    Param # ┃ Connected to      ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ input_layer         │ (None, 256, 256,  │          0 │ -                 │
+│ (InputLayer)        │ 3)                │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ mobilenetv2_backbo… │ (None, 8, 8,      │  2,257,984 │ input_layer[0][0] │
+│ (Functional)        │ 1280)             │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv1 (Conv2D) │ (None, 8, 8, 128) │    163,968 │ mobilenetv2_back… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv2 (Conv2D) │ (None, 8, 8, 32)  │      4,128 │ attn_conv1[0][0]  │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_mod1 (Conv2D)  │ (None, 8, 8, 64)  │    737,344 │ mobilenetv2_back… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_avgpool        │ (None, 8, 8, 32)  │          0 │ attn_conv2[0][0]  │
+│ (AveragePooling2D)  │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_mod2 (Conv2D)  │ (None, 8, 8, 32)  │     18,464 │ conv_mod1[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv3 (Conv2D) │ (None, 8, 8, 1)   │         33 │ attn_avgpool[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_maxpool        │ (None, 8, 8, 32)  │          0 │ conv_mod2[0][0]   │
+│ (MaxPooling2D)      │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_multiply       │ (None, 8, 8,      │          0 │ attn_conv3[0][0], │
+│ (Multiply)          │ 1280)             │            │ mobilenetv2_back… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_mod3 (Conv2D)  │ (None, 8, 8, 16)  │      4,624 │ conv_maxpool[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ branch_concat       │ (None, 8, 8,      │          0 │ attn_multiply[0]… │
+│ (Concatenate)       │ 1296)             │            │ conv_mod3[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ gap                 │ (None, 1296)      │          0 │ branch_concat[0]… │
+│ (GlobalAveragePool… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_1 (Dropout) │ (None, 1296)      │          0 │ gap[0][0]         │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ fc_32 (Dense)       │ (None, 32)        │     41,504 │ dropout_1[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout_2 (Dropout) │ (None, 32)        │          0 │ fc_32[0][0]       │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ predictions (Dense) │ (None, 3)         │         99 │ dropout_2[0][0]   │
+└─────────────────────┴───────────────────┴────────────┴───────────────────┘
+ Total params: 3,228,148 (12.31 MB)
+ Trainable params: 3,194,036 (12.18 MB)
+ Non-trainable params: 34,112 (133.25 KB)
+Total params: 3228148
+
+======================================================================
+Fold 1/5
+======================================================================
+Fold 1 augmented train set: (3082, 256, 256, 3) {0: 1048, 2: 1017, 1: 1017}
+  Phase 1/2: 8 warmup epochs, backbone frozen...
+Epoch 1/8
+2026-09-01 09:24:44.575898: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-09-01 09:24:44.714182: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+I0000 00:00:1788254689.359718      76 device_compiler.h:196] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 39ms/step - accuracy: 0.4540 - loss: 1.2818
+2026-09-01 09:25:04.064282: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-09-01 09:25:04.201731: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+97/97 ━━━━━━━━━━━━━━━━━━━━ 0s 195ms/step - accuracy: 0.4548 - loss: 1.2800
+2026-09-01 09:25:26.937292: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-09-01 09:25:27.074452: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+97/97 ━━━━━━━━━━━━━━━━━━━━ 64s 413ms/step - accuracy: 0.5247 - loss: 1.1105 - val_accuracy: 0.5445 - val_loss: 0.9500
+Epoch 2/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.6330 - loss: 0.9020 - val_accuracy: 0.6271 - val_loss: 0.8656
+Epoch 3/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.6970 - loss: 0.8000 - val_accuracy: 0.6547 - val_loss: 0.8387
+Epoch 4/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 44ms/step - accuracy: 0.7414 - loss: 0.7254 - val_accuracy: 0.6907 - val_loss: 0.8326
+Epoch 5/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 44ms/step - accuracy: 0.7946 - loss: 0.6669 - val_accuracy: 0.7034 - val_loss: 0.8058
+Epoch 6/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.8361 - loss: 0.6001 - val_accuracy: 0.7013 - val_loss: 0.8151
+Epoch 7/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 44ms/step - accuracy: 0.8673 - loss: 0.5483 - val_accuracy: 0.6780 - val_loss: 0.8503
+Epoch 8/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 44ms/step - accuracy: 0.8696 - loss: 0.5401 - val_accuracy: 0.6992 - val_loss: 0.8792
+  Phase 2/2: unfreezing backbone (BatchNorm layers kept frozen)...
+Epoch 1/62
+97/97 ━━━━━━━━━━━━━━━━━━━━ 0s 361ms/step - accuracy: 0.5540 - loss: 1.0707
+Epoch 1: val_accuracy improved from None to 0.56144, saving model to ac_branch_mobilenet_fold0.keras
+
+Epoch 1: finished saving model to ac_branch_mobilenet_fold0.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 86s 510ms/step - accuracy: 0.5782 - loss: 0.9938 - val_accuracy: 0.5614 - val_loss: 0.9416 - learning_rate: 6.0000e-05
+Epoch 2/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.6977 - loss: 0.7900
+Epoch 2: val_accuracy improved from 0.56144 to 0.74576, saving model to ac_branch_mobilenet_fold0.keras
+
+Epoch 2: finished saving model to ac_branch_mobilenet_fold0.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 165ms/step - accuracy: 0.7333 - loss: 0.7383 - val_accuracy: 0.7458 - val_loss: 0.6973 - learning_rate: 6.0000e-05
+Epoch 3/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 146ms/step - accuracy: 0.8176 - loss: 0.6211
+Epoch 3: val_accuracy improved from 0.74576 to 0.77119, saving model to ac_branch_mobilenet_fold0.keras
+
+Epoch 3: finished saving model to ac_branch_mobilenet_fold0.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.8189 - loss: 0.6172 - val_accuracy: 0.7712 - val_loss: 0.7195 - learning_rate: 6.0000e-05
+Epoch 4/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.8408 - loss: 0.5934
+Epoch 4: val_accuracy improved from 0.77119 to 0.81780, saving model to ac_branch_mobilenet_fold0.keras
+
+Epoch 4: finished saving model to ac_branch_mobilenet_fold0.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 166ms/step - accuracy: 0.8524 - loss: 0.5673 - val_accuracy: 0.8178 - val_loss: 0.5997 - learning_rate: 6.0000e-05
+Epoch 5/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.8823 - loss: 0.5253
+Epoch 5: val_accuracy improved from 0.81780 to 0.82415, saving model to ac_branch_mobilenet_fold0.keras
+
+Epoch 5: finished saving model to ac_branch_mobilenet_fold0.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 167ms/step - accuracy: 0.8851 - loss: 0.5212 - val_accuracy: 0.8242 - val_loss: 0.5918 - learning_rate: 6.0000e-05
+Epoch 6/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.8853 - loss: 0.5019
+Epoch 6: val_accuracy improved from 0.82415 to 0.83898, saving model to ac_branch_mobilenet_fold0.keras
+
+Epoch 6: finished saving model to ac_branch_mobilenet_fold0.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 164ms/step - accuracy: 0.8971 - loss: 0.4910 - val_accuracy: 0.8390 - val_loss: 0.5843 - learning_rate: 6.0000e-05
+Epoch 7/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9135 - loss: 0.4747
+Epoch 7: val_accuracy did not improve from 0.83898
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9205 - loss: 0.4640 - val_accuracy: 0.8347 - val_loss: 0.5840 - learning_rate: 6.0000e-05
+Epoch 8/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9243 - loss: 0.4553
+Epoch 8: val_accuracy improved from 0.83898 to 0.84322, saving model to ac_branch_mobilenet_fold0.keras
+
+Epoch 8: finished saving model to ac_branch_mobilenet_fold0.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 164ms/step - accuracy: 0.9137 - loss: 0.4679 - val_accuracy: 0.8432 - val_loss: 0.5737 - learning_rate: 6.0000e-05
+Epoch 9/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9356 - loss: 0.4291
+Epoch 9: val_accuracy did not improve from 0.84322
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 154ms/step - accuracy: 0.9387 - loss: 0.4304 - val_accuracy: 0.8136 - val_loss: 0.6346 - learning_rate: 6.0000e-05
+Epoch 10/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9410 - loss: 0.4254
+Epoch 10: val_accuracy did not improve from 0.84322
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9396 - loss: 0.4257 - val_accuracy: 0.8199 - val_loss: 0.6343 - learning_rate: 6.0000e-05
+Epoch 11/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9480 - loss: 0.4185
+Epoch 11: val_accuracy did not improve from 0.84322
+97/97 ━━━━━━━━━━━━━━━━━━━━ 15s 154ms/step - accuracy: 0.9507 - loss: 0.4157 - val_accuracy: 0.8114 - val_loss: 0.6393 - learning_rate: 6.0000e-05
+Epoch 12/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9531 - loss: 0.3990
+Epoch 12: val_accuracy did not improve from 0.84322
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9458 - loss: 0.4134 - val_accuracy: 0.8347 - val_loss: 0.5714 - learning_rate: 6.0000e-05
+Epoch 13/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9501 - loss: 0.4097
+Epoch 13: val_accuracy improved from 0.84322 to 0.85381, saving model to ac_branch_mobilenet_fold0.keras
+
+Epoch 13: finished saving model to ac_branch_mobilenet_fold0.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 166ms/step - accuracy: 0.9523 - loss: 0.4020 - val_accuracy: 0.8538 - val_loss: 0.5662 - learning_rate: 6.0000e-05
+Epoch 14/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9657 - loss: 0.3798
+Epoch 14: val_accuracy did not improve from 0.85381
+97/97 ━━━━━━━━━━━━━━━━━━━━ 15s 154ms/step - accuracy: 0.9585 - loss: 0.3913 - val_accuracy: 0.8305 - val_loss: 0.6340 - learning_rate: 6.0000e-05
+Epoch 15/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9650 - loss: 0.3748
+Epoch 15: val_accuracy did not improve from 0.85381
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9640 - loss: 0.3784 - val_accuracy: 0.8390 - val_loss: 0.5912 - learning_rate: 6.0000e-05
+Epoch 16/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9674 - loss: 0.3775
+Epoch 16: val_accuracy did not improve from 0.85381
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9727 - loss: 0.3695 - val_accuracy: 0.8326 - val_loss: 0.6448 - learning_rate: 6.0000e-05
+Epoch 17/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9837 - loss: 0.3493
+Epoch 17: val_accuracy did not improve from 0.85381
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9789 - loss: 0.3575 - val_accuracy: 0.8496 - val_loss: 0.6195 - learning_rate: 6.0000e-05
+Epoch 18/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9709 - loss: 0.3702
+Epoch 18: val_accuracy did not improve from 0.85381
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9682 - loss: 0.3714 - val_accuracy: 0.8051 - val_loss: 0.6408 - learning_rate: 6.0000e-05
+Epoch 19/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9780 - loss: 0.3625
+Epoch 19: ReduceLROnPlateau reducing learning rate to 2.9999999242136255e-05.
+
+Epoch 19: val_accuracy improved from 0.85381 to 0.85805, saving model to ac_branch_mobilenet_fold0.keras
+
+Epoch 19: finished saving model to ac_branch_mobilenet_fold0.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 163ms/step - accuracy: 0.9802 - loss: 0.3545 - val_accuracy: 0.8581 - val_loss: 0.5991 - learning_rate: 6.0000e-05
+Epoch 20/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9899 - loss: 0.3420
+Epoch 20: val_accuracy did not improve from 0.85805
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9903 - loss: 0.3392 - val_accuracy: 0.8581 - val_loss: 0.5842 - learning_rate: 3.0000e-05
+Epoch 21/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9792 - loss: 0.3522
+Epoch 21: val_accuracy did not improve from 0.85805
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 154ms/step - accuracy: 0.9857 - loss: 0.3420 - val_accuracy: 0.8538 - val_loss: 0.5922 - learning_rate: 3.0000e-05
+Epoch 22/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9961 - loss: 0.3257
+Epoch 22: val_accuracy did not improve from 0.85805
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9948 - loss: 0.3278 - val_accuracy: 0.8347 - val_loss: 0.6367 - learning_rate: 3.0000e-05
+Epoch 23/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9928 - loss: 0.3284
+Epoch 23: val_accuracy did not improve from 0.85805
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9906 - loss: 0.3313 - val_accuracy: 0.8453 - val_loss: 0.6108 - learning_rate: 3.0000e-05
+Epoch 24/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9915 - loss: 0.3323
+Epoch 24: val_accuracy improved from 0.85805 to 0.86441, saving model to ac_branch_mobilenet_fold0.keras
+
+Epoch 24: finished saving model to ac_branch_mobilenet_fold0.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 162ms/step - accuracy: 0.9919 - loss: 0.3297 - val_accuracy: 0.8644 - val_loss: 0.6001 - learning_rate: 3.0000e-05
+Epoch 25/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9960 - loss: 0.3251
+Epoch 25: ReduceLROnPlateau reducing learning rate to 1.4999999621068127e-05.
+
+Epoch 25: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9932 - loss: 0.3295 - val_accuracy: 0.8517 - val_loss: 0.6157 - learning_rate: 3.0000e-05
+Epoch 26/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9969 - loss: 0.3223
+Epoch 26: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 154ms/step - accuracy: 0.9971 - loss: 0.3221 - val_accuracy: 0.8496 - val_loss: 0.6025 - learning_rate: 1.5000e-05
+Epoch 27/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 145ms/step - accuracy: 0.9987 - loss: 0.3200
+Epoch 27: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 15s 151ms/step - accuracy: 0.9977 - loss: 0.3197 - val_accuracy: 0.8581 - val_loss: 0.6009 - learning_rate: 1.5000e-05
+Epoch 28/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9991 - loss: 0.3174
+Epoch 28: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9981 - loss: 0.3189 - val_accuracy: 0.8623 - val_loss: 0.6150 - learning_rate: 1.5000e-05
+Epoch 29/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 147ms/step - accuracy: 0.9981 - loss: 0.3190
+Epoch 29: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 15s 153ms/step - accuracy: 0.9977 - loss: 0.3188 - val_accuracy: 0.8517 - val_loss: 0.6235 - learning_rate: 1.5000e-05
+Epoch 30/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9970 - loss: 0.3187
+Epoch 30: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9977 - loss: 0.3174 - val_accuracy: 0.8517 - val_loss: 0.6192 - learning_rate: 1.5000e-05
+Epoch 31/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9990 - loss: 0.3163
+Epoch 31: ReduceLROnPlateau reducing learning rate to 7.499999810534064e-06.
+
+Epoch 31: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 15s 154ms/step - accuracy: 0.9987 - loss: 0.3164 - val_accuracy: 0.8581 - val_loss: 0.6019 - learning_rate: 1.5000e-05
+Epoch 32/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9997 - loss: 0.3156
+Epoch 32: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9987 - loss: 0.3177 - val_accuracy: 0.8475 - val_loss: 0.6128 - learning_rate: 7.5000e-06
+Epoch 33/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9978 - loss: 0.3198
+Epoch 33: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9987 - loss: 0.3168 - val_accuracy: 0.8475 - val_loss: 0.6104 - learning_rate: 7.5000e-06
+Epoch 34/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9979 - loss: 0.3173
+Epoch 34: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9977 - loss: 0.3185 - val_accuracy: 0.8581 - val_loss: 0.6067 - learning_rate: 7.5000e-06
+Epoch 35/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9996 - loss: 0.3155
+Epoch 35: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9994 - loss: 0.3155 - val_accuracy: 0.8475 - val_loss: 0.6061 - learning_rate: 7.5000e-06
+Epoch 36/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9988 - loss: 0.3140
+Epoch 36: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9987 - loss: 0.3145 - val_accuracy: 0.8538 - val_loss: 0.6029 - learning_rate: 7.5000e-06
+Epoch 37/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9992 - loss: 0.3168
+Epoch 37: ReduceLROnPlateau reducing learning rate to 3.749999905267032e-06.
+
+Epoch 37: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9984 - loss: 0.3169 - val_accuracy: 0.8602 - val_loss: 0.6073 - learning_rate: 7.5000e-06
+Epoch 38/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9989 - loss: 0.3145
+Epoch 38: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9984 - loss: 0.3147 - val_accuracy: 0.8496 - val_loss: 0.6032 - learning_rate: 3.7500e-06
+Epoch 39/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9987 - loss: 0.3148
+Epoch 39: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9981 - loss: 0.3158 - val_accuracy: 0.8623 - val_loss: 0.6073 - learning_rate: 3.7500e-06
+Epoch 40/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9996 - loss: 0.3142
+Epoch 40: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9994 - loss: 0.3146 - val_accuracy: 0.8559 - val_loss: 0.6105 - learning_rate: 3.7500e-06
+Epoch 41/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9989 - loss: 0.3147
+Epoch 41: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9987 - loss: 0.3150 - val_accuracy: 0.8559 - val_loss: 0.6035 - learning_rate: 3.7500e-06
+Epoch 42/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9989 - loss: 0.3135
+Epoch 42: val_accuracy did not improve from 0.86441
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9994 - loss: 0.3142 - val_accuracy: 0.8581 - val_loss: 0.6125 - learning_rate: 3.7500e-06
+Epoch 42: early stopping
+Restoring model weights from the end of the best epoch: 24.
+Fold 1 best val_accuracy: 0.8644
+2026-09-01 09:38:43.395652: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-09-01 09:38:43.532631: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+======================================================================
+Fold 2/5
+======================================================================
+Fold 2 augmented train set: (3082, 256, 256, 3) {0: 1048, 2: 1017, 1: 1017}
+  Phase 1/2: 8 warmup epochs, backbone frozen...
+Epoch 1/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 38s 253ms/step - accuracy: 0.5415 - loss: 1.1077 - val_accuracy: 0.6928 - val_loss: 0.8267
+Epoch 2/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 5s 46ms/step - accuracy: 0.6661 - loss: 0.8386 - val_accuracy: 0.7331 - val_loss: 0.7570
+Epoch 3/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.7401 - loss: 0.7434 - val_accuracy: 0.7331 - val_loss: 0.7529
+Epoch 4/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.7829 - loss: 0.6789 - val_accuracy: 0.7500 - val_loss: 0.7196
+Epoch 5/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.8274 - loss: 0.6112 - val_accuracy: 0.7521 - val_loss: 0.7012
+Epoch 6/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.8692 - loss: 0.5537 - val_accuracy: 0.7267 - val_loss: 0.7492
+Epoch 7/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.8602 - loss: 0.5653 - val_accuracy: 0.7479 - val_loss: 0.7666
+Epoch 8/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 46ms/step - accuracy: 0.8962 - loss: 0.5068 - val_accuracy: 0.7373 - val_loss: 0.7534
+  Phase 2/2: unfreezing backbone (BatchNorm layers kept frozen)...
+Epoch 1/62
+97/97 ━━━━━━━━━━━━━━━━━━━━ 0s 315ms/step - accuracy: 0.4878 - loss: 1.1745
+Epoch 1: val_accuracy improved from None to 0.70339, saving model to ac_branch_mobilenet_fold1.keras
+
+Epoch 1: finished saving model to ac_branch_mobilenet_fold1.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 75s 461ms/step - accuracy: 0.5399 - loss: 1.0286 - val_accuracy: 0.7034 - val_loss: 0.7970 - learning_rate: 6.0000e-05
+Epoch 2/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.6952 - loss: 0.7994
+Epoch 2: val_accuracy did not improve from 0.70339
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.7031 - loss: 0.7990 - val_accuracy: 0.6398 - val_loss: 0.9251 - learning_rate: 6.0000e-05
+Epoch 3/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.7356 - loss: 0.8001
+Epoch 3: val_accuracy improved from 0.70339 to 0.76483, saving model to ac_branch_mobilenet_fold1.keras
+
+Epoch 3: finished saving model to ac_branch_mobilenet_fold1.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 168ms/step - accuracy: 0.7855 - loss: 0.6957 - val_accuracy: 0.7648 - val_loss: 0.7245 - learning_rate: 6.0000e-05
+Epoch 4/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.8419 - loss: 0.5848
+Epoch 4: val_accuracy improved from 0.76483 to 0.81780, saving model to ac_branch_mobilenet_fold1.keras
+
+Epoch 4: finished saving model to ac_branch_mobilenet_fold1.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 166ms/step - accuracy: 0.8482 - loss: 0.5799 - val_accuracy: 0.8178 - val_loss: 0.6246 - learning_rate: 6.0000e-05
+Epoch 5/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.8789 - loss: 0.5350
+Epoch 5: val_accuracy did not improve from 0.81780
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.8770 - loss: 0.5351 - val_accuracy: 0.8178 - val_loss: 0.5934 - learning_rate: 6.0000e-05
+Epoch 6/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9060 - loss: 0.4900
+Epoch 6: val_accuracy did not improve from 0.81780
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.8991 - loss: 0.5016 - val_accuracy: 0.8136 - val_loss: 0.6102 - learning_rate: 6.0000e-05
+Epoch 7/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9015 - loss: 0.4810
+Epoch 7: val_accuracy did not improve from 0.81780
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.8968 - loss: 0.4950 - val_accuracy: 0.8008 - val_loss: 0.6187 - learning_rate: 6.0000e-05
+Epoch 8/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9191 - loss: 0.4560
+Epoch 8: val_accuracy improved from 0.81780 to 0.82203, saving model to ac_branch_mobilenet_fold1.keras
+
+Epoch 8: finished saving model to ac_branch_mobilenet_fold1.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 162ms/step - accuracy: 0.9195 - loss: 0.4564 - val_accuracy: 0.8220 - val_loss: 0.5784 - learning_rate: 6.0000e-05
+Epoch 9/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9353 - loss: 0.4320
+Epoch 9: val_accuracy improved from 0.82203 to 0.82415, saving model to ac_branch_mobilenet_fold1.keras
+
+Epoch 9: finished saving model to ac_branch_mobilenet_fold1.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 167ms/step - accuracy: 0.9319 - loss: 0.4401 - val_accuracy: 0.8242 - val_loss: 0.6373 - learning_rate: 6.0000e-05
+Epoch 10/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 155ms/step - accuracy: 0.9352 - loss: 0.4251
+Epoch 10: val_accuracy improved from 0.82415 to 0.83475, saving model to ac_branch_mobilenet_fold1.keras
+
+Epoch 10: finished saving model to ac_branch_mobilenet_fold1.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 168ms/step - accuracy: 0.9429 - loss: 0.4186 - val_accuracy: 0.8347 - val_loss: 0.5706 - learning_rate: 6.0000e-05
+Epoch 11/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9521 - loss: 0.4044
+Epoch 11: val_accuracy did not improve from 0.83475
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9517 - loss: 0.4083 - val_accuracy: 0.8305 - val_loss: 0.6053 - learning_rate: 6.0000e-05
+Epoch 12/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9530 - loss: 0.4025
+Epoch 12: val_accuracy did not improve from 0.83475
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9533 - loss: 0.4059 - val_accuracy: 0.8263 - val_loss: 0.6043 - learning_rate: 6.0000e-05
+Epoch 13/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9550 - loss: 0.4019
+Epoch 13: val_accuracy did not improve from 0.83475
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9478 - loss: 0.4106 - val_accuracy: 0.8199 - val_loss: 0.6024 - learning_rate: 6.0000e-05
+Epoch 14/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9593 - loss: 0.3996
+Epoch 14: val_accuracy improved from 0.83475 to 0.87076, saving model to ac_branch_mobilenet_fold1.keras
+
+Epoch 14: finished saving model to ac_branch_mobilenet_fold1.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 163ms/step - accuracy: 0.9588 - loss: 0.3963 - val_accuracy: 0.8708 - val_loss: 0.5702 - learning_rate: 6.0000e-05
+Epoch 15/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9776 - loss: 0.3666
+Epoch 15: val_accuracy did not improve from 0.87076
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9721 - loss: 0.3721 - val_accuracy: 0.8411 - val_loss: 0.6226 - learning_rate: 6.0000e-05
+Epoch 16/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9595 - loss: 0.3927
+Epoch 16: val_accuracy did not improve from 0.87076
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9650 - loss: 0.3816 - val_accuracy: 0.8390 - val_loss: 0.5673 - learning_rate: 6.0000e-05
+Epoch 17/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9782 - loss: 0.3580
+Epoch 17: val_accuracy did not improve from 0.87076
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9766 - loss: 0.3606 - val_accuracy: 0.8347 - val_loss: 0.5857 - learning_rate: 6.0000e-05
+Epoch 18/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9877 - loss: 0.3494
+Epoch 18: val_accuracy did not improve from 0.87076
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9854 - loss: 0.3509 - val_accuracy: 0.8644 - val_loss: 0.5685 - learning_rate: 6.0000e-05
+Epoch 19/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9888 - loss: 0.3460
+Epoch 19: val_accuracy did not improve from 0.87076
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9877 - loss: 0.3463 - val_accuracy: 0.8602 - val_loss: 0.5651 - learning_rate: 6.0000e-05
+Epoch 20/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 147ms/step - accuracy: 0.9844 - loss: 0.3483
+Epoch 20: val_accuracy did not improve from 0.87076
+97/97 ━━━━━━━━━━━━━━━━━━━━ 15s 152ms/step - accuracy: 0.9854 - loss: 0.3474 - val_accuracy: 0.8602 - val_loss: 0.5841 - learning_rate: 6.0000e-05
+Epoch 21/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9904 - loss: 0.3378
+Epoch 21: val_accuracy did not improve from 0.87076
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9867 - loss: 0.3445 - val_accuracy: 0.8581 - val_loss: 0.6008 - learning_rate: 6.0000e-05
+Epoch 22/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9749 - loss: 0.3656
+Epoch 22: val_accuracy improved from 0.87076 to 0.87712, saving model to ac_branch_mobilenet_fold1.keras
+
+Epoch 22: finished saving model to ac_branch_mobilenet_fold1.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 163ms/step - accuracy: 0.9757 - loss: 0.3667 - val_accuracy: 0.8771 - val_loss: 0.5636 - learning_rate: 6.0000e-05
+Epoch 23/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9716 - loss: 0.3688
+Epoch 23: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9740 - loss: 0.3651 - val_accuracy: 0.8581 - val_loss: 0.5696 - learning_rate: 6.0000e-05
+Epoch 24/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9832 - loss: 0.3484
+Epoch 24: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9835 - loss: 0.3493 - val_accuracy: 0.8242 - val_loss: 0.6703 - learning_rate: 6.0000e-05
+Epoch 25/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9790 - loss: 0.3582
+Epoch 25: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9812 - loss: 0.3537 - val_accuracy: 0.8538 - val_loss: 0.5557 - learning_rate: 6.0000e-05
+Epoch 26/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9864 - loss: 0.3437
+Epoch 26: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 154ms/step - accuracy: 0.9873 - loss: 0.3430 - val_accuracy: 0.8559 - val_loss: 0.6013 - learning_rate: 6.0000e-05
+Epoch 27/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9713 - loss: 0.3707
+Epoch 27: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9750 - loss: 0.3658 - val_accuracy: 0.8559 - val_loss: 0.5894 - learning_rate: 6.0000e-05
+Epoch 28/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9880 - loss: 0.3415
+Epoch 28: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9893 - loss: 0.3394 - val_accuracy: 0.8559 - val_loss: 0.5944 - learning_rate: 6.0000e-05
+Epoch 29/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9950 - loss: 0.3272
+Epoch 29: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9942 - loss: 0.3284 - val_accuracy: 0.8602 - val_loss: 0.5910 - learning_rate: 6.0000e-05
+Epoch 30/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9873 - loss: 0.3381
+Epoch 30: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9851 - loss: 0.3433 - val_accuracy: 0.8538 - val_loss: 0.5906 - learning_rate: 6.0000e-05
+Epoch 31/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9899 - loss: 0.3348
+Epoch 31: ReduceLROnPlateau reducing learning rate to 2.9999999242136255e-05.
+
+Epoch 31: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9880 - loss: 0.3378 - val_accuracy: 0.8581 - val_loss: 0.5868 - learning_rate: 6.0000e-05
+Epoch 32/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9952 - loss: 0.3274
+Epoch 32: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9951 - loss: 0.3261 - val_accuracy: 0.8559 - val_loss: 0.6112 - learning_rate: 3.0000e-05
+Epoch 33/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9957 - loss: 0.3206
+Epoch 33: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9961 - loss: 0.3194 - val_accuracy: 0.8538 - val_loss: 0.5803 - learning_rate: 3.0000e-05
+Epoch 34/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 155ms/step - accuracy: 0.9968 - loss: 0.3212
+Epoch 34: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 161ms/step - accuracy: 0.9971 - loss: 0.3197 - val_accuracy: 0.8538 - val_loss: 0.5796 - learning_rate: 3.0000e-05
+Epoch 35/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9991 - loss: 0.3160
+Epoch 35: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9987 - loss: 0.3161 - val_accuracy: 0.8623 - val_loss: 0.5871 - learning_rate: 3.0000e-05
+Epoch 36/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9984 - loss: 0.3162
+Epoch 36: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9984 - loss: 0.3175 - val_accuracy: 0.8708 - val_loss: 0.5725 - learning_rate: 3.0000e-05
+Epoch 37/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9980 - loss: 0.3170
+Epoch 37: ReduceLROnPlateau reducing learning rate to 1.4999999621068127e-05.
+
+Epoch 37: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9977 - loss: 0.3172 - val_accuracy: 0.8581 - val_loss: 0.5843 - learning_rate: 3.0000e-05
+Epoch 38/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9971 - loss: 0.3174
+Epoch 38: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9981 - loss: 0.3164 - val_accuracy: 0.8686 - val_loss: 0.5814 - learning_rate: 1.5000e-05
+Epoch 39/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9996 - loss: 0.3143
+Epoch 39: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9994 - loss: 0.3150 - val_accuracy: 0.8665 - val_loss: 0.5875 - learning_rate: 1.5000e-05
+Epoch 40/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9968 - loss: 0.3156
+Epoch 40: val_accuracy did not improve from 0.87712
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9977 - loss: 0.3146 - val_accuracy: 0.8644 - val_loss: 0.5823 - learning_rate: 1.5000e-05
+Epoch 40: early stopping
+Restoring model weights from the end of the best epoch: 22.
+Fold 2 best val_accuracy: 0.8771
+
+======================================================================
+Fold 3/5
+======================================================================
+Fold 3 augmented train set: (3082, 256, 256, 3) {0: 1048, 2: 1017, 1: 1017}
+  Phase 1/2: 8 warmup epochs, backbone frozen...
+Epoch 1/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 39s 254ms/step - accuracy: 0.4990 - loss: 1.1584 - val_accuracy: 0.6504 - val_loss: 0.8982
+Epoch 2/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 5s 46ms/step - accuracy: 0.6226 - loss: 0.9119 - val_accuracy: 0.6631 - val_loss: 0.8414
+Epoch 3/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 46ms/step - accuracy: 0.6859 - loss: 0.8330 - val_accuracy: 0.6780 - val_loss: 0.8108
+Epoch 4/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.7119 - loss: 0.7842 - val_accuracy: 0.6843 - val_loss: 0.7834
+Epoch 5/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 46ms/step - accuracy: 0.7651 - loss: 0.7043 - val_accuracy: 0.7161 - val_loss: 0.7548
+Epoch 6/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 46ms/step - accuracy: 0.8021 - loss: 0.6548 - val_accuracy: 0.7097 - val_loss: 0.7651
+Epoch 7/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.8245 - loss: 0.6169 - val_accuracy: 0.7331 - val_loss: 0.7345
+Epoch 8/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 46ms/step - accuracy: 0.8430 - loss: 0.5915 - val_accuracy: 0.7225 - val_loss: 0.7457
+  Phase 2/2: unfreezing backbone (BatchNorm layers kept frozen)...
+Epoch 1/62
+97/97 ━━━━━━━━━━━━━━━━━━━━ 0s 315ms/step - accuracy: 0.5401 - loss: 1.1936
+Epoch 1: val_accuracy improved from None to 0.70127, saving model to ac_branch_mobilenet_fold2.keras
+
+Epoch 1: finished saving model to ac_branch_mobilenet_fold2.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 75s 468ms/step - accuracy: 0.6016 - loss: 0.9721 - val_accuracy: 0.7013 - val_loss: 0.8200 - learning_rate: 6.0000e-05
+Epoch 2/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.7636 - loss: 0.7275
+Epoch 2: val_accuracy improved from 0.70127 to 0.76483, saving model to ac_branch_mobilenet_fold2.keras
+
+Epoch 2: finished saving model to ac_branch_mobilenet_fold2.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 163ms/step - accuracy: 0.7700 - loss: 0.7093 - val_accuracy: 0.7648 - val_loss: 0.6922 - learning_rate: 6.0000e-05
+Epoch 3/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.8408 - loss: 0.5944
+Epoch 3: val_accuracy did not improve from 0.76483
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.8323 - loss: 0.6071 - val_accuracy: 0.7479 - val_loss: 0.7941 - learning_rate: 6.0000e-05
+Epoch 4/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.8622 - loss: 0.5578
+Epoch 4: val_accuracy improved from 0.76483 to 0.80085, saving model to ac_branch_mobilenet_fold2.keras
+
+Epoch 4: finished saving model to ac_branch_mobilenet_fold2.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 164ms/step - accuracy: 0.8683 - loss: 0.5541 - val_accuracy: 0.8008 - val_loss: 0.6251 - learning_rate: 6.0000e-05
+Epoch 5/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.8864 - loss: 0.5077
+Epoch 5: val_accuracy did not improve from 0.80085
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.8799 - loss: 0.5218 - val_accuracy: 0.7945 - val_loss: 0.6959 - learning_rate: 6.0000e-05
+Epoch 6/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 145ms/step - accuracy: 0.9119 - loss: 0.4853
+Epoch 6: val_accuracy improved from 0.80085 to 0.82415, saving model to ac_branch_mobilenet_fold2.keras
+
+Epoch 6: finished saving model to ac_branch_mobilenet_fold2.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9056 - loss: 0.4914 - val_accuracy: 0.8242 - val_loss: 0.6349 - learning_rate: 6.0000e-05
+Epoch 7/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9179 - loss: 0.4706
+Epoch 7: val_accuracy improved from 0.82415 to 0.82627, saving model to ac_branch_mobilenet_fold2.keras
+
+Epoch 7: finished saving model to ac_branch_mobilenet_fold2.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 165ms/step - accuracy: 0.9140 - loss: 0.4731 - val_accuracy: 0.8263 - val_loss: 0.6342 - learning_rate: 6.0000e-05
+Epoch 8/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9257 - loss: 0.4459
+Epoch 8: val_accuracy improved from 0.82627 to 0.84534, saving model to ac_branch_mobilenet_fold2.keras
+
+Epoch 8: finished saving model to ac_branch_mobilenet_fold2.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 164ms/step - accuracy: 0.9286 - loss: 0.4460 - val_accuracy: 0.8453 - val_loss: 0.6017 - learning_rate: 6.0000e-05
+Epoch 9/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9438 - loss: 0.4219
+Epoch 9: val_accuracy did not improve from 0.84534
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9354 - loss: 0.4368 - val_accuracy: 0.8347 - val_loss: 0.5900 - learning_rate: 6.0000e-05
+Epoch 10/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9320 - loss: 0.4407
+Epoch 10: val_accuracy did not improve from 0.84534
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 154ms/step - accuracy: 0.9358 - loss: 0.4328 - val_accuracy: 0.8242 - val_loss: 0.6071 - learning_rate: 6.0000e-05
+Epoch 11/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9449 - loss: 0.4145
+Epoch 11: val_accuracy did not improve from 0.84534
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9471 - loss: 0.4146 - val_accuracy: 0.8284 - val_loss: 0.6423 - learning_rate: 6.0000e-05
+Epoch 12/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9461 - loss: 0.4106
+Epoch 12: val_accuracy did not improve from 0.84534
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9445 - loss: 0.4166 - val_accuracy: 0.8390 - val_loss: 0.6075 - learning_rate: 6.0000e-05
+Epoch 13/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 155ms/step - accuracy: 0.9563 - loss: 0.3983
+Epoch 13: val_accuracy improved from 0.84534 to 0.84958, saving model to ac_branch_mobilenet_fold2.keras
+
+Epoch 13: finished saving model to ac_branch_mobilenet_fold2.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 168ms/step - accuracy: 0.9468 - loss: 0.4080 - val_accuracy: 0.8496 - val_loss: 0.5793 - learning_rate: 6.0000e-05
+Epoch 14/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9595 - loss: 0.3859
+Epoch 14: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9650 - loss: 0.3822 - val_accuracy: 0.8263 - val_loss: 0.6426 - learning_rate: 6.0000e-05
+Epoch 15/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9630 - loss: 0.3816
+Epoch 15: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9633 - loss: 0.3822 - val_accuracy: 0.8220 - val_loss: 0.6047 - learning_rate: 6.0000e-05
+Epoch 16/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9698 - loss: 0.3772
+Epoch 16: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 154ms/step - accuracy: 0.9708 - loss: 0.3712 - val_accuracy: 0.8072 - val_loss: 0.7109 - learning_rate: 6.0000e-05
+Epoch 17/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9714 - loss: 0.3678
+Epoch 17: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9705 - loss: 0.3690 - val_accuracy: 0.8411 - val_loss: 0.6599 - learning_rate: 6.0000e-05
+Epoch 18/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9736 - loss: 0.3655
+Epoch 18: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9737 - loss: 0.3680 - val_accuracy: 0.7924 - val_loss: 0.6922 - learning_rate: 6.0000e-05
+Epoch 19/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9726 - loss: 0.3677
+Epoch 19: ReduceLROnPlateau reducing learning rate to 2.9999999242136255e-05.
+
+Epoch 19: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9796 - loss: 0.3577 - val_accuracy: 0.8093 - val_loss: 0.6515 - learning_rate: 6.0000e-05
+Epoch 20/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9903 - loss: 0.3394
+Epoch 20: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 154ms/step - accuracy: 0.9903 - loss: 0.3386 - val_accuracy: 0.8326 - val_loss: 0.6123 - learning_rate: 3.0000e-05
+Epoch 21/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9929 - loss: 0.3340
+Epoch 21: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9919 - loss: 0.3327 - val_accuracy: 0.8411 - val_loss: 0.6476 - learning_rate: 3.0000e-05
+Epoch 22/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 145ms/step - accuracy: 0.9965 - loss: 0.3250
+Epoch 22: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 15s 151ms/step - accuracy: 0.9955 - loss: 0.3264 - val_accuracy: 0.8453 - val_loss: 0.6483 - learning_rate: 3.0000e-05
+Epoch 23/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9931 - loss: 0.3294
+Epoch 23: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9948 - loss: 0.3264 - val_accuracy: 0.8390 - val_loss: 0.6508 - learning_rate: 3.0000e-05
+Epoch 24/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9940 - loss: 0.3248
+Epoch 24: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 15s 154ms/step - accuracy: 0.9958 - loss: 0.3243 - val_accuracy: 0.8432 - val_loss: 0.6185 - learning_rate: 3.0000e-05
+Epoch 25/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9963 - loss: 0.3217
+Epoch 25: ReduceLROnPlateau reducing learning rate to 1.4999999621068127e-05.
+
+Epoch 25: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9951 - loss: 0.3244 - val_accuracy: 0.8432 - val_loss: 0.6233 - learning_rate: 3.0000e-05
+Epoch 26/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9965 - loss: 0.3249
+Epoch 26: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9971 - loss: 0.3231 - val_accuracy: 0.8432 - val_loss: 0.6252 - learning_rate: 1.5000e-05
+Epoch 27/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9981 - loss: 0.3198
+Epoch 27: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9964 - loss: 0.3218 - val_accuracy: 0.8475 - val_loss: 0.6120 - learning_rate: 1.5000e-05
+Epoch 28/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9972 - loss: 0.3205
+Epoch 28: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9955 - loss: 0.3222 - val_accuracy: 0.8369 - val_loss: 0.6299 - learning_rate: 1.5000e-05
+Epoch 29/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9975 - loss: 0.3201
+Epoch 29: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9974 - loss: 0.3199 - val_accuracy: 0.8453 - val_loss: 0.6121 - learning_rate: 1.5000e-05
+Epoch 30/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9980 - loss: 0.3191
+Epoch 30: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9981 - loss: 0.3188 - val_accuracy: 0.8305 - val_loss: 0.6430 - learning_rate: 1.5000e-05
+Epoch 31/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 156ms/step - accuracy: 0.9958 - loss: 0.3208
+Epoch 31: ReduceLROnPlateau reducing learning rate to 7.499999810534064e-06.
+
+Epoch 31: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 162ms/step - accuracy: 0.9964 - loss: 0.3208 - val_accuracy: 0.8347 - val_loss: 0.6217 - learning_rate: 1.5000e-05
+Epoch 31: early stopping
+Restoring model weights from the end of the best epoch: 13.
+Fold 3 best val_accuracy: 0.8496
+
+======================================================================
+Fold 4/5
+======================================================================
+Fold 4 augmented train set: (3082, 256, 256, 3) {0: 1048, 2: 1017, 1: 1017}
+  Phase 1/2: 8 warmup epochs, backbone frozen...
+Epoch 1/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 38s 252ms/step - accuracy: 0.5448 - loss: 1.0430 - val_accuracy: 0.6483 - val_loss: 0.8692
+Epoch 2/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 5s 46ms/step - accuracy: 0.6820 - loss: 0.8289 - val_accuracy: 0.6419 - val_loss: 0.8679
+Epoch 3/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 46ms/step - accuracy: 0.7343 - loss: 0.7276 - val_accuracy: 0.6907 - val_loss: 0.7950
+Epoch 4/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.7849 - loss: 0.6687 - val_accuracy: 0.6653 - val_loss: 0.8150
+Epoch 5/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.8300 - loss: 0.6074 - val_accuracy: 0.6441 - val_loss: 0.8740
+Epoch 6/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 46ms/step - accuracy: 0.8666 - loss: 0.5518 - val_accuracy: 0.6716 - val_loss: 0.8076
+Epoch 7/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.8929 - loss: 0.5097 - val_accuracy: 0.7097 - val_loss: 0.7851
+Epoch 8/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.9137 - loss: 0.4755 - val_accuracy: 0.7013 - val_loss: 0.8251
+  Phase 2/2: unfreezing backbone (BatchNorm layers kept frozen)...
+Epoch 1/62
+97/97 ━━━━━━━━━━━━━━━━━━━━ 0s 309ms/step - accuracy: 0.5183 - loss: 1.0896
+Epoch 1: val_accuracy improved from None to 0.58263, saving model to ac_branch_mobilenet_fold3.keras
+
+Epoch 1: finished saving model to ac_branch_mobilenet_fold3.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 74s 455ms/step - accuracy: 0.5597 - loss: 0.9831 - val_accuracy: 0.5826 - val_loss: 1.4600 - learning_rate: 6.0000e-05
+Epoch 2/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.6438 - loss: 0.8923
+Epoch 2: val_accuracy improved from 0.58263 to 0.73093, saving model to ac_branch_mobilenet_fold3.keras
+
+Epoch 2: finished saving model to ac_branch_mobilenet_fold3.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 164ms/step - accuracy: 0.6963 - loss: 0.8007 - val_accuracy: 0.7309 - val_loss: 0.7531 - learning_rate: 6.0000e-05
+Epoch 3/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.7566 - loss: 0.7125
+Epoch 3: val_accuracy improved from 0.73093 to 0.78814, saving model to ac_branch_mobilenet_fold3.keras
+
+Epoch 3: finished saving model to ac_branch_mobilenet_fold3.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 165ms/step - accuracy: 0.7833 - loss: 0.6712 - val_accuracy: 0.7881 - val_loss: 0.6802 - learning_rate: 6.0000e-05
+Epoch 4/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.8274 - loss: 0.5933
+Epoch 4: val_accuracy improved from 0.78814 to 0.79661, saving model to ac_branch_mobilenet_fold3.keras
+
+Epoch 4: finished saving model to ac_branch_mobilenet_fold3.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 164ms/step - accuracy: 0.8323 - loss: 0.5984 - val_accuracy: 0.7966 - val_loss: 0.6448 - learning_rate: 6.0000e-05
+Epoch 5/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.8584 - loss: 0.5647
+Epoch 5: val_accuracy did not improve from 0.79661
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.8615 - loss: 0.5564 - val_accuracy: 0.7203 - val_loss: 0.8397 - learning_rate: 6.0000e-05
+Epoch 6/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 145ms/step - accuracy: 0.8890 - loss: 0.5280
+Epoch 6: val_accuracy improved from 0.79661 to 0.82203, saving model to ac_branch_mobilenet_fold3.keras
+
+Epoch 6: finished saving model to ac_branch_mobilenet_fold3.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.8952 - loss: 0.5106 - val_accuracy: 0.8220 - val_loss: 0.6401 - learning_rate: 6.0000e-05
+Epoch 7/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9074 - loss: 0.4873
+Epoch 7: val_accuracy did not improve from 0.82203
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9033 - loss: 0.4914 - val_accuracy: 0.7712 - val_loss: 0.6880 - learning_rate: 6.0000e-05
+Epoch 8/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9150 - loss: 0.4684
+Epoch 8: val_accuracy did not improve from 0.82203
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9169 - loss: 0.4737 - val_accuracy: 0.8051 - val_loss: 0.6252 - learning_rate: 6.0000e-05
+Epoch 9/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 147ms/step - accuracy: 0.9337 - loss: 0.4401
+Epoch 9: val_accuracy improved from 0.82203 to 0.83686, saving model to ac_branch_mobilenet_fold3.keras
+
+Epoch 9: finished saving model to ac_branch_mobilenet_fold3.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9283 - loss: 0.4488 - val_accuracy: 0.8369 - val_loss: 0.6023 - learning_rate: 6.0000e-05
+Epoch 10/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9388 - loss: 0.4382
+Epoch 10: val_accuracy improved from 0.83686 to 0.84110, saving model to ac_branch_mobilenet_fold3.keras
+
+Epoch 10: finished saving model to ac_branch_mobilenet_fold3.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 164ms/step - accuracy: 0.9354 - loss: 0.4403 - val_accuracy: 0.8411 - val_loss: 0.6022 - learning_rate: 6.0000e-05
+Epoch 11/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9421 - loss: 0.4264
+Epoch 11: val_accuracy did not improve from 0.84110
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9374 - loss: 0.4292 - val_accuracy: 0.8220 - val_loss: 0.6530 - learning_rate: 6.0000e-05
+Epoch 12/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9497 - loss: 0.4080
+Epoch 12: val_accuracy did not improve from 0.84110
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 154ms/step - accuracy: 0.9481 - loss: 0.4102 - val_accuracy: 0.8178 - val_loss: 0.6158 - learning_rate: 6.0000e-05
+Epoch 13/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9465 - loss: 0.4150
+Epoch 13: val_accuracy did not improve from 0.84110
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9494 - loss: 0.4077 - val_accuracy: 0.8411 - val_loss: 0.6138 - learning_rate: 6.0000e-05
+Epoch 14/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9745 - loss: 0.3773
+Epoch 14: val_accuracy improved from 0.84110 to 0.84534, saving model to ac_branch_mobilenet_fold3.keras
+
+Epoch 14: finished saving model to ac_branch_mobilenet_fold3.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 164ms/step - accuracy: 0.9666 - loss: 0.3844 - val_accuracy: 0.8453 - val_loss: 0.6399 - learning_rate: 6.0000e-05
+Epoch 15/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9690 - loss: 0.3752
+Epoch 15: ReduceLROnPlateau reducing learning rate to 2.9999999242136255e-05.
+
+Epoch 15: val_accuracy did not improve from 0.84534
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 154ms/step - accuracy: 0.9633 - loss: 0.3822 - val_accuracy: 0.8284 - val_loss: 0.6356 - learning_rate: 6.0000e-05
+Epoch 16/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9850 - loss: 0.3471
+Epoch 16: val_accuracy did not improve from 0.84534
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 154ms/step - accuracy: 0.9857 - loss: 0.3469 - val_accuracy: 0.8390 - val_loss: 0.6273 - learning_rate: 3.0000e-05
+Epoch 17/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9839 - loss: 0.3437
+Epoch 17: val_accuracy did not improve from 0.84534
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9838 - loss: 0.3467 - val_accuracy: 0.8432 - val_loss: 0.6285 - learning_rate: 3.0000e-05
+Epoch 18/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 145ms/step - accuracy: 0.9891 - loss: 0.3439
+Epoch 18: val_accuracy did not improve from 0.84534
+97/97 ━━━━━━━━━━━━━━━━━━━━ 15s 151ms/step - accuracy: 0.9909 - loss: 0.3411 - val_accuracy: 0.8326 - val_loss: 0.6646 - learning_rate: 3.0000e-05
+Epoch 19/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9950 - loss: 0.3309
+Epoch 19: val_accuracy did not improve from 0.84534
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9929 - loss: 0.3326 - val_accuracy: 0.8453 - val_loss: 0.6425 - learning_rate: 3.0000e-05
+Epoch 20/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9938 - loss: 0.3344
+Epoch 20: val_accuracy improved from 0.84534 to 0.84958, saving model to ac_branch_mobilenet_fold3.keras
+
+Epoch 20: finished saving model to ac_branch_mobilenet_fold3.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 164ms/step - accuracy: 0.9932 - loss: 0.3331 - val_accuracy: 0.8496 - val_loss: 0.6225 - learning_rate: 3.0000e-05
+Epoch 21/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9965 - loss: 0.3288
+Epoch 21: ReduceLROnPlateau reducing learning rate to 1.4999999621068127e-05.
+
+Epoch 21: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9958 - loss: 0.3293 - val_accuracy: 0.8432 - val_loss: 0.6238 - learning_rate: 3.0000e-05
+Epoch 22/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9974 - loss: 0.3240
+Epoch 22: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9968 - loss: 0.3236 - val_accuracy: 0.8411 - val_loss: 0.6352 - learning_rate: 1.5000e-05
+Epoch 23/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9968 - loss: 0.3250
+Epoch 23: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9971 - loss: 0.3239 - val_accuracy: 0.8390 - val_loss: 0.6341 - learning_rate: 1.5000e-05
+Epoch 24/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 145ms/step - accuracy: 0.9985 - loss: 0.3234
+Epoch 24: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 15s 151ms/step - accuracy: 0.9977 - loss: 0.3233 - val_accuracy: 0.8305 - val_loss: 0.6397 - learning_rate: 1.5000e-05
+Epoch 25/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9989 - loss: 0.3222
+Epoch 25: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9990 - loss: 0.3216 - val_accuracy: 0.8305 - val_loss: 0.6674 - learning_rate: 1.5000e-05
+Epoch 26/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9962 - loss: 0.3297
+Epoch 26: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9955 - loss: 0.3255 - val_accuracy: 0.8284 - val_loss: 0.6354 - learning_rate: 1.5000e-05
+Epoch 27/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9981 - loss: 0.3212
+Epoch 27: ReduceLROnPlateau reducing learning rate to 7.499999810534064e-06.
+
+Epoch 27: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9974 - loss: 0.3221 - val_accuracy: 0.8369 - val_loss: 0.6325 - learning_rate: 1.5000e-05
+Epoch 28/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9990 - loss: 0.3192
+Epoch 28: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9984 - loss: 0.3197 - val_accuracy: 0.8326 - val_loss: 0.6240 - learning_rate: 7.5000e-06
+Epoch 29/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 159ms/step - accuracy: 0.9986 - loss: 0.3189
+Epoch 29: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 164ms/step - accuracy: 0.9987 - loss: 0.3192 - val_accuracy: 0.8326 - val_loss: 0.6533 - learning_rate: 7.5000e-06
+Epoch 30/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9978 - loss: 0.3182
+Epoch 30: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 154ms/step - accuracy: 0.9981 - loss: 0.3185 - val_accuracy: 0.8347 - val_loss: 0.6462 - learning_rate: 7.5000e-06
+Epoch 31/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9987 - loss: 0.3194
+Epoch 31: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9990 - loss: 0.3187 - val_accuracy: 0.8347 - val_loss: 0.6477 - learning_rate: 7.5000e-06
+Epoch 32/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9995 - loss: 0.3171
+Epoch 32: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9987 - loss: 0.3183 - val_accuracy: 0.8326 - val_loss: 0.6474 - learning_rate: 7.5000e-06
+Epoch 33/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9993 - loss: 0.3183
+Epoch 33: ReduceLROnPlateau reducing learning rate to 3.749999905267032e-06.
+
+Epoch 33: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9990 - loss: 0.3184 - val_accuracy: 0.8347 - val_loss: 0.6494 - learning_rate: 7.5000e-06
+Epoch 34/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9980 - loss: 0.3172
+Epoch 34: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9990 - loss: 0.3162 - val_accuracy: 0.8369 - val_loss: 0.6414 - learning_rate: 3.7500e-06
+Epoch 35/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 156ms/step - accuracy: 0.9994 - loss: 0.3174
+Epoch 35: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 162ms/step - accuracy: 0.9994 - loss: 0.3168 - val_accuracy: 0.8369 - val_loss: 0.6414 - learning_rate: 3.7500e-06
+Epoch 36/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9993 - loss: 0.3158
+Epoch 36: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9990 - loss: 0.3165 - val_accuracy: 0.8347 - val_loss: 0.6497 - learning_rate: 3.7500e-06
+Epoch 37/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9959 - loss: 0.3178
+Epoch 37: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9981 - loss: 0.3171 - val_accuracy: 0.8369 - val_loss: 0.6386 - learning_rate: 3.7500e-06
+Epoch 38/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9999 - loss: 0.3155
+Epoch 38: val_accuracy did not improve from 0.84958
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9997 - loss: 0.3156 - val_accuracy: 0.8326 - val_loss: 0.6408 - learning_rate: 3.7500e-06
+Epoch 38: early stopping
+Restoring model weights from the end of the best epoch: 20.
+Fold 4 best val_accuracy: 0.8496
+
+======================================================================
+Fold 5/5
+======================================================================
+Fold 5 augmented train set: (3084, 256, 256, 3) {0: 1048, 1: 1018, 2: 1018}
+  Phase 1/2: 8 warmup epochs, backbone frozen...
+Epoch 1/8
+95/97 ━━━━━━━━━━━━━━━━━━━━ 0s 39ms/step - accuracy: 0.4528 - loss: 1.2054
+2026-09-01 10:16:16.805458: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-09-01 10:16:16.943313: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+97/97 ━━━━━━━━━━━━━━━━━━━━ 0s 196ms/step - accuracy: 0.4542 - loss: 1.2022
+2026-09-01 10:16:39.520282: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-09-01 10:16:39.657261: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+97/97 ━━━━━━━━━━━━━━━━━━━━ 54s 413ms/step - accuracy: 0.5250 - loss: 1.0526 - val_accuracy: 0.6539 - val_loss: 0.8630
+Epoch 2/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 5s 46ms/step - accuracy: 0.6673 - loss: 0.8298 - val_accuracy: 0.6752 - val_loss: 0.8603
+Epoch 3/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 46ms/step - accuracy: 0.7494 - loss: 0.7274 - val_accuracy: 0.6794 - val_loss: 0.8862
+Epoch 4/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 46ms/step - accuracy: 0.7964 - loss: 0.6579 - val_accuracy: 0.6688 - val_loss: 0.8680
+Epoch 5/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 5s 46ms/step - accuracy: 0.8288 - loss: 0.6007 - val_accuracy: 0.6943 - val_loss: 0.8689
+Epoch 6/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.8534 - loss: 0.5660 - val_accuracy: 0.6752 - val_loss: 0.9186
+Epoch 7/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 5s 46ms/step - accuracy: 0.8800 - loss: 0.5372 - val_accuracy: 0.6815 - val_loss: 0.9937
+Epoch 8/8
+97/97 ━━━━━━━━━━━━━━━━━━━━ 4s 45ms/step - accuracy: 0.9027 - loss: 0.5075 - val_accuracy: 0.6879 - val_loss: 0.9402
+  Phase 2/2: unfreezing backbone (BatchNorm layers kept frozen)...
+Epoch 1/62
+97/97 ━━━━━━━━━━━━━━━━━━━━ 0s 369ms/step - accuracy: 0.6376 - loss: 0.9615
+Epoch 1: val_accuracy improved from None to 0.69639, saving model to ac_branch_mobilenet_fold4.keras
+
+Epoch 1: finished saving model to ac_branch_mobilenet_fold4.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 80s 516ms/step - accuracy: 0.6702 - loss: 0.8698 - val_accuracy: 0.6964 - val_loss: 0.7667 - learning_rate: 6.0000e-05
+Epoch 2/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.7903 - loss: 0.6794
+Epoch 2: val_accuracy did not improve from 0.69639
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.7776 - loss: 0.6910 - val_accuracy: 0.6858 - val_loss: 0.8555 - learning_rate: 6.0000e-05
+Epoch 3/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.8312 - loss: 0.6071
+Epoch 3: val_accuracy improved from 0.69639 to 0.77070, saving model to ac_branch_mobilenet_fold4.keras
+
+Epoch 3: finished saving model to ac_branch_mobilenet_fold4.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 163ms/step - accuracy: 0.8427 - loss: 0.5912 - val_accuracy: 0.7707 - val_loss: 0.6873 - learning_rate: 6.0000e-05
+Epoch 4/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.8617 - loss: 0.5550
+Epoch 4: val_accuracy improved from 0.77070 to 0.79406, saving model to ac_branch_mobilenet_fold4.keras
+
+Epoch 4: finished saving model to ac_branch_mobilenet_fold4.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 163ms/step - accuracy: 0.8739 - loss: 0.5369 - val_accuracy: 0.7941 - val_loss: 0.6629 - learning_rate: 6.0000e-05
+Epoch 5/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9031 - loss: 0.4927
+Epoch 5: val_accuracy did not improve from 0.79406
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9034 - loss: 0.4935 - val_accuracy: 0.7749 - val_loss: 0.6949 - learning_rate: 6.0000e-05
+Epoch 6/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 145ms/step - accuracy: 0.9217 - loss: 0.4589
+Epoch 6: val_accuracy improved from 0.79406 to 0.80467, saving model to ac_branch_mobilenet_fold4.keras
+
+Epoch 6: finished saving model to ac_branch_mobilenet_fold4.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9196 - loss: 0.4610 - val_accuracy: 0.8047 - val_loss: 0.6470 - learning_rate: 6.0000e-05
+Epoch 7/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 148ms/step - accuracy: 0.9271 - loss: 0.4571
+Epoch 7: val_accuracy improved from 0.80467 to 0.81529, saving model to ac_branch_mobilenet_fold4.keras
+
+Epoch 7: finished saving model to ac_branch_mobilenet_fold4.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 162ms/step - accuracy: 0.9244 - loss: 0.4607 - val_accuracy: 0.8153 - val_loss: 0.6403 - learning_rate: 6.0000e-05
+Epoch 8/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9341 - loss: 0.4410
+Epoch 8: val_accuracy did not improve from 0.81529
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9309 - loss: 0.4469 - val_accuracy: 0.7983 - val_loss: 0.6722 - learning_rate: 6.0000e-05
+Epoch 9/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 150ms/step - accuracy: 0.9305 - loss: 0.4472
+Epoch 9: val_accuracy did not improve from 0.81529
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9335 - loss: 0.4378 - val_accuracy: 0.8110 - val_loss: 0.6669 - learning_rate: 6.0000e-05
+Epoch 10/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9622 - loss: 0.3968
+Epoch 10: val_accuracy did not improve from 0.81529
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9575 - loss: 0.3995 - val_accuracy: 0.7919 - val_loss: 0.6869 - learning_rate: 6.0000e-05
+Epoch 11/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9621 - loss: 0.3916
+Epoch 11: val_accuracy improved from 0.81529 to 0.83864, saving model to ac_branch_mobilenet_fold4.keras
+
+Epoch 11: finished saving model to ac_branch_mobilenet_fold4.keras
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 167ms/step - accuracy: 0.9653 - loss: 0.3878 - val_accuracy: 0.8386 - val_loss: 0.6311 - learning_rate: 6.0000e-05
+Epoch 12/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9710 - loss: 0.3837
+Epoch 12: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9692 - loss: 0.3810 - val_accuracy: 0.8195 - val_loss: 0.6615 - learning_rate: 6.0000e-05
+Epoch 13/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9787 - loss: 0.3686
+Epoch 13: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9750 - loss: 0.3702 - val_accuracy: 0.8047 - val_loss: 0.6888 - learning_rate: 6.0000e-05
+Epoch 14/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 157ms/step - accuracy: 0.9784 - loss: 0.3676
+Epoch 14: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 163ms/step - accuracy: 0.9754 - loss: 0.3714 - val_accuracy: 0.8344 - val_loss: 0.6929 - learning_rate: 6.0000e-05
+Epoch 15/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9682 - loss: 0.3801
+Epoch 15: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9702 - loss: 0.3746 - val_accuracy: 0.8153 - val_loss: 0.7123 - learning_rate: 6.0000e-05
+Epoch 16/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 158ms/step - accuracy: 0.9675 - loss: 0.3786
+Epoch 16: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 164ms/step - accuracy: 0.9695 - loss: 0.3731 - val_accuracy: 0.8344 - val_loss: 0.6478 - learning_rate: 6.0000e-05
+Epoch 17/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9729 - loss: 0.3722
+Epoch 17: ReduceLROnPlateau reducing learning rate to 2.9999999242136255e-05.
+
+Epoch 17: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9786 - loss: 0.3599 - val_accuracy: 0.8089 - val_loss: 0.6963 - learning_rate: 6.0000e-05
+Epoch 18/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 155ms/step - accuracy: 0.9899 - loss: 0.3379
+Epoch 18: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 161ms/step - accuracy: 0.9909 - loss: 0.3394 - val_accuracy: 0.8174 - val_loss: 0.6819 - learning_rate: 3.0000e-05
+Epoch 19/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 154ms/step - accuracy: 0.9932 - loss: 0.3322
+Epoch 19: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9951 - loss: 0.3299 - val_accuracy: 0.8174 - val_loss: 0.6674 - learning_rate: 3.0000e-05
+Epoch 20/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 157ms/step - accuracy: 0.9951 - loss: 0.3297
+Epoch 20: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 163ms/step - accuracy: 0.9951 - loss: 0.3304 - val_accuracy: 0.8259 - val_loss: 0.6477 - learning_rate: 3.0000e-05
+Epoch 21/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 152ms/step - accuracy: 0.9975 - loss: 0.3245
+Epoch 21: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 158ms/step - accuracy: 0.9955 - loss: 0.3272 - val_accuracy: 0.8344 - val_loss: 0.6598 - learning_rate: 3.0000e-05
+Epoch 22/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 155ms/step - accuracy: 0.9983 - loss: 0.3235
+Epoch 22: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 161ms/step - accuracy: 0.9971 - loss: 0.3255 - val_accuracy: 0.8280 - val_loss: 0.6660 - learning_rate: 3.0000e-05
+Epoch 23/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 153ms/step - accuracy: 0.9980 - loss: 0.3236
+Epoch 23: ReduceLROnPlateau reducing learning rate to 1.4999999621068127e-05.
+
+Epoch 23: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 159ms/step - accuracy: 0.9968 - loss: 0.3239 - val_accuracy: 0.8217 - val_loss: 0.6726 - learning_rate: 3.0000e-05
+Epoch 24/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 158ms/step - accuracy: 0.9991 - loss: 0.3211
+Epoch 24: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 17s 164ms/step - accuracy: 0.9987 - loss: 0.3219 - val_accuracy: 0.8386 - val_loss: 0.6555 - learning_rate: 1.5000e-05
+Epoch 25/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 149ms/step - accuracy: 0.9994 - loss: 0.3221
+Epoch 25: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 155ms/step - accuracy: 0.9987 - loss: 0.3219 - val_accuracy: 0.8238 - val_loss: 0.6502 - learning_rate: 1.5000e-05
+Epoch 26/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 155ms/step - accuracy: 0.9996 - loss: 0.3176
+Epoch 26: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 160ms/step - accuracy: 0.9997 - loss: 0.3181 - val_accuracy: 0.8323 - val_loss: 0.6564 - learning_rate: 1.5000e-05
+Epoch 27/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9997 - loss: 0.3183
+Epoch 27: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 157ms/step - accuracy: 0.9990 - loss: 0.3185 - val_accuracy: 0.8301 - val_loss: 0.6414 - learning_rate: 1.5000e-05
+Epoch 28/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 155ms/step - accuracy: 0.9994 - loss: 0.3184
+Epoch 28: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 161ms/step - accuracy: 0.9994 - loss: 0.3187 - val_accuracy: 0.8301 - val_loss: 0.6583 - learning_rate: 1.5000e-05
+Epoch 29/62
+96/97 ━━━━━━━━━━━━━━━━━━━━ 0s 151ms/step - accuracy: 0.9967 - loss: 0.3205
+Epoch 29: ReduceLROnPlateau reducing learning rate to 7.499999810534064e-06.
+
+Epoch 29: val_accuracy did not improve from 0.83864
+97/97 ━━━━━━━━━━━━━━━━━━━━ 16s 156ms/step - accuracy: 0.9974 - loss: 0.3209 - val_accuracy: 0.8301 - val_loss: 0.6651 - learning_rate: 1.5000e-05
+Epoch 29: early stopping
+Restoring model weights from the end of the best epoch: 11.
+Fold 5 best val_accuracy: 0.8386
+
+Per-fold best val_accuracy: ['0.8644', '0.8771', '0.8496', '0.8496', '0.8386']
+Mean +/- std across folds: 0.8559 +/- 0.0134
+
+Fold 1 model alone on X_test: 85.42 %
+Fold 2 model alone on X_test: 84.75 %
+Fold 3 model alone on X_test: 84.92 %
+Fold 4 model alone on X_test: 85.76 %
+Fold 5 model alone on X_test: 82.03 %
+Best single fold: 85.76 %  |  Mean single fold: 84.58 %
+
+Ensemble (5 folds) results:
+Accuracy : 85.76 %   (paper: 95.11 %)
+Precision: 85.63 %   (paper: 94.62 %)
+Recall   : 83.39 %   (paper: 94.39 %)
+F1-score : 84.41 %   (paper: 94.50 %)
+
+Classification report:
+                    precision    recall  f1-score   support
+
+   Trans-thalamic       0.86      0.90      0.88       328
+ Trans-cerebellum       0.94      0.85      0.89       143
+Trans-ventricular       0.78      0.76      0.77       119
+
+         accuracy                           0.86       590
+        macro avg       0.86      0.83      0.84       590
+     weighted avg       0.86      0.86      0.86       590
+
+
+      Metric  Paper (AC_Branch_MobileNet)  This run  Beat paper?
+0   Accuracy                        95.11     85.76        False
+1  Precision                        94.62     85.63        False
+2     Recall                        94.39     83.39        False
+3   F1-score                        94.50     84.41        False
+Grad-CAM skipped (layer name mismatch across TF/Keras versions): "Exception encountered when calling Functional.call().\n\n\x1b[1m138665236115008\x1b[0m\n\nArguments received by Functional.call():\n  • inputs=array([[[[-1.        , -1.        , -1.        ],\n         [-1.        , -1.        , -1.        ],\n         [-1.        , -1.        , -1.        ],\n         ...,\n         [-1.        , -1.        , -1.        ],\n         [-1.        , -1.        , -1.        ],\n         [-1.        , -1.        , -1.        ]],\n\n        [[-1.        , -1.        , -1.        ],\n         [-0.9843137 , -0.9843137 , -0.9843137 ],\n         [-0.9843137 , -0.9843137 , -0.9843137 ],\n         ...,\n         [-1.        , -1.        , -1.        ],\n         [-1.        , -1.        , -1.        ],\n         [-0.9843137 , -0.9843137 , -0.9843137 ]],\n\n        [[-1.        , -1.        , -1.        ],\n         [-0.9843137 , -0.9843137 , -0.9843137 ],\n         [-0.9843137 , -0.9843137 , -0.9843137 ],\n         ...,\n         [ 0.35686278,  0.35686278,  0.35686278],\n         [-0.9843137 , -0.9843137 , -0.9843137 ],\n         [-0.99215686, -0.99215686, -0.99215686]],\n\n        ...,\n\n        [[-0.96862745, -0.96862745, -0.96862745],\n         [-0.9372549 , -0.9372549 , -0.9372549 ],\n         [-0.92156863, -0.92156863, -0.92156863],\n         ...,\n         [-0.85882354, -0.85882354, -0.85882354],\n         [-0.81960785, -0.81960785, -0.81960785],\n         [-0.8509804 , -0.8509804 , -0.8509804 ]],\n\n        [[-0.9843137 , -0.9843137 , -0.9843137 ],\n         [-0.9529412 , -0.9529412 , -0.9529412 ],\n         [-0.94509804, -0.94509804, -0.94509804],\n         ...,\n         [-0.9137255 , -0.9137255 , -0.9137255 ],\n         [-0.92156863, -0.92156863, -0.92156863],\n         [-0.92941177, -0.92941177, -0.92941177]],\n\n        [[-0.9843137 , -0.9843137 , -0.9843137 ],\n         [-0.9764706 , -0.9764706 , -0.9764706 ],\n         [-0.9607843 , -0.9607843 , -0.9607843 ],\n         ...,\n         [-0.9607843 , -0.9607843 , -0.9607843 ],\n         [-0.9607843 , -0.9607843 , -0.9607843 ],\n         [-0.92941177, -0.92941177, -0.92941177]]]], dtype=float32)\n  • training=None\n  • mask=None\n  • kwargs=<class 'inspect._empty'>"

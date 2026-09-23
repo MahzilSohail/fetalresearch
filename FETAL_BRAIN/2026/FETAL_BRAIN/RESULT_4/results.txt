@@ -1,0 +1,422 @@
+TensorFlow: 2.20.0
+GPUs: [PhysicalDevice(name='/physical_device:GPU:0', device_type='GPU'), PhysicalDevice(name='/physical_device:GPU:1', device_type='GPU')]
+✓ CSV   : /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/FETAL_PLANES_DB_data.csv
+✓ Images: /kaggle/input/datasets/khalidhasan47/fetal-planes-db-khr/FETAL_PLANES_ZENODO/Images
+CSV columns: ['Image_name', 'Patient_num', 'Plane', 'Brain_plane', 'Operator', 'US_Machine', 'Train']
+Total rows: 12400
+Brain images found: 3092
+Using sub-label column: 'Brain_plane'
+
+Brain images with valid paths: 2949
+Class distribution:
+ label
+Trans-thalamic       1638
+Trans-cerebellum      714
+Trans-ventricular     597
+Name: count, dtype: int64
+Class→idx mapping: {'Trans-thalamic': 0, 'Trans-ventricular': 1, 'Trans-cerebellum': 2}
+
+Split sizes — Train: 2064  Val: 442  Test: 443
+Train class distribution:
+ label
+Trans-thalamic       1146
+Trans-cerebellum      500
+Trans-ventricular     418
+Name: count, dtype: int64
+Val   class distribution:
+ label
+Trans-thalamic       246
+Trans-cerebellum     107
+Trans-ventricular     89
+Name: count, dtype: int64
+Test  class distribution:
+ label
+Trans-thalamic       246
+Trans-cerebellum     107
+Trans-ventricular     90
+Name: count, dtype: int64
+
+Building augmented training set (this may take a few minutes)...
+  Preprocessing class 'Trans-thalamic' (1146 images)...
+    → 1590 images after augmentation
+  Preprocessing class 'Trans-ventricular' (418 images)...
+    → 1590 images after augmentation
+  Preprocessing class 'Trans-cerebellum' (500 images)...
+    → 1590 images after augmentation
+
+Augmented train set: (4770, 256, 256, 3)  labels: [1590 1590 1590]
+WARNING: All log messages before absl::InitializeLog() is called are written to STDERR
+I0000 00:00:1787119735.558984      23 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:0 with 13756 MB memory:  -> device: 0, name: Tesla T4, pci bus id: 0000:00:04.0, compute capability: 7.5
+I0000 00:00:1787119735.562106      23 gpu_device.cc:2020] Created device /job:localhost/replica:0/task:0/device:GPU:1 with 13756 MB memory:  -> device: 1, name: Tesla T4, pci bus id: 0000:00:05.0, compute capability: 7.5
+Downloading data from https://storage.googleapis.com/tensorflow/keras-applications/mobilenet_v2/mobilenet_v2_weights_tf_dim_ordering_tf_kernels_1.0_224_no_top.h5
+9406464/9406464 ━━━━━━━━━━━━━━━━━━━━ 0s 0us/step
+Model: "AC_Branch_MobileNet"
+┏━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━━━┓
+┃ Layer (type)        ┃ Output Shape      ┃    Param # ┃ Connected to      ┃
+┡━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━╇━━━━━━━━━━━━━━━━━━━┩
+│ input (InputLayer)  │ (None, 256, 256,  │          0 │ -                 │
+│                     │ 3)                │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ mobilenetv2_1.00_2… │ (None, 8, 8,      │  2,257,984 │ input[0][0]       │
+│ (Functional)        │ 1280)             │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ proj_1024 (Conv2D)  │ (None, 8, 8,      │  1,310,720 │ mobilenetv2_1.00… │
+│                     │ 1024)             │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ proj_bn             │ (None, 8, 8,      │      4,096 │ proj_1024[0][0]   │
+│ (BatchNormalizatio… │ 1024)             │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ proj_relu           │ (None, 8, 8,      │          0 │ proj_bn[0][0]     │
+│ (Activation)        │ 1024)             │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv1 (Conv2D) │ (None, 8, 8, 128) │    131,200 │ proj_relu[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_elu1           │ (None, 8, 8, 128) │          0 │ attn_conv1[0][0]  │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_conv1   │ (None, 8, 8, 64)  │    589,888 │ proj_relu[0][0]   │
+│ (Conv2D)            │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv2 (Conv2D) │ (None, 8, 8, 32)  │      4,128 │ attn_elu1[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_elu1    │ (None, 8, 8, 64)  │          0 │ conv_branch_conv… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_elu2           │ (None, 8, 8, 32)  │          0 │ attn_conv2[0][0]  │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_conv2   │ (None, 8, 8, 32)  │     18,464 │ conv_branch_elu1… │
+│ (Conv2D)            │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_avgpool        │ (None, 8, 8, 32)  │          0 │ attn_elu2[0][0]   │
+│ (AveragePooling2D)  │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_elu2    │ (None, 8, 8, 32)  │          0 │ conv_branch_conv… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_conv3 (Conv2D) │ (None, 8, 8, 1)   │         33 │ attn_avgpool[0][… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_maxpool │ (None, 8, 8, 32)  │          0 │ conv_branch_elu2… │
+│ (MaxPooling2D)      │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_elu3           │ (None, 8, 8, 1)   │          0 │ attn_conv3[0][0]  │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_conv3   │ (None, 8, 8, 16)  │      4,624 │ conv_branch_maxp… │
+│ (Conv2D)            │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ attn_multiply       │ (None, 8, 8,      │          0 │ attn_elu3[0][0],  │
+│ (Multiply)          │ 1024)             │            │ proj_relu[0][0]   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ conv_branch_elu3    │ (None, 8, 8, 16)  │          0 │ conv_branch_conv… │
+│ (Activation)        │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ concat              │ (None, 8, 8,      │          0 │ attn_multiply[0]… │
+│ (Concatenate)       │ 1040)             │            │ conv_branch_elu3… │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ gap                 │ (None, 1040)      │          0 │ concat[0][0]      │
+│ (GlobalAveragePool… │                   │            │                   │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout1 (Dropout)  │ (None, 1040)      │          0 │ gap[0][0]         │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dense1 (Dense)      │ (None, 128)       │    133,248 │ dropout1[0][0]    │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ dropout2 (Dropout)  │ (None, 128)       │          0 │ dense1[0][0]      │
+├─────────────────────┼───────────────────┼────────────┼───────────────────┤
+│ output (Dense)      │ (None, 3)         │        387 │ dropout2[0][0]    │
+└─────────────────────┴───────────────────┴────────────┴───────────────────┘
+ Total params: 4,454,772 (16.99 MB)
+ Trainable params: 4,418,612 (16.86 MB)
+ Non-trainable params: 36,160 (141.25 KB)
+Total parameters: 4,454,772
+
+Training for 50 epochs...
+Epoch 1/50
+2026-08-19 06:09:51.664396: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-08-19 06:09:51.803471: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+I0000 00:00:1787119816.972319      94 device_compiler.h:196] Compiled cluster using XLA!  This line is logged at most once for the lifetime of the process.
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 126ms/step - accuracy: 0.4639 - loss: 1.3472
+2026-08-19 06:10:55.827801: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-08-19 06:10:55.964558: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+150/150 ━━━━━━━━━━━━━━━━━━━━ 0s 395ms/step - accuracy: 0.4647 - loss: 1.3447
+2026-08-19 06:11:41.856610: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-08-19 06:11:41.994650: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+Epoch 1: val_accuracy improved from None to 0.59050, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 1: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 161s 564ms/step - accuracy: 0.5816 - loss: 0.9771 - val_accuracy: 0.5905 - val_loss: 2.9253
+Epoch 2/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.7651 - loss: 0.5795
+Epoch 2: val_accuracy improved from 0.59050 to 0.66516, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 2: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 24s 156ms/step - accuracy: 0.7893 - loss: 0.5314 - val_accuracy: 0.6652 - val_loss: 1.7694
+Epoch 3/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 133ms/step - accuracy: 0.8560 - loss: 0.3768
+Epoch 3: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 152ms/step - accuracy: 0.8476 - loss: 0.3858 - val_accuracy: 0.4774 - val_loss: 2.6266
+Epoch 4/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.8787 - loss: 0.3306
+Epoch 4: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.8763 - loss: 0.3371 - val_accuracy: 0.2014 - val_loss: 10.2668
+Epoch 5/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.8228 - loss: 0.4622
+Epoch 5: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.8509 - loss: 0.3901 - val_accuracy: 0.2081 - val_loss: 12.0063
+Epoch 6/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.8982 - loss: 0.2648
+Epoch 6: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9010 - loss: 0.2650 - val_accuracy: 0.3733 - val_loss: 6.8016
+Epoch 7/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9310 - loss: 0.1985
+Epoch 7: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9268 - loss: 0.2031 - val_accuracy: 0.3032 - val_loss: 12.0745
+Epoch 8/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.8227 - loss: 0.5087
+Epoch 8: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.8656 - loss: 0.3775 - val_accuracy: 0.2014 - val_loss: 12.6195
+Epoch 9/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.8946 - loss: 0.3074
+Epoch 9: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9082 - loss: 0.2640 - val_accuracy: 0.2014 - val_loss: 17.8906
+Epoch 10/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9176 - loss: 0.2421
+Epoch 10: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9283 - loss: 0.2129 - val_accuracy: 0.2014 - val_loss: 15.2506
+Epoch 11/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9540 - loss: 0.1295
+Epoch 11: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9501 - loss: 0.1456 - val_accuracy: 0.2104 - val_loss: 14.3970
+Epoch 12/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.9673 - loss: 0.1049
+Epoch 12: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9597 - loss: 0.1246 - val_accuracy: 0.2014 - val_loss: 13.9919
+Epoch 13/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9594 - loss: 0.1268
+Epoch 13: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9570 - loss: 0.1311 - val_accuracy: 0.3643 - val_loss: 4.0219
+Epoch 14/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9582 - loss: 0.1373
+Epoch 14: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9556 - loss: 0.1311 - val_accuracy: 0.2647 - val_loss: 8.5086
+Epoch 15/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.9454 - loss: 0.1543
+Epoch 15: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9436 - loss: 0.1570 - val_accuracy: 0.2172 - val_loss: 13.6540
+Epoch 16/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.9743 - loss: 0.0795
+Epoch 16: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 150ms/step - accuracy: 0.9740 - loss: 0.0775 - val_accuracy: 0.4208 - val_loss: 4.5061
+Epoch 17/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9677 - loss: 0.1013
+Epoch 17: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9677 - loss: 0.0990 - val_accuracy: 0.4027 - val_loss: 5.6817
+Epoch 18/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9830 - loss: 0.0575
+Epoch 18: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9792 - loss: 0.0724 - val_accuracy: 0.5226 - val_loss: 2.5818
+Epoch 19/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.8144 - loss: 0.5763
+Epoch 19: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.8721 - loss: 0.3814 - val_accuracy: 0.2217 - val_loss: 9.5043
+Epoch 20/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9515 - loss: 0.1478
+Epoch 20: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9518 - loss: 0.1478 - val_accuracy: 0.2036 - val_loss: 17.3525
+Epoch 21/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9571 - loss: 0.1416
+Epoch 21: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9564 - loss: 0.1339 - val_accuracy: 0.2557 - val_loss: 9.5582
+Epoch 22/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.8925 - loss: 0.3147
+Epoch 22: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9182 - loss: 0.2440 - val_accuracy: 0.2353 - val_loss: 7.3005
+Epoch 23/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9720 - loss: 0.0833
+Epoch 23: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9730 - loss: 0.0879 - val_accuracy: 0.2579 - val_loss: 8.0894
+Epoch 24/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9276 - loss: 0.2257
+Epoch 24: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 151ms/step - accuracy: 0.9394 - loss: 0.1835 - val_accuracy: 0.2398 - val_loss: 8.8757
+Epoch 25/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9755 - loss: 0.0718
+Epoch 25: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9704 - loss: 0.0912 - val_accuracy: 0.2036 - val_loss: 12.5765
+Epoch 26/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9722 - loss: 0.0841
+Epoch 26: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9765 - loss: 0.0748 - val_accuracy: 0.5724 - val_loss: 2.5086
+Epoch 27/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9735 - loss: 0.0719
+Epoch 27: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 148ms/step - accuracy: 0.9715 - loss: 0.0825 - val_accuracy: 0.4910 - val_loss: 4.0363
+Epoch 28/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.9773 - loss: 0.0726
+Epoch 28: val_accuracy did not improve from 0.66516
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9763 - loss: 0.0758 - val_accuracy: 0.6131 - val_loss: 2.2164
+Epoch 29/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9042 - loss: 0.2816
+Epoch 29: val_accuracy improved from 0.66516 to 0.72398, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 29: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 156ms/step - accuracy: 0.9249 - loss: 0.2200 - val_accuracy: 0.7240 - val_loss: 1.4297
+Epoch 30/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9750 - loss: 0.0755
+Epoch 30: val_accuracy did not improve from 0.72398
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9704 - loss: 0.0887 - val_accuracy: 0.5679 - val_loss: 1.9150
+Epoch 31/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9610 - loss: 0.1226
+Epoch 31: val_accuracy did not improve from 0.72398
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 150ms/step - accuracy: 0.9679 - loss: 0.0944 - val_accuracy: 0.6063 - val_loss: 1.6973
+Epoch 32/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.8945 - loss: 0.3456
+Epoch 32: val_accuracy did not improve from 0.72398
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9235 - loss: 0.2429 - val_accuracy: 0.2760 - val_loss: 6.6153
+Epoch 33/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.9704 - loss: 0.0966
+Epoch 33: val_accuracy did not improve from 0.72398
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 148ms/step - accuracy: 0.9730 - loss: 0.0867 - val_accuracy: 0.4140 - val_loss: 3.1844
+Epoch 34/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.9867 - loss: 0.0445
+Epoch 34: val_accuracy did not improve from 0.72398
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 149ms/step - accuracy: 0.9851 - loss: 0.0493 - val_accuracy: 0.6516 - val_loss: 2.0900
+Epoch 35/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 130ms/step - accuracy: 0.9798 - loss: 0.0712
+Epoch 35: val_accuracy did not improve from 0.72398
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 148ms/step - accuracy: 0.9822 - loss: 0.0591 - val_accuracy: 0.5701 - val_loss: 2.6645
+Epoch 36/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9852 - loss: 0.0481
+Epoch 36: val_accuracy did not improve from 0.72398
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 150ms/step - accuracy: 0.9870 - loss: 0.0435 - val_accuracy: 0.6946 - val_loss: 1.9232
+Epoch 37/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9891 - loss: 0.0354
+Epoch 37: val_accuracy did not improve from 0.72398
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 150ms/step - accuracy: 0.9849 - loss: 0.0507 - val_accuracy: 0.6176 - val_loss: 2.5752
+Epoch 38/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9685 - loss: 0.0992
+Epoch 38: val_accuracy did not improve from 0.72398
+150/150 ━━━━━━━━━━━━━━━━━━━━ 22s 150ms/step - accuracy: 0.9702 - loss: 0.0932 - val_accuracy: 0.5226 - val_loss: 2.9849
+Epoch 39/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9764 - loss: 0.0810
+Epoch 39: val_accuracy improved from 0.72398 to 0.73077, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 39: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 24s 157ms/step - accuracy: 0.9790 - loss: 0.0695 - val_accuracy: 0.7308 - val_loss: 1.4884
+Epoch 40/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9892 - loss: 0.0419
+Epoch 40: val_accuracy did not improve from 0.73077
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 151ms/step - accuracy: 0.9845 - loss: 0.0539 - val_accuracy: 0.6606 - val_loss: 1.5848
+Epoch 41/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9731 - loss: 0.0886
+Epoch 41: val_accuracy improved from 0.73077 to 0.74887, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 41: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 24s 157ms/step - accuracy: 0.9746 - loss: 0.0799 - val_accuracy: 0.7489 - val_loss: 1.5250
+Epoch 42/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9768 - loss: 0.0756
+Epoch 42: val_accuracy did not improve from 0.74887
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 151ms/step - accuracy: 0.9776 - loss: 0.0750 - val_accuracy: 0.4683 - val_loss: 4.1515
+Epoch 43/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 0.9615 - loss: 0.1304
+Epoch 43: val_accuracy did not improve from 0.74887
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 152ms/step - accuracy: 0.9683 - loss: 0.1063 - val_accuracy: 0.6810 - val_loss: 1.6798
+Epoch 44/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9700 - loss: 0.0953
+Epoch 44: val_accuracy did not improve from 0.74887
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 151ms/step - accuracy: 0.9738 - loss: 0.0832 - val_accuracy: 0.7014 - val_loss: 1.9190
+Epoch 45/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9558 - loss: 0.1322
+Epoch 45: val_accuracy did not improve from 0.74887
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 151ms/step - accuracy: 0.9671 - loss: 0.1050 - val_accuracy: 0.6878 - val_loss: 2.9896
+Epoch 46/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 0.9736 - loss: 0.0905
+Epoch 46: val_accuracy improved from 0.74887 to 0.75339, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 46: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 24s 158ms/step - accuracy: 0.9696 - loss: 0.1001 - val_accuracy: 0.7534 - val_loss: 2.3591
+Epoch 47/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 132ms/step - accuracy: 0.9867 - loss: 0.0410
+Epoch 47: val_accuracy improved from 0.75339 to 0.77828, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 47: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 24s 157ms/step - accuracy: 0.9857 - loss: 0.0496 - val_accuracy: 0.7783 - val_loss: 1.7674
+Epoch 48/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9449 - loss: 0.1745
+Epoch 48: val_accuracy improved from 0.77828 to 0.79412, saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+
+Epoch 48: finished saving model to /kaggle/working/ac_branch_mobilenet_results/best_model.keras
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 156ms/step - accuracy: 0.9581 - loss: 0.1333 - val_accuracy: 0.7941 - val_loss: 1.8981
+Epoch 49/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9901 - loss: 0.0354
+Epoch 49: val_accuracy did not improve from 0.79412
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 150ms/step - accuracy: 0.9885 - loss: 0.0411 - val_accuracy: 0.6900 - val_loss: 2.7061
+Epoch 50/50
+149/150 ━━━━━━━━━━━━━━━━━━━━ 0s 131ms/step - accuracy: 0.9813 - loss: 0.0616
+Epoch 50: val_accuracy did not improve from 0.79412
+150/150 ━━━━━━━━━━━━━━━━━━━━ 23s 150ms/step - accuracy: 0.9822 - loss: 0.0579 - val_accuracy: 0.7873 - val_loss: 1.8491
+Models saved.
+2026-08-19 06:30:40.038043: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+2026-08-19 06:30:40.176390: E external/local_xla/xla/stream_executor/cuda/cuda_timer.cc:86] Delay kernel timed out: measured time has sub-optimal accuracy. There may be a missing warmup execution, please investigate in Nsight Systems.
+=======================================================
+  Test Results
+=======================================================
+  Accuracy  : 78.33%   (Paper: 95.11%)
+  Precision : 75.89%   (Paper: 94.62%)
+  Recall    : 79.01%   (Paper: 94.39%)
+  F1-score  : 77.01%   (Paper: 94.50%)
+=======================================================
+                   precision    recall  f1-score   support
+
+   Trans-thalamic       0.87      0.76      0.81       246
+Trans-ventricular       0.57      0.72      0.64        90
+ Trans-cerebellum       0.84      0.89      0.86       107
+
+         accuracy                           0.78       443
+        macro avg       0.76      0.79      0.77       443
+     weighted avg       0.80      0.78      0.79       443
+
+
+=======================================================
+  Validation Results
+=======================================================
+  Accuracy  : 79.41%   (Paper: 95.11%)
+  Precision : 76.81%   (Paper: 94.62%)
+  Recall    : 81.14%   (Paper: 94.39%)
+  F1-score  : 78.39%   (Paper: 94.50%)
+=======================================================
+                   precision    recall  f1-score   support
+
+   Trans-thalamic       0.89      0.76      0.82       246
+Trans-ventricular       0.64      0.81      0.71        89
+ Trans-cerebellum       0.78      0.87      0.82       107
+
+         accuracy                           0.79       442
+        macro avg       0.77      0.81      0.78       442
+     weighted avg       0.81      0.79      0.80       442
+
+
+Saved: /kaggle/working/ac_branch_mobilenet_results/confusion_matrix_test.png
+
+Saved: /kaggle/working/ac_branch_mobilenet_results/training_curves.png
+Last conv layer for Grad-CAM: conv_branch_conv3
+
+Saved: /kaggle/working/ac_branch_mobilenet_results/gradcam_visualization.png
+
+=======================================================
+  All outputs saved to: /kaggle/working/ac_branch_mobilenet_results
+=======================================================
+{
+  "accuracy": 78.3295711060948,
+  "precision": 75.8874714646334,
+  "recall": 79.00784303793195,
+  "f1": 77.01383583736524
+}
+
+Paper reported:
+{
+  "accuracy": 95.11,
+  "precision": 94.62,
+  "recall": 94.39,
+  "f1": 94.5
+}

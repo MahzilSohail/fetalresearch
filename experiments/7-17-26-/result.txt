@@ -1,0 +1,73 @@
+Detected dataset root: /kaggle/input/datasets/minhnhtl05/fetal-planes-db-dataset/Fetal_Planes_DB
+Available splits: ['val', 'test', 'train']
+Device: cuda
+Classes (6): ['Fetal abdomen', 'Fetal brain', 'Fetal femur', 'Fetal thorax', 'Maternal cervix', 'Other']
+Train size: 7437 | Val size: 1238 | Test size: 3725
+Class counts: {'Fetal abdomen': np.int64(426), 'Fetal brain': np.int64(1855), 'Fetal femur': np.int64(624), 'Fetal thorax': np.int64(1030), 'Maternal cervix': np.int64(975), 'Other': np.int64(2527)}
+Downloading: "https://download.pytorch.org/models/efficientnet_b0_rwightman-7f5810bc.pth" to /root/.cache/torch/hub/checkpoints/efficientnet_b0_rwightman-7f5810bc.pth
+100%|██████████| 20.5M/20.5M [00:00<00:00, 135MB/s] 
+
+Starting training...
+Epoch 1/15 [129.3s] train_loss=1.4286 train_acc=0.5365 val_loss=0.9329 val_acc=0.7714
+Epoch 2/15 [82.2s] train_loss=0.5924 train_acc=0.8595 val_loss=0.6106 val_acc=0.9321
+Epoch 3/15 [85.7s] train_loss=0.4722 train_acc=0.9258 val_loss=0.5976 val_acc=0.9378
+Epoch 4/15 [82.9s] train_loss=0.4312 train_acc=0.9459 val_loss=0.5847 val_acc=0.9459
+Epoch 5/15 [82.1s] train_loss=0.4199 train_acc=0.9523 val_loss=0.5574 val_acc=0.9418
+Epoch 6/15 [82.3s] train_loss=0.3975 train_acc=0.9636 val_loss=0.5824 val_acc=0.9394
+Epoch 7/15 [82.5s] train_loss=0.3839 train_acc=0.9682 val_loss=0.5505 val_acc=0.9580
+Epoch 8/15 [82.5s] train_loss=0.3683 train_acc=0.9762 val_loss=0.5661 val_acc=0.9532
+Epoch 9/15 [81.8s] train_loss=0.3578 train_acc=0.9815 val_loss=0.5409 val_acc=0.9612
+Epoch 10/15 [82.6s] train_loss=0.3472 train_acc=0.9890 val_loss=0.5545 val_acc=0.9556
+Epoch 11/15 [81.6s] train_loss=0.3436 train_acc=0.9890 val_loss=0.5452 val_acc=0.9572
+Epoch 12/15 [82.9s] train_loss=0.3394 train_acc=0.9922 val_loss=0.5583 val_acc=0.9588
+Epoch 13/15 [82.1s] train_loss=0.3356 train_acc=0.9927 val_loss=0.5526 val_acc=0.9588
+Epoch 14/15 [81.9s] train_loss=0.3326 train_acc=0.9952 val_loss=0.5523 val_acc=0.9588
+Epoch 15/15 [81.7s] train_loss=0.3321 train_acc=0.9957 val_loss=0.5497 val_acc=0.9588
+
+Best validation accuracy: 0.9612
+
+--- Validation classification report ---
+                 precision    recall  f1-score   support
+
+  Fetal abdomen       0.90      0.99      0.94        71
+    Fetal brain       0.99      1.00      0.99       309
+    Fetal femur       0.90      0.93      0.92       104
+   Fetal thorax       0.94      0.96      0.95       171
+Maternal cervix       1.00      1.00      1.00       162
+          Other       0.97      0.92      0.94       421
+
+       accuracy                           0.96      1238
+      macro avg       0.95      0.97      0.96      1238
+   weighted avg       0.96      0.96      0.96      1238
+
+Validation confusion matrix:
+ [[ 70   0   0   0   0   1]
+ [  0 309   0   0   0   0]
+ [  0   0  97   0   0   7]
+ [  0   0   0 165   0   6]
+ [  0   0   0   0 162   0]
+ [  8   4  11  11   0 387]]
+
+--- Test classification report ---
+                 precision    recall  f1-score   support
+
+  Fetal abdomen       0.88      0.95      0.92       214
+    Fetal brain       0.99      0.99      0.99       928
+    Fetal femur       0.87      0.97      0.91       312
+   Fetal thorax       0.94      0.98      0.96       517
+Maternal cervix       0.99      0.99      0.99       489
+          Other       0.97      0.91      0.94      1265
+
+       accuracy                           0.96      3725
+      macro avg       0.94      0.97      0.95      3725
+   weighted avg       0.96      0.96      0.96      3725
+
+Test confusion matrix:
+ [[ 204    0    0    3    0    7]
+ [   4  920    0    0    2    2]
+ [   0    0  302    0    0   10]
+ [   2    0    0  507    0    8]
+ [   0    0    0    0  486    3]
+ [  21    8   47   29    3 1157]]
+
+Done. Best model saved to /kaggle/working/results/best_model.pt

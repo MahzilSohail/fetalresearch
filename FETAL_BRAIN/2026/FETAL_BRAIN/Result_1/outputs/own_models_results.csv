@@ -1,0 +1,7 @@
+Model,Params,Accuracy (%),Precision (%),Recall (%),F1-score (%)
+MobileNetV2,3602627,52.28,63.3,59.72,53.24
+A-MobileNetV2,3737988,66.43,73,73.21,68.27
+AC_Branch_MobileNetV2,4351476,41.75,70.78,54.49,44.4
+MobileNetV3_small,957683,84.21,83.34,83.14,83.24
+A-MobileNetV3_small,1035700,83.43,82.24,83.11,82.65
+AC_Branch_MobileNetV3_small,1391140,79.59,78.08,80.72,79.08
